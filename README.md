@@ -1,34 +1,66 @@
-# Machine Learning Course Authoring Repository
+# Machine Learning Course
 
-This repository is the private authoring source of truth for the course materials.
+This repository is being prepared as a clean first content commit for the course.
 
-## Purpose
+The commit is intentionally minimal. It contains only the canonical lecture layer:
 
-- Maintain lecture assignments and solutions in English.
-- Keep notebooks versionable via Jupytext pairs.
-- Prepare future publication into a separate student-facing read-only repository.
-- Keep datasets outside git and reference them via metadata and helper utilities.
+- lecture structure,
+- lecture PDFs,
+- practice notebooks,
+- Markdown explanations.
 
-## Repository Layout
+## Included in This Commit Layer
 
-- `lectures/`: lecture materials and metadata.
-- `src/mlcourse/`: reusable Python helpers shared across notebooks.
-- `docs/`: repository workflow and publishing notes.
-- `publish/lectures.yaml`: release-state manifest for future student exports.
-- `legacy_import/`: temporary landing zone for raw legacy materials.
+- `AGENTS.md`
+- `lectures/README.md`
+- `lectures/lecture_xx_slug/README.md`
+- `lectures/lecture_xx_slug/lecture_notes.md`
+- `lectures/lecture_xx_slug/links.yaml`
+- `lectures/lecture_xx_slug/slides/lecture.pdf`
+- `lectures/lecture_xx_slug/assignment/practice.ipynb`
 
-## Canonical Commands
+## What Is Not Included Yet
 
-```bash
-uv sync
-uv run jupyter lab
-uv run ruff format .
-uv run ruff check .
-uv run ty check src tests
+- solutions
+- tooling and environment files
+- reusable Python helpers
+- publishing manifests
+- raw imports and migration history
+- extra source formats such as `pptx`
+
+## Directory Layout
+
+```text
+lectures/
+├── README.md
+├── lecture_01_eda/
+│   ├── README.md
+│   ├── lecture_notes.md
+│   ├── links.yaml
+│   ├── slides/
+│   │   └── lecture.pdf
+│   └── assignment/
+│       └── practice.ipynb
+└── ...
 ```
 
-## Migration Sequence
+## How to Read the Repository
 
-1. Initialize the scaffold and tooling.
-2. Import legacy course materials verbatim into `legacy_import/`.
-3. Refactor imported materials into the normalized lecture structure.
+For humans:
+
+1. `README.md`
+2. `lectures/README.md`
+3. `lectures/<lecture_slug>/README.md`
+4. `lectures/<lecture_slug>/lecture_notes.md`
+5. `lectures/<lecture_slug>/links.yaml`
+6. `lectures/<lecture_slug>/slides/lecture.pdf`
+7. `lectures/<lecture_slug>/assignment/practice.ipynb`
+
+For agents:
+
+1. `AGENTS.md`
+2. `lectures/README.md`
+3. `lectures/<lecture_slug>/README.md`
+4. `lectures/<lecture_slug>/lecture_notes.md`
+5. `lectures/<lecture_slug>/links.yaml`
+6. `lectures/<lecture_slug>/assignment/practice.ipynb`

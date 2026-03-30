@@ -1,3 +1,10 @@
 # Lecture 08: Time Series
 
-Status: pending migration from legacy materials.
+This directory contains the minimal lecture package for the first content commit.
+
+## Files
+
+- `lecture_notes.md`
+- `links.yaml`
+- `assignment/practice.ipynb`
+- `slides/lecture.pdf`
