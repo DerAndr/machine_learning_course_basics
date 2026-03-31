@@ -2,11 +2,12 @@
 
 This repository is being prepared as a clean first content commit for the course.
 
-The commit is intentionally minimal. It contains only the canonical lecture layer:
+The repository currently contains the canonical lecture layer plus the local tooling needed to open and inspect the lecture example notebooks.
 
 - lecture structure,
 - lecture PDFs,
-- practice notebooks,
+- lecture example notebooks,
+- paired `.py` companions for lecture example notebooks,
 - Markdown explanations.
 
 ## Included in This Commit Layer
@@ -17,12 +18,11 @@ The commit is intentionally minimal. It contains only the canonical lecture laye
 - `lectures/lecture_xx_slug/lecture_notes.md`
 - `lectures/lecture_xx_slug/links.yaml`
 - `lectures/lecture_xx_slug/slides/lecture.pdf`
-- `lectures/lecture_xx_slug/assignment/practice.ipynb`
+- `lectures/lecture_xx_slug/lecture_examples/README.md`
 
 ## What Is Not Included Yet
 
-- solutions
-- tooling and environment files
+- classroom practical sessions, except where explicitly added later
 - reusable Python helpers
 - publishing manifests
 - raw imports and migration history
@@ -39,10 +39,48 @@ lectures/
 │   ├── links.yaml
 │   ├── slides/
 │   │   └── lecture.pdf
-│   └── assignment/
-│       └── practice.ipynb
+│   └── lecture_examples/
+│       ├── README.md
+│       ├── example_01.ipynb
+│       ├── example_01.py
+│       └── ...
 └── ...
 ```
+
+## Local Setup
+
+Use `uv` as the single environment manager for this repository.
+
+1. `uv sync`
+2. `uv run python tools/check_notebook_environment.py`
+3. `uv run jupyter lab`
+
+There is no separate `requirements.txt` on purpose.
+
+- `pyproject.toml` is the source of truth for dependencies.
+- `uv.lock` is the reproducible lockfile.
+- The default environment installs the shared baseline used across the course.
+- Heavy or lecture-specific packages can be added only when needed:
+  - `uv sync --group ensembles` for Lecture 07 extras such as `catboost`, `lightgbm`, and `xgboost`
+  - `uv sync --group time_series` for Lecture 08 extras such as `prophet`
+  - `uv sync --group hpo_automl` for Lecture 11 extras such as `h2o`, `optuna`, `hyperopt`, and `scikit-optimize`
+  - `uv sync --group neural_networks` for Lecture 12 extras such as `torch`
+  - `uv sync --group xai_piml` for the optional PiML example in Lecture 10 on compatible Python versions
+
+Student-oriented setup instructions live in `docs/student-quickstart.md`.
+
+## Working With Lecture Examples
+
+- Each lecture example notebook in `lecture_examples/` has a paired `.py` file.
+- The `.py` files are generated companions for local reading, diffing, and lightweight execution.
+- If a notebook contains Colab-only install cells such as `!pip install ...`, those cells can usually be skipped locally after `uv sync`.
+- When a lecture uses optional heavy dependencies, install the matching group first and then re-run the environment check:
+  - `uv run python tools/check_notebook_environment.py --group ensembles`
+  - `uv run python tools/check_notebook_environment.py --group time_series`
+  - `uv run python tools/check_notebook_environment.py --group hpo_automl`
+  - `uv run python tools/check_notebook_environment.py --group neural_networks`
+- To regenerate the `.py` companions and example READMEs after changing notebooks, run:
+  - `uv run python tools/sync_lecture_examples.py`
 
 ## How to Read the Repository
 
@@ -54,7 +92,9 @@ For humans:
 4. `lectures/<lecture_slug>/lecture_notes.md`
 5. `lectures/<lecture_slug>/links.yaml`
 6. `lectures/<lecture_slug>/slides/lecture.pdf`
-7. `lectures/<lecture_slug>/assignment/practice.ipynb`
+7. `lectures/<lecture_slug>/lecture_examples/README.md`
+8. `lectures/<lecture_slug>/lecture_examples/example_XX.ipynb`
+9. `lectures/<lecture_slug>/lecture_examples/example_XX.py`
 
 For agents:
 
@@ -63,4 +103,4 @@ For agents:
 3. `lectures/<lecture_slug>/README.md`
 4. `lectures/<lecture_slug>/lecture_notes.md`
 5. `lectures/<lecture_slug>/links.yaml`
-6. `lectures/<lecture_slug>/assignment/practice.ipynb`
+6. `lectures/<lecture_slug>/lecture_examples/README.md`
