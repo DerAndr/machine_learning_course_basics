@@ -1,14 +1,39 @@
 # Machine Learning Course
 
-This repository is being prepared as a clean first content commit for the course.
+Lecture notes, slide decks, and example notebooks for an introductory machine learning course.
 
-The repository currently contains the canonical lecture layer plus the local tooling needed to open and inspect the lecture example notebooks.
+The repository is organized lecture by lecture and is meant to work both as:
 
-- lecture structure,
-- lecture PDFs,
-- lecture example notebooks,
-- paired `.py` companions for lecture example notebooks,
-- Markdown explanations.
+- a course library for students who want to read notes and browse examples
+- a local notebook workspace for students who want to run materials with `uv`
+
+## At a Glance
+
+- 14 lecture topics across core machine learning subjects
+- lecture notes for revision and recap
+- canonical lecture PDFs
+- example notebooks for each lecture
+- optional local setup with lecture-specific dependency groups
+
+## Start Here
+
+If you are a student:
+
+1. Open `lectures/README.md`
+2. Choose a lecture directory
+3. Read `lecture_notes.md`
+4. Open `slides/lecture.pdf`
+5. Run notebooks from `lecture_examples/` if needed
+
+For local setup, start with:
+
+```bash
+uv sync
+uv run python tools/check_notebook_environment.py
+uv run jupyter lab
+```
+
+Student-oriented setup instructions live in `docs/student-quickstart.md`.
 
 ## Included in This Commit Layer
 
@@ -66,9 +91,6 @@ There is no separate `requirements.txt` on purpose.
   - `uv sync --group hpo_automl` for Lecture 11 extras such as `h2o`, `optuna`, `hyperopt`, and `scikit-optimize`
   - `uv sync --group neural_networks` for Lecture 12 extras such as `torch`
   - `uv sync --group xai_piml` for the optional PiML example in Lecture 10 on compatible Python versions
-
-Student-oriented setup instructions live in `docs/student-quickstart.md`.
-
 ## Working With Lecture Examples
 
 - Each lecture example notebook in `lecture_examples/` has a paired `.py` file.
