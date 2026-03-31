@@ -10,7 +10,13 @@ Each lecture directory contains:
 - `lecture_notes.md`
 - `links.yaml`
 - `slides/lecture.pdf`
-- `assignment/practice.ipynb`
+- `lecture_examples/README.md`
+- `lecture_examples/example_XX.ipynb`
+- `lecture_examples/example_XX.py`
+
+Some lectures may also contain additional subdirectories such as:
+
+- `practical_session/`
 
 ## Lecture Map
 

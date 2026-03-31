@@ -12,7 +12,9 @@ Treat the following as the only in-scope content:
 - `lectures/<lecture_slug>/lecture_notes.md`
 - `lectures/<lecture_slug>/links.yaml`
 - `lectures/<lecture_slug>/slides/lecture.pdf`
-- `lectures/<lecture_slug>/assignment/practice.ipynb`
+- `lectures/<lecture_slug>/lecture_examples/README.md`
+- `lectures/<lecture_slug>/lecture_examples/example_XX.ipynb`
+- `lectures/<lecture_slug>/lecture_examples/example_XX.py`
 
 ## Canonical Traversal Order
 
@@ -22,13 +24,15 @@ Treat the following as the only in-scope content:
 4. `lectures/<lecture_slug>/lecture_notes.md`
 5. `lectures/<lecture_slug>/links.yaml`
 6. `lectures/<lecture_slug>/slides/lecture.pdf`
-7. `lectures/<lecture_slug>/assignment/practice.ipynb`
+7. `lectures/<lecture_slug>/lecture_examples/README.md`
+8. `lectures/<lecture_slug>/lecture_examples/example_XX.ipynb`
+9. `lectures/<lecture_slug>/lecture_examples/example_XX.py`
 
 ## Intentional Exclusions
 
 For this commit, do not depend on:
 
-- solutions
+- classroom practical sessions unless they are explicitly requested
 - tooling files
 - source code under `src/`
 - docs outside the minimal root and lecture readmes
@@ -41,7 +45,9 @@ For this commit, do not depend on:
 - `lecture_notes.md`: student-facing recap and revision notes
 - `links.yaml`: compact lecture metadata with lecture number, slug, title, YouTube, and slides URL
 - `slides/lecture.pdf`: canonical lecture deck for this commit layer
-- `assignment/practice.ipynb`: practical notebook for the lecture
+- `lecture_examples/README.md`: canonical entry point for the lecture example notebooks
+- `lecture_examples/example_XX.ipynb`: canonical notebook examples for the lecture
+- `lecture_examples/example_XX.py`: local script companions generated from the notebook examples
 - `README.md`: navigation and purpose, not theory content
 
 ## Editing Guidance
@@ -50,5 +56,5 @@ If asked to refine the first commit layer:
 
 - keep the structure simple
 - prefer English-only repository text
-- keep one canonical PDF and one canonical practice notebook per lecture
+- keep one canonical PDF and one normalized `lecture_examples/` layer per lecture
 - do not re-introduce raw source duplication into this layer

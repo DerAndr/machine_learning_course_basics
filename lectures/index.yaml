@@ -1,0 +1,254 @@
+schema_version: 1
+directory_role: canonical_course_content
+lecture_file_order:
+  - README.md
+  - lecture_notes.md
+  - links.yaml
+  - lecture_examples/
+  - assets/
+lectures:
+  - number: 1
+    slug: lecture_01_eda
+    title: Exploratory Data Analysis
+    directory: lecture_01_eda
+    readme: lecture_01_eda/README.md
+    notes: lecture_01_eda/lecture_notes.md
+    metadata: lecture_01_eda/links.yaml
+    slides_pdf: lecture_01_eda/slides/lecture.pdf
+    lecture_examples_directory: lecture_01_eda/lecture_examples
+    lecture_examples_readme: lecture_01_eda/lecture_examples/README.md
+    lecture_example_notebooks:
+      - lecture_01_eda/lecture_examples/example_01.ipynb
+      - lecture_01_eda/lecture_examples/example_02.ipynb
+    lecture_example_scripts:
+      - lecture_01_eda/lecture_examples/example_01.py
+      - lecture_01_eda/lecture_examples/example_02.py
+    raw_sources: ../incoming_materials/lecture_01_eda
+  - number: 2
+    slug: lecture_02_data_preparation_part_1
+    title: Data Preparation Part 1
+    directory: lecture_02_data_preparation_part_1
+    readme: lecture_02_data_preparation_part_1/README.md
+    notes: lecture_02_data_preparation_part_1/lecture_notes.md
+    metadata: lecture_02_data_preparation_part_1/links.yaml
+    slides_pdf: lecture_02_data_preparation_part_1/slides/lecture.pdf
+    lecture_examples_directory: lecture_02_data_preparation_part_1/lecture_examples
+    lecture_examples_readme: lecture_02_data_preparation_part_1/lecture_examples/README.md
+    lecture_example_notebooks:
+      - lecture_02_data_preparation_part_1/lecture_examples/example_01.ipynb
+      - lecture_02_data_preparation_part_1/lecture_examples/example_02.ipynb
+      - lecture_02_data_preparation_part_1/lecture_examples/example_03.ipynb
+    lecture_example_scripts:
+      - lecture_02_data_preparation_part_1/lecture_examples/example_01.py
+      - lecture_02_data_preparation_part_1/lecture_examples/example_02.py
+      - lecture_02_data_preparation_part_1/lecture_examples/example_03.py
+    raw_sources: ../incoming_materials/lecture_02_data_preparation_part_1
+  - number: 3
+    slug: lecture_03_data_preparation_part_2
+    title: Data Preparation Part 2
+    directory: lecture_03_data_preparation_part_2
+    readme: lecture_03_data_preparation_part_2/README.md
+    notes: lecture_03_data_preparation_part_2/lecture_notes.md
+    metadata: lecture_03_data_preparation_part_2/links.yaml
+    slides_pdf: lecture_03_data_preparation_part_2/slides/lecture.pdf
+    lecture_examples_directory: lecture_03_data_preparation_part_2/lecture_examples
+    lecture_examples_readme: lecture_03_data_preparation_part_2/lecture_examples/README.md
+    lecture_example_notebooks:
+      - lecture_03_data_preparation_part_2/lecture_examples/example_01.ipynb
+      - lecture_03_data_preparation_part_2/lecture_examples/example_02.ipynb
+      - lecture_03_data_preparation_part_2/lecture_examples/example_03.ipynb
+      - lecture_03_data_preparation_part_2/lecture_examples/example_04.ipynb
+      - lecture_03_data_preparation_part_2/lecture_examples/example_05.ipynb
+      - lecture_03_data_preparation_part_2/lecture_examples/example_06.ipynb
+    lecture_example_scripts:
+      - lecture_03_data_preparation_part_2/lecture_examples/example_01.py
+      - lecture_03_data_preparation_part_2/lecture_examples/example_02.py
+      - lecture_03_data_preparation_part_2/lecture_examples/example_03.py
+      - lecture_03_data_preparation_part_2/lecture_examples/example_04.py
+      - lecture_03_data_preparation_part_2/lecture_examples/example_05.py
+      - lecture_03_data_preparation_part_2/lecture_examples/example_06.py
+    raw_sources: ../incoming_materials/lecture_03_data_preparation_part_2
+  - number: 4
+    slug: lecture_04_regression
+    title: Regression
+    directory: lecture_04_regression
+    readme: lecture_04_regression/README.md
+    notes: lecture_04_regression/lecture_notes.md
+    metadata: lecture_04_regression/links.yaml
+    slides_pdf: lecture_04_regression/slides/lecture.pdf
+    lecture_examples_directory: lecture_04_regression/lecture_examples
+    lecture_examples_readme: lecture_04_regression/lecture_examples/README.md
+    lecture_example_notebooks:
+      - lecture_04_regression/lecture_examples/example_01.ipynb
+    lecture_example_scripts:
+      - lecture_04_regression/lecture_examples/example_01.py
+    raw_sources: ../incoming_materials/lecture_04_regression
+  - number: 5
+    slug: lecture_05_classification_part_1
+    title: Classification Part 1
+    directory: lecture_05_classification_part_1
+    readme: lecture_05_classification_part_1/README.md
+    notes: lecture_05_classification_part_1/lecture_notes.md
+    metadata: lecture_05_classification_part_1/links.yaml
+    slides_pdf: lecture_05_classification_part_1/slides/lecture.pdf
+    lecture_examples_directory: lecture_05_classification_part_1/lecture_examples
+    lecture_examples_readme: lecture_05_classification_part_1/lecture_examples/README.md
+    lecture_example_notebooks:
+      - lecture_05_classification_part_1/lecture_examples/example_01.ipynb
+      - lecture_05_classification_part_1/lecture_examples/example_02.ipynb
+      - lecture_05_classification_part_1/lecture_examples/example_03.ipynb
+    lecture_example_scripts:
+      - lecture_05_classification_part_1/lecture_examples/example_01.py
+      - lecture_05_classification_part_1/lecture_examples/example_02.py
+      - lecture_05_classification_part_1/lecture_examples/example_03.py
+    raw_sources: ../incoming_materials/lecture_05_classification_part_1
+  - number: 6
+    slug: lecture_06_classification_part_2
+    title: Classification Part 2
+    directory: lecture_06_classification_part_2
+    readme: lecture_06_classification_part_2/README.md
+    notes: lecture_06_classification_part_2/lecture_notes.md
+    metadata: lecture_06_classification_part_2/links.yaml
+    slides_pdf: lecture_06_classification_part_2/slides/lecture.pdf
+    lecture_examples_directory: lecture_06_classification_part_2/lecture_examples
+    lecture_examples_readme: lecture_06_classification_part_2/lecture_examples/README.md
+    lecture_example_notebooks:
+      - lecture_06_classification_part_2/lecture_examples/example_01.ipynb
+      - lecture_06_classification_part_2/lecture_examples/example_02.ipynb
+      - lecture_06_classification_part_2/lecture_examples/example_03.ipynb
+      - lecture_06_classification_part_2/lecture_examples/example_04.ipynb
+    lecture_example_scripts:
+      - lecture_06_classification_part_2/lecture_examples/example_01.py
+      - lecture_06_classification_part_2/lecture_examples/example_02.py
+      - lecture_06_classification_part_2/lecture_examples/example_03.py
+      - lecture_06_classification_part_2/lecture_examples/example_04.py
+    practical_session_directory: lecture_06_classification_part_2/practical_session
+    practical_session_readme: lecture_06_classification_part_2/practical_session/README.md
+    practical_session_teacher_notebook: lecture_06_classification_part_2/practical_session/classification_part2_practical_teacher_90min.ipynb
+    practical_session_student_notebook: lecture_06_classification_part_2/practical_session/classification_part2_practical_student_90min.ipynb
+    practical_session_teacher_guide: lecture_06_classification_part_2/practical_session/teacher_cheat_sheet.md
+    raw_sources: ../incoming_materials/lecture_06_classification_part_2
+  - number: 7
+    slug: lecture_07_ensembles
+    title: Ensembles
+    directory: lecture_07_ensembles
+    readme: lecture_07_ensembles/README.md
+    notes: lecture_07_ensembles/lecture_notes.md
+    metadata: lecture_07_ensembles/links.yaml
+    slides_pdf: lecture_07_ensembles/slides/lecture.pdf
+    lecture_examples_directory: lecture_07_ensembles/lecture_examples
+    lecture_examples_readme: lecture_07_ensembles/lecture_examples/README.md
+    lecture_example_notebooks:
+      - lecture_07_ensembles/lecture_examples/example_01.ipynb
+    lecture_example_scripts:
+      - lecture_07_ensembles/lecture_examples/example_01.py
+    raw_sources: ../incoming_materials/lecture_07_ensembles
+  - number: 8
+    slug: lecture_08_time_series
+    title: Time Series
+    directory: lecture_08_time_series
+    readme: lecture_08_time_series/README.md
+    notes: lecture_08_time_series/lecture_notes.md
+    metadata: lecture_08_time_series/links.yaml
+    slides_pdf: lecture_08_time_series/slides/lecture.pdf
+    lecture_examples_directory: lecture_08_time_series/lecture_examples
+    lecture_examples_readme: lecture_08_time_series/lecture_examples/README.md
+    lecture_example_notebooks:
+      - lecture_08_time_series/lecture_examples/example_01.ipynb
+    lecture_example_scripts:
+      - lecture_08_time_series/lecture_examples/example_01.py
+    raw_sources: ../incoming_materials/lecture_08_time_series
+  - number: 9
+    slug: lecture_09_clustering
+    title: Clustering
+    directory: lecture_09_clustering
+    readme: lecture_09_clustering/README.md
+    notes: lecture_09_clustering/lecture_notes.md
+    metadata: lecture_09_clustering/links.yaml
+    slides_pdf: lecture_09_clustering/slides/lecture.pdf
+    lecture_examples_directory: lecture_09_clustering/lecture_examples
+    lecture_examples_readme: lecture_09_clustering/lecture_examples/README.md
+    lecture_example_notebooks:
+      - lecture_09_clustering/lecture_examples/example_01.ipynb
+    lecture_example_scripts:
+      - lecture_09_clustering/lecture_examples/example_01.py
+    raw_sources: ../incoming_materials/lecture_09_clustering
+  - number: 10
+    slug: lecture_10_explainability_interpretability
+    title: Explainability and Interpretability
+    directory: lecture_10_explainability_interpretability
+    readme: lecture_10_explainability_interpretability/README.md
+    notes: lecture_10_explainability_interpretability/lecture_notes.md
+    metadata: lecture_10_explainability_interpretability/links.yaml
+    slides_pdf: lecture_10_explainability_interpretability/slides/lecture.pdf
+    lecture_examples_directory: lecture_10_explainability_interpretability/lecture_examples
+    lecture_examples_readme: lecture_10_explainability_interpretability/lecture_examples/README.md
+    lecture_example_notebooks:
+      - lecture_10_explainability_interpretability/lecture_examples/example_01.ipynb
+      - lecture_10_explainability_interpretability/lecture_examples/example_02.ipynb
+    lecture_example_scripts:
+      - lecture_10_explainability_interpretability/lecture_examples/example_01.py
+      - lecture_10_explainability_interpretability/lecture_examples/example_02.py
+    raw_sources: ../incoming_materials/lecture_10_explainability_interpretability
+  - number: 11
+    slug: lecture_11_cross_validation_hpo
+    title: Cross-Validation and Hyperparameter Optimization
+    directory: lecture_11_cross_validation_hpo
+    readme: lecture_11_cross_validation_hpo/README.md
+    notes: lecture_11_cross_validation_hpo/lecture_notes.md
+    metadata: lecture_11_cross_validation_hpo/links.yaml
+    slides_pdf: lecture_11_cross_validation_hpo/slides/lecture.pdf
+    lecture_examples_directory: lecture_11_cross_validation_hpo/lecture_examples
+    lecture_examples_readme: lecture_11_cross_validation_hpo/lecture_examples/README.md
+    lecture_example_notebooks:
+      - lecture_11_cross_validation_hpo/lecture_examples/example_01.ipynb
+      - lecture_11_cross_validation_hpo/lecture_examples/example_02.ipynb
+    lecture_example_scripts:
+      - lecture_11_cross_validation_hpo/lecture_examples/example_01.py
+      - lecture_11_cross_validation_hpo/lecture_examples/example_02.py
+    raw_sources: ../incoming_materials/lecture_11_cross_validation_hpo
+  - number: 12
+    slug: lecture_12_intro_neural_networks
+    title: Introduction to Neural Networks
+    directory: lecture_12_intro_neural_networks
+    readme: lecture_12_intro_neural_networks/README.md
+    notes: lecture_12_intro_neural_networks/lecture_notes.md
+    metadata: lecture_12_intro_neural_networks/links.yaml
+    slides_pdf: lecture_12_intro_neural_networks/slides/lecture.pdf
+    lecture_examples_directory: lecture_12_intro_neural_networks/lecture_examples
+    lecture_examples_readme: lecture_12_intro_neural_networks/lecture_examples/README.md
+    lecture_example_notebooks:
+      - lecture_12_intro_neural_networks/lecture_examples/example_01.ipynb
+    lecture_example_scripts:
+      - lecture_12_intro_neural_networks/lecture_examples/example_01.py
+    raw_sources: ../incoming_materials/lecture_12_intro_neural_networks
+  - number: 13
+    slug: lecture_13_responsible_ai
+    title: Responsible AI
+    directory: lecture_13_responsible_ai
+    readme: lecture_13_responsible_ai/README.md
+    notes: lecture_13_responsible_ai/lecture_notes.md
+    metadata: lecture_13_responsible_ai/links.yaml
+    slides_pdf: lecture_13_responsible_ai/slides/lecture.pdf
+    lecture_examples_directory: lecture_13_responsible_ai/lecture_examples
+    lecture_examples_readme: lecture_13_responsible_ai/lecture_examples/README.md
+    lecture_example_notebooks:
+      - lecture_13_responsible_ai/lecture_examples/example_01.ipynb
+    lecture_example_scripts:
+      - lecture_13_responsible_ai/lecture_examples/example_01.py
+    raw_sources: ../incoming_materials/lecture_13_responsible_ai
+  - number: 14
+    slug: lecture_14_ml_in_production
+    title: ML in Production
+    directory: lecture_14_ml_in_production
+    readme: lecture_14_ml_in_production/README.md
+    notes: lecture_14_ml_in_production/lecture_notes.md
+    metadata: lecture_14_ml_in_production/links.yaml
+    slides_pdf: lecture_14_ml_in_production/slides/lecture.pdf
+    lecture_examples_directory: lecture_14_ml_in_production/lecture_examples
+    lecture_examples_readme: lecture_14_ml_in_production/lecture_examples/README.md
+    lecture_example_notebooks:
+      - lecture_14_ml_in_production/lecture_examples/example_01.ipynb
+    lecture_example_scripts:
+      - lecture_14_ml_in_production/lecture_examples/example_01.py
+    raw_sources: ../incoming_materials/lecture_14_ml_in_production
