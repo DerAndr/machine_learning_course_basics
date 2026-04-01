@@ -35,23 +35,21 @@ uv run jupyter lab
 
 Student-oriented setup instructions live in `docs/student-quickstart.md`.
 
-## Included in This Commit Layer
+## Repository Contents
 
-- `AGENTS.md`
-- `lectures/README.md`
-- `lectures/lecture_xx_slug/README.md`
-- `lectures/lecture_xx_slug/lecture_notes.md`
-- `lectures/lecture_xx_slug/links.yaml`
-- `lectures/lecture_xx_slug/slides/lecture.pdf`
-- `lectures/lecture_xx_slug/lecture_examples/README.md`
+- `lectures/README.md` for top-level lecture navigation
+- `lectures/<lecture_slug>/README.md` for lecture-specific navigation
+- `lectures/<lecture_slug>/lecture_notes.md` for student revision and recap
+- `lectures/<lecture_slug>/links.yaml` for compact lecture metadata
+- `lectures/<lecture_slug>/slides/lecture.pdf` for the canonical lecture deck
+- `lectures/<lecture_slug>/lecture_examples/` for example notebooks and paired scripts
+- `docs/student-quickstart.md` for local setup instructions
 
-## What Is Not Included Yet
+## Current Scope
 
-- classroom practical sessions, except where explicitly added later
-- reusable Python helpers
-- publishing manifests
-- raw imports and migration history
-- extra source formats such as `pptx`
+- The public layer is centered on lecture materials, notes, and example notebooks.
+- Some lectures may also gain separate classroom practical materials over time.
+- Raw imports, migration history, and source collection remain outside the public course layer.
 
 ## Directory Layout
 
@@ -91,6 +89,7 @@ There is no separate `requirements.txt` on purpose.
   - `uv sync --group hpo_automl` for Lecture 11 extras such as `h2o`, `optuna`, `hyperopt`, and `scikit-optimize`
   - `uv sync --group neural_networks` for Lecture 12 extras such as `torch`
   - `uv sync --group xai_piml` for the optional PiML example in Lecture 10 on compatible Python versions
+
 ## Working With Lecture Examples
 
 - Each lecture example notebook in `lecture_examples/` has a paired `.py` file.

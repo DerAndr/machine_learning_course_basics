@@ -5,6 +5,16 @@ This repository can be used in two ways:
 - as a lecture-material library with PDFs, notes, and example notebooks
 - as a local notebook workspace with `uv`
 
+## 0. If you only want to read the materials
+
+You do not need to install anything to:
+
+- read `lecture_notes.md`
+- open lecture PDFs
+- browse the repository on GitHub
+
+Local setup is only needed when you want to run notebooks on your machine.
+
 ## 1. Install the baseline environment
 
 If you only want the standard shared packages used in most lectures, run:
@@ -31,6 +41,11 @@ Then open the lecture you need:
 ## 3. Install extra packages only for specific lectures
 
 Some lectures use heavier libraries that are not installed by default.
+
+Rule:
+
+- start with the baseline environment
+- then add only the group needed for the lecture you are working on
 
 ### Lecture 07: Ensembles
 
@@ -102,6 +117,8 @@ uv run jupyter lab
 ```
 
 If a lecture README says that extra setup is needed, run the matching `uv sync --group ...` command first.
+
+For most lectures, the baseline environment is enough.
 
 ## 5. What to do if a notebook still has `!pip install ...`
 
