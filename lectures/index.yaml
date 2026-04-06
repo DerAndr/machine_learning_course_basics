@@ -142,6 +142,11 @@ lectures:
       - lecture_07_ensembles/lecture_examples/example_01.ipynb
     lecture_example_scripts:
       - lecture_07_ensembles/lecture_examples/example_01.py
+    practical_session_directory: lecture_07_ensembles/practical_session
+    practical_session_readme: lecture_07_ensembles/practical_session/README.md
+    practical_session_teacher_notebook: lecture_07_ensembles/practical_session/ensembles_practical_teacher_90min.ipynb
+    practical_session_student_notebook: lecture_07_ensembles/practical_session/ensembles_practical_student_90min.ipynb
+    practical_session_teacher_guide: lecture_07_ensembles/practical_session/teacher_cheat_sheet.md
     raw_sources: ../incoming_materials/lecture_07_ensembles
   - number: 8
     slug: lecture_08_time_series
@@ -157,6 +162,11 @@ lectures:
       - lecture_08_time_series/lecture_examples/example_01.ipynb
     lecture_example_scripts:
       - lecture_08_time_series/lecture_examples/example_01.py
+    practical_session_directory: lecture_08_time_series/practical_session
+    practical_session_readme: lecture_08_time_series/practical_session/README.md
+    practical_session_teacher_notebook: lecture_08_time_series/practical_session/time_series_practical_teacher_90min.ipynb
+    practical_session_student_notebook: lecture_08_time_series/practical_session/time_series_practical_student_90min.ipynb
+    practical_session_teacher_guide: lecture_08_time_series/practical_session/teacher_cheat_sheet.md
     raw_sources: ../incoming_materials/lecture_08_time_series
   - number: 9
     slug: lecture_09_clustering
