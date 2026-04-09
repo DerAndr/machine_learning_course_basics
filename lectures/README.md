@@ -18,6 +18,8 @@ Some lectures may also contain additional subdirectories such as:
 
 - `practical_session/`
 
+When `practical_session/` is present, the public release may contain only the student-facing notebook and README, while instructor materials stay unpublished.
+
 ## Lecture Map
 
 1. [Lecture 01: Exploratory Data Analysis](lecture_01_eda/README.md)
