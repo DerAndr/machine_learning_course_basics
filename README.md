@@ -13,6 +13,7 @@ The repository is organized lecture by lecture and is meant to work both as:
 - lecture notes for revision and recap
 - canonical lecture PDFs
 - example notebooks for each lecture
+- selected lectures with separate classroom practical sessions
 - optional local setup with lecture-specific dependency groups
 
 ## Start Here
@@ -43,12 +44,14 @@ Student-oriented setup instructions live in `docs/student-quickstart.md`.
 - `lectures/<lecture_slug>/links.yaml` for compact lecture metadata
 - `lectures/<lecture_slug>/slides/lecture.pdf` for the canonical lecture deck
 - `lectures/<lecture_slug>/lecture_examples/` for example notebooks and paired scripts
+- `lectures/<lecture_slug>/practical_session/` for separate classroom practicals when a lecture includes them
 - `docs/student-quickstart.md` for local setup instructions
 
 ## Current Scope
 
 - The public layer is centered on lecture materials, notes, and example notebooks.
-- Some lectures may also gain separate classroom practical materials over time.
+- Some lectures also include separate public `practical_session/` materials for classroom work.
+- Instructor notebooks or cheat sheets may be kept out of the public student release.
 - Raw imports, migration history, and source collection remain outside the public course layer.
 
 ## Directory Layout
