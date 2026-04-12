@@ -19,13 +19,15 @@ This directory contains the lecture materials for this topic.
 ## Practical Session
 
 - `practical_session/data_preparation_part1_practical_student_90min.ipynb`: student version with targeted TODO cells and short answer placeholders
+- `practical_session/data_preparation_part1_practical_student_90min.py`: Python companion script for the practical notebook
 - `practical_session/README.md`: practical overview, scope, and runtime notes
 
 The practical covers:
 
-- missing-value inspection and a short discussion of likely missingness mechanism
+- missing-value inspection, a quick missingness scan, and a short discussion of likely missingness mechanism
+- the distinction between structurally absent fields and genuinely missing numeric measurements
 - median imputation and visual comparison of the original and imputed distribution
-- IQR-based outlier thresholds, skewness, and log transforms
+- IQR-based outlier thresholds, skewness, log transforms, and Isolation Forest outlier detection
 - ordinal encoding, one-hot reasoning, and quantile binning
 - feature engineering, robust scaling, and a final preprocessing pipeline with `Ridge`
 

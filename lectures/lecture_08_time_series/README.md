@@ -13,7 +13,7 @@ This directory contains the lecture materials for this topic.
 ## Lecture Examples
 
 - `lecture_examples/example_01.ipynb` and `lecture_examples/example_01.py`: Data Preparation Function. Forecasting pipeline with SARIMA, Random Forest, Prophet, and XGBoost.
-  Optional setup note: this example uses Prophet and XGBoost. The baseline environment does not install it by default. Install the lecture-specific extras with `uv sync --group time_series`.
+  Optional setup note: this example uses Prophet and XGBoost. The baseline environment does not install them by default. Install the lecture-specific extras with `uv sync --group time_series`.
 
 ## Practical Session
 

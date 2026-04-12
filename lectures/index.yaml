@@ -45,6 +45,7 @@ lectures:
     practical_session_directory: lecture_02_data_preparation_part_1/practical_session
     practical_session_readme: lecture_02_data_preparation_part_1/practical_session/README.md
     practical_session_student_notebook: lecture_02_data_preparation_part_1/practical_session/data_preparation_part1_practical_student_90min.ipynb
+    practical_session_student_script: lecture_02_data_preparation_part_1/practical_session/data_preparation_part1_practical_student_90min.py
     raw_sources: ../incoming_materials/lecture_02_data_preparation_part_1
   - number: 3
     slug: lecture_03_data_preparation_part_2
@@ -128,6 +129,7 @@ lectures:
     practical_session_directory: lecture_06_classification_part_2/practical_session
     practical_session_readme: lecture_06_classification_part_2/practical_session/README.md
     practical_session_student_notebook: lecture_06_classification_part_2/practical_session/classification_part2_practical_student_90min.ipynb
+    practical_session_student_script: lecture_06_classification_part_2/practical_session/classification_part2_practical_student_90min.py
     raw_sources: ../incoming_materials/lecture_06_classification_part_2
   - number: 7
     slug: lecture_07_ensembles
@@ -164,6 +166,7 @@ lectures:
     practical_session_directory: lecture_08_time_series/practical_session
     practical_session_readme: lecture_08_time_series/practical_session/README.md
     practical_session_student_notebook: lecture_08_time_series/practical_session/time_series_practical_student_90min.ipynb
+    practical_session_student_script: lecture_08_time_series/practical_session/time_series_practical_student_90min.py
     raw_sources: ../incoming_materials/lecture_08_time_series
   - number: 9
     slug: lecture_09_clustering
