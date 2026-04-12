@@ -17,10 +17,9 @@ This directory contains the lecture materials for this topic.
 
 ## Practical Session
 
-- `practical_session/time_series_practical_teacher_90min.ipynb`: teacher version of the 90-minute classroom practical
 - `practical_session/time_series_practical_student_90min.ipynb`: student version with targeted TODO cells
 - `practical_session/time_series_practical_student_90min.py`: generated companion script for the student notebook
-- `practical_session/teacher_cheat_sheet.md`: timing, discussion prompts, and expected takeaways
+- `practical_session/README.md`: practical overview, scope, and runtime notes
 
 The practical covers:
 

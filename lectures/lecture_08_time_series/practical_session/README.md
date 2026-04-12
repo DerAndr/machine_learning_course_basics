@@ -4,14 +4,12 @@ This directory contains a 90-minute classroom practical for Lecture 08.
 
 ## Files
 
-- `time_series_practical_teacher_90min.ipynb`
 - `time_series_practical_student_90min.ipynb`
 - `time_series_practical_student_90min.py`
-- `teacher_cheat_sheet.md`
+- `README.md`
 
 ## Format
 
-- The teacher and student notebooks preserve the same cell order and overall structure.
 - The student notebook contains targeted TODO placeholders in the main modelling cells.
 - The student notebook also has a generated Python companion script for easier diffing and review.
 - The practical uses the OpenML dataset `seoul_bike_sharing_demand` (`id=46297`) and aggregates the hourly data to daily demand.

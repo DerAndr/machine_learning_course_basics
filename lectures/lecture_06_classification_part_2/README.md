@@ -16,7 +16,16 @@ This directory contains the lecture materials for this topic.
 - `lecture_examples/example_03.ipynb` and `lecture_examples/example_03.py`: Multilabel Classification with Logistic Regression and Evaluation Metrics. Multilabel classification and multilabel metric interpretation.
 - `lecture_examples/example_04.ipynb` and `lecture_examples/example_04.py`: Ordinal Classification with Ordinal Logistic Regression. Ordinal classification with ordered targets and ordinal regression.
 
-## Additional Materials
+## Practical Session
 
-- `practical_session/README.md`
-- `practical_session/` contains separate classroom practical materials for this lecture.
+- `practical_session/classification_part2_practical_student_90min.ipynb`: student version with targeted TODO cells
+- `practical_session/README.md`: practical overview, scope, and runtime notes
+
+The practical covers:
+
+- imbalanced binary classification with threshold-aware evaluation
+- multiclass classification with native, OvR, and OvO logistic workflows
+- multilabel classification with problem-specific metrics
+- a three-group classroom split with a final comparison of trade-offs and methodology
+
+The practical session is intentionally separate from `lecture_examples/`.

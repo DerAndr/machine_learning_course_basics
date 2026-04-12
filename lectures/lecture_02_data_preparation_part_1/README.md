@@ -8,9 +8,25 @@ This directory contains the lecture materials for this topic.
 - `links.yaml`
 - `slides/lecture.pdf`
 - `lecture_examples/README.md`
+- `practical_session/README.md`
 
 ## Lecture Examples
 
 - `lecture_examples/example_01.ipynb` and `lecture_examples/example_01.py`: Data Preparation - Missing Values. Missing-value inspection and practical imputation strategies.
 - `lecture_examples/example_02.ipynb` and `lecture_examples/example_02.py`: Managing Outliers. Outlier detection, interpretation, and treatment choices.
 - `lecture_examples/example_03.ipynb` and `lecture_examples/example_03.py`: Category Encoding Techniques Demonstration on Toy Dataset. Categorical encoding methods on toy and tabular data.
+
+## Practical Session
+
+- `practical_session/data_preparation_part1_practical_student_90min.ipynb`: student version with targeted TODO cells and short answer placeholders
+- `practical_session/README.md`: practical overview, scope, and runtime notes
+
+The practical covers:
+
+- missing-value inspection and a short discussion of likely missingness mechanism
+- median imputation and visual comparison of the original and imputed distribution
+- IQR-based outlier thresholds, skewness, and log transforms
+- ordinal encoding, one-hot reasoning, and quantile binning
+- feature engineering, robust scaling, and a final preprocessing pipeline with `Ridge`
+
+The practical session is intentionally separate from `lecture_examples/`.
