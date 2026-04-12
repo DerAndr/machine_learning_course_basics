@@ -4,9 +4,9 @@
 > Lecture slug: `lecture_03_data_preparation_part_2`
 > Role: student-facing recap and revision notes
 > Use this file: after the lecture, before or alongside the practice notebook
-> Related files: `README.md`, `slides/lecture.pdf`, `assignment/practice.ipynb`
+> Related files: `README.md`, `slides/lecture.pdf`, `practical_session/README.md`, `practical_session/data_preparation_part2_practical_student_90min.ipynb`
 > Source basis: lecture slides and practical notebooks
-> Last updated: 2026-03-31
+> Last updated: 2026-04-13
 
 ## 1. Why This Lecture Goes Beyond Basic Cleaning
 

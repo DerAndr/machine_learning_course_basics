@@ -12,7 +12,8 @@ This directory contains a 90-minute classroom practical for Lecture 02.
 
 - The student notebook contains targeted TODO placeholders and short answer cells instead of full solutions.
 - The Python companion script mirrors the notebook structure for lighter review and diffing.
-- The practical uses the Ames Housing dataset as a realistic tabular example with missing values, mixed feature types, and strong outliers.
+- The practical uses the Ames Housing dataset from **OpenML dataset `41211`** as a realistic tabular example with missing values, mixed feature types, and strong outliers.
+- The notebook renames the OpenML columns into the course's space-separated Ames style so it stays aligned with the rest of the course materials.
 - The notebook is organized into four classroom blocks:
   - missing-value inspection, quick missingness scanning, and imputation
   - outliers and transformations

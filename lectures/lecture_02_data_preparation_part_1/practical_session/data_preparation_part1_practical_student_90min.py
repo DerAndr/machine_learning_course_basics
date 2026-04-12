@@ -23,13 +23,13 @@
 # 
 # ```python
 # # If needed:
-# # pip install -U numpy pandas matplotlib seaborn scikit-learn
+# # pip install -U numpy pandas matplotlib seaborn scikit-learn liac-arff
 # ```
 # 
-# In Google Colab, the default runtime usually already includes these libraries. If any import fails, run the install cell once before continuing.
+# This practical uses the Ames Housing dataset from **OpenML dataset `41211`**. We immediately rename the OpenML columns into the course's space-separated Ames style so the practical stays aligned with the rest of the course.
 
 # %%
-# NOTE: notebook magic commented for local script use: !pip install -U numpy pandas matplotlib seaborn scikit-learn
+# NOTE: notebook magic commented for local script use: !pip install -U numpy pandas matplotlib seaborn scikit-learn liac-arff
 
 # %%
 import matplotlib.pyplot as plt
@@ -38,10 +38,11 @@ import pandas as pd
 import seaborn as sns
 
 from sklearn.compose import ColumnTransformer
+from sklearn.datasets import fetch_openml
 from sklearn.ensemble import IsolationForest
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import Ridge
-from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.metrics import r2_score, root_mean_squared_error
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, RobustScaler, StandardScaler
@@ -61,27 +62,163 @@ print("✓ Libraries loaded successfully!")
 
 # %%
 def plot_distribution(series, title, xlabel, bins=40, kde=True, color='steelblue'):
-    """Plot a single distribution with consistent styling."""
-    plt.figure(figsize=(10, 6))
-    sns.histplot(series.dropna(), bins=bins, kde=kde, color=color)
-    plt.title(title)
-    plt.xlabel(xlabel)
-    plt.ylabel('Frequency')
+    """Show a histogram and boxplot together for a single feature."""
+    clean = series.dropna()
+    fig, axes = plt.subplots(1, 2, figsize=(13, 4), gridspec_kw={'width_ratios': [4, 1]})
+
+    sns.histplot(clean, bins=bins, kde=kde, color=color, ax=axes[0])
+    axes[0].axvline(clean.median(), color='crimson', linestyle='--', linewidth=2, label=f"Median = {clean.median():.1f}")
+    axes[0].axvline(clean.mean(), color='black', linestyle=':', linewidth=2, label=f"Mean = {clean.mean():.1f}")
+    axes[0].set_title(title)
+    axes[0].set_xlabel(xlabel)
+    axes[0].set_ylabel('Frequency')
+    axes[0].legend()
+
+    sns.boxplot(x=clean, color=color, ax=axes[1])
+    axes[1].set_title('Boxplot')
+    axes[1].set_xlabel(xlabel)
+
     plt.tight_layout()
     plt.show()
 
 
-def plot_distribution_overlay(left, right, left_label, right_label, title, xlabel, bins=40):
-    """Overlay two distributions to compare a preprocessing change."""
-    plt.figure(figsize=(10, 6))
-    sns.histplot(left.dropna(), bins=bins, kde=True, label=left_label, alpha=0.45)
-    sns.histplot(right.dropna(), bins=bins, kde=True, label=right_label, alpha=0.45)
-    plt.title(title)
-    plt.xlabel(xlabel)
-    plt.ylabel('Frequency')
-    plt.legend()
+def plot_imputation_impact(original, imputed, left_label, right_label, title, xlabel, bins=40):
+    """Show imputation impact with separate histograms, boxplots, and missing counts."""
+    missing_before = int(original.isna().sum())
+    missing_after = int(imputed.isna().sum())
+
+    if missing_before == 0:
+        print(
+            "The original series already has no missing values. "
+            "For this comparison, keep the raw column unchanged and create a separate imputed copy."
+        )
+
+    original_clean = original.dropna()
+    imputed_clean = imputed.dropna()
+    combined = pd.concat([original_clean, imputed_clean], ignore_index=True)
+    shared_bins = np.histogram_bin_edges(combined, bins=bins)
+
+    fig, axes = plt.subplots(2, 2, figsize=(14, 9))
+
+    sns.histplot(original_clean, bins=shared_bins, kde=True, color='steelblue', ax=axes[0, 0])
+    axes[0, 0].axvline(original_clean.median(), color='crimson', linestyle='--', linewidth=2)
+    axes[0, 0].set_title(f'{left_label} distribution')
+    axes[0, 0].set_xlabel(xlabel)
+    axes[0, 0].set_ylabel('Frequency')
+
+    sns.histplot(imputed_clean, bins=shared_bins, kde=True, color='darkorange', ax=axes[0, 1])
+    axes[0, 1].axvline(imputed_clean.median(), color='crimson', linestyle='--', linewidth=2)
+    axes[0, 1].set_title(f'{right_label} distribution')
+    axes[0, 1].set_xlabel(xlabel)
+    axes[0, 1].set_ylabel('Frequency')
+
+    sns.boxplot(
+        data=pd.concat([original_clean.rename(left_label), imputed_clean.rename(right_label)], axis=1),
+        orient='h',
+        palette=['steelblue', 'darkorange'],
+        ax=axes[1, 0],
+    )
+    axes[1, 0].set_title('Side-by-side boxplots')
+    axes[1, 0].set_xlabel(xlabel)
+
+    missing_counts = pd.Series(
+        {
+            f'{left_label}\nmissing': missing_before,
+            f'{right_label}\nmissing': missing_after,
+        }
+    )
+    sns.barplot(x=missing_counts.index, y=missing_counts.values, palette=['steelblue', 'darkorange'], ax=axes[1, 1])
+    axes[1, 1].set_title('Missing values before vs after')
+    axes[1, 1].set_ylabel('Count')
+    axes[1, 1].set_xlabel('')
+
+    plt.suptitle(title, fontsize=15, y=1.02)
     plt.tight_layout()
     plt.show()
+
+
+def plot_before_after_transform(original, transformed, original_label, transformed_label, xlabel_original, xlabel_transformed, bins=40):
+    """Compare a feature before and after a transformation on separate scales."""
+    original_clean = original.dropna()
+    transformed_clean = transformed.dropna()
+
+    fig, axes = plt.subplots(2, 2, figsize=(14, 8))
+
+    sns.histplot(original_clean, bins=bins, kde=True, color='steelblue', ax=axes[0, 0])
+    axes[0, 0].set_title(original_label)
+    axes[0, 0].set_xlabel(xlabel_original)
+    axes[0, 0].set_ylabel('Frequency')
+
+    sns.histplot(transformed_clean, bins=bins, kde=True, color='darkorange', ax=axes[0, 1])
+    axes[0, 1].set_title(transformed_label)
+    axes[0, 1].set_xlabel(xlabel_transformed)
+    axes[0, 1].set_ylabel('Frequency')
+
+    sns.boxplot(x=original_clean, color='steelblue', ax=axes[1, 0])
+    axes[1, 0].set_title(f'{original_label} boxplot')
+    axes[1, 0].set_xlabel(xlabel_original)
+
+    sns.boxplot(x=transformed_clean, color='darkorange', ax=axes[1, 1])
+    axes[1, 1].set_title(f'{transformed_label} boxplot')
+    axes[1, 1].set_xlabel(xlabel_transformed)
+
+    plt.tight_layout()
+    plt.show()
+
+
+def plot_top_missing_counts(missing_summary, top_n=10):
+    """Plot the top missing-value counts for quick inspection."""
+    top_missing = missing_summary.head(top_n).sort_values(ascending=True)
+    if top_missing.empty:
+        print('No missing values detected after parsing the dataset.')
+        return
+    plt.figure(figsize=(8, 5))
+    top_missing.plot(kind='barh', color='indianred')
+    plt.title('Top columns by missing-value count')
+    plt.xlabel('Missing values')
+    plt.ylabel('Feature')
+    plt.tight_layout()
+    plt.show()
+
+
+def load_ames_housing_openml():
+    """Load OpenML 41211 and rename columns into the course's Ames style."""
+    ames = fetch_openml(data_id=41211, as_frame=True, parser='auto')
+
+    if getattr(ames, 'frame', None) is not None:
+        df = ames.frame.copy()
+    else:
+        target = ames.target.rename('Sale_Price') if hasattr(ames.target, 'rename') else pd.Series(ames.target, name='Sale_Price')
+        df = pd.concat([ames.data.copy(), target], axis=1)
+
+    rename_map = {column: column.replace('_', ' ') for column in df.columns}
+    rename_map.update(
+        {
+            'Sale_Price': 'SalePrice',
+            'Year_Sold': 'Yr Sold',
+            'First_Flr_SF': '1st Flr SF',
+            'Second_Flr_SF': '2nd Flr SF',
+            'Three_season_porch': '3Ssn Porch',
+        }
+    )
+    df = df.rename(columns=rename_map)
+
+    # OpenML can surface missing categorical values as literal sentinel strings.
+    # Normalize them up front so the rest of the practical sees true NaNs.
+    df = df.replace(
+        {
+            '?': np.nan,
+            'NA': np.nan,
+            'NaN': np.nan,
+            'nan': np.nan,
+            'None': np.nan,
+        }
+    )
+
+    for column in df.select_dtypes(include=['object', 'string']).columns:
+        df[column] = df[column].replace(r'^\s*$', np.nan, regex=True)
+
+    return df
 
 # %% [markdown]
 # ## How To Work In Teams
@@ -108,17 +245,17 @@ def plot_distribution_overlay(left, right, left_label, right_label, title, xlabe
 # 
 # **Instructions:**
 # Load the Ames Housing dataset into a DataFrame named `df`.
-# - URL: `https://drive.google.com/uc?export=download&id=11m25c8jLsqHV6pePePACd_ntPx9Wz7Pc`
-# - Remember: missing values in this file are marked `"NA"`. Make sure pandas parses them as NaNs (`na_values="NA"`).
+# - Source: OpenML dataset `41211`
+# - Use the helper `load_ames_housing_openml()`
+# - Keep the course-style column names with spaces such as `Lot Frontage`, `1st Flr SF`, and `Yr Sold`
 # 
 # **Calculation 1:** What is the exact number of rows and columns in the raw dataset?
 
 # %%
 # TODO:
-# 1. Read the CSV from the provided URL.
-# 2. Parse both "NA" and empty strings as missing values.
-# 3. Use the Order column as the index.
-# 4. Print the shape and display the first rows.
+# 1. Load the dataset with load_ames_housing_openml().
+# 2. Save it to a DataFrame named df.
+# 3. Print the shape and display the first rows.
 
 # df = ...
 
@@ -139,6 +276,7 @@ missing_summary = missing_summary[missing_summary > 0]
 
 print('Top columns by missing-value count:')
 print(missing_summary.head(10))
+plot_top_missing_counts(missing_summary)
 
 top_missing_cols = missing_summary.head(8).index.tolist()
 if top_missing_cols:
@@ -155,6 +293,26 @@ if top_missing_cols:
     plt.show()
 else:
     print('No missing values found in this dataset.')
+
+lot_frontage_missing_rate = (
+    df.assign(lot_frontage_missing=df['Lot Frontage'].isna())
+    .groupby('Neighborhood')['lot_frontage_missing']
+    .mean()
+    .sort_values(ascending=False)
+    .head(10)
+)
+
+if lot_frontage_missing_rate.sum() > 0:
+    plt.figure(figsize=(8, 5))
+    lot_frontage_missing_rate.sort_values().plot(kind='barh', color='slateblue')
+    plt.title('Neighborhoods with the highest Lot Frontage missing rate')
+    plt.xlabel('Missing-rate share')
+    plt.ylabel('Neighborhood')
+    plt.xlim(0, 1)
+    plt.tight_layout()
+    plt.show()
+else:
+    print('Lot Frontage has no missing values after parsing, so the neighborhood missing-rate plot is skipped.')
 
 # %% [markdown]
 # ### 1.3 Quantify Missingness ✏️ TODO (⏱️ ~6 min)
@@ -173,13 +331,13 @@ else:
 # ### 1.4 The Impact of Imputation ✏️ TODO (⏱️ ~9 min)
 # If you apply Median Imputation to `Lot Frontage`, it changes the distribution. Let's quantify how much.
 # 
-# **Calculation 3:** Create a copy of the dataframe `df_work = df.copy()`. Impute `Lot Frontage` using the **column median computed on the full dataframe used in this practical**. What is the exact new overall mean of `Lot Frontage` across all 2930 rows after imputation (rounded to 2 decimal places)?
+# **Calculation 3:** Create a copy of the dataframe `df_work = df.copy()`. Impute `Lot Frontage` using the **column median computed on the full dataframe used in this practical**. Store the result in a **new column** called `Lot Frontage_imputed` and keep the original `Lot Frontage` unchanged for comparison. What is the exact new overall mean of `Lot Frontage_imputed` across all 2930 rows after imputation (rounded to 2 decimal places)?
 
 # %%
 # TODO:
 # 1. Create df_work = df.copy().
 # 2. Compute the median of Lot Frontage.
-# 3. Create Lot Frontage_imputed with fillna(median).
+# 3. Create Lot Frontage_imputed with fillna(median) and do not overwrite the original Lot Frontage column.
 # 4. Compute and print the new overall mean rounded to 2 decimals.
 
 # %% [markdown]
@@ -191,8 +349,8 @@ else:
 # For this classroom calculation, we use the full dataframe so everyone gets the same numeric answer. In a real ML workflow, imputation statistics such as the median must be fit on the training split only and then reused on validation/test data to avoid leakage.
 
 # %%
-plot_distribution_overlay(
-    df_work['Lot Frontage'],
+plot_imputation_impact(
+    df['Lot Frontage'],
     df_work['Lot Frontage_imputed'],
     left_label='Original',
     right_label='Median-imputed',
@@ -234,10 +392,61 @@ plot_distribution(
     xlabel='SalePrice'
 )
 
+saleprice_scatter = df_work[['Gr Liv Area', 'SalePrice']].dropna()
+
+plt.figure(figsize=(8, 5))
+sns.scatterplot(
+    data=saleprice_scatter.sample(n=min(len(saleprice_scatter), 1200), random_state=RANDOM_STATE),
+    x='Gr Liv Area',
+    y='SalePrice',
+    alpha=0.45,
+    s=24,
+)
+plt.title('SalePrice vs Gr Liv Area')
+plt.xlabel('Gr Liv Area')
+plt.ylabel('SalePrice')
+plt.tight_layout()
+plt.show()
+
 skewness = df_work['SalePrice'].skew()
 kurtosis = df_work['SalePrice'].kurt()
 print(f"Skewness of SalePrice: {skewness:.2f}")
 print(f"Kurtosis of SalePrice: {kurtosis:.2f}")
+
+# %% [markdown]
+# #### Pre-filled Illustration: Mean vs Median vs Mode on `SalePrice`
+# 
+# On a right-skewed variable, these three statistics do different jobs:
+# - `mean` gets pulled toward the long right tail
+# - `median` stays closer to the center of the bulk of the data
+# - `mode` marks the most common local value
+# 
+# That is one reason median-based preprocessing is often more robust than mean-based preprocessing when strong outliers are present.
+
+# %%
+saleprice_mode = df_work['SalePrice'].mode().iloc[0]
+saleprice_mean = df_work['SalePrice'].mean()
+saleprice_median = df_work['SalePrice'].median()
+
+stats_table = pd.DataFrame(
+    {
+        'statistic': ['mean', 'median', 'mode'],
+        'value': [saleprice_mean, saleprice_median, saleprice_mode],
+    }
+)
+display(stats_table)
+
+plt.figure(figsize=(10, 5))
+sns.histplot(df_work['SalePrice'].dropna(), bins=45, kde=True, color='steelblue')
+plt.axvline(saleprice_mean, color='black', linestyle=':', linewidth=2, label=f"Mean = {saleprice_mean:,.0f}")
+plt.axvline(saleprice_median, color='crimson', linestyle='--', linewidth=2, label=f"Median = {saleprice_median:,.0f}")
+plt.axvline(saleprice_mode, color='darkgreen', linestyle='-.', linewidth=2, label=f"Mode = {saleprice_mode:,.0f}")
+plt.title('SalePrice: mean vs median vs mode')
+plt.xlabel('SalePrice')
+plt.ylabel('Frequency')
+plt.legend()
+plt.tight_layout()
+plt.show()
 
 # %% [markdown]
 # #### Interpretation Note
@@ -254,6 +463,64 @@ print(f"Kurtosis of SalePrice: {kurtosis:.2f}")
 
 # %% [markdown]
 # **Answer 5:** Maximum logged value is [Value].
+
+# %%
+if 'SalePrice_Log' in df_work.columns:
+    plot_before_after_transform(
+        df_work['SalePrice'],
+        df_work['SalePrice_Log'],
+        original_label='Original SalePrice',
+        transformed_label='Log-transformed SalePrice',
+        xlabel_original='SalePrice',
+        xlabel_transformed='log1p(SalePrice)',
+    )
+else:
+    print("Run Task 5 first to visualize the log-transformed SalePrice distribution.")
+
+# %% [markdown]
+# #### Pre-filled Illustration: Metrics After Log-Transforming the Target
+# 
+# If a model is trained on `log1p(SalePrice)`, its predictions also live on the **log scale**.
+# 
+# That means:
+# - metrics computed directly on the log scale describe error in log-units
+# - if you want an interpretable metric in the original price units, you must apply `np.expm1()` to both predictions and targets first
+# 
+# Forgetting this does **not** necessarily crash the code, but it gives you a metric on the wrong scale and can make the model look misleadingly good.
+
+# %%
+if 'SalePrice_Log' in df_work.columns:
+    example_slice = df_work[['SalePrice', 'SalePrice_Log']].dropna().head(400).copy()
+
+    # Mock log-scale predictions: close, but not perfect.
+    y_true_log = example_slice['SalePrice_Log']
+    y_pred_log = y_true_log - 0.12
+
+    rmse_on_log_scale = root_mean_squared_error(y_true_log, y_pred_log)
+
+    y_true_original = np.expm1(y_true_log)
+    y_pred_original = np.expm1(y_pred_log)
+    rmse_after_inverse_transform = root_mean_squared_error(y_true_original, y_pred_original)
+
+    metric_comparison = pd.DataFrame(
+        {
+            'metric': ['RMSE on log scale', 'RMSE after inverse transform'],
+            'value': [rmse_on_log_scale, rmse_after_inverse_transform],
+            'unit': ['log-units', 'price units'],
+        }
+    )
+    display(metric_comparison)
+
+    plt.figure(figsize=(8, 4))
+    sns.barplot(data=metric_comparison, x='metric', y='value', hue='unit', dodge=False, palette=['slateblue', 'darkorange'])
+    plt.title('Why inverse-transforming matters for target-based metrics')
+    plt.xlabel('')
+    plt.ylabel('RMSE value')
+    plt.xticks(rotation=10)
+    plt.tight_layout()
+    plt.show()
+else:
+    print("Run Task 5 first to see the metric comparison for log-transformed targets.")
 
 # %% [markdown]
 # ### 2.3 Multivariate Outliers (Isolation Forest) ✏️ TODO (⏱️ ~7 min)
@@ -307,6 +574,19 @@ print(f"Kurtosis of SalePrice: {kurtosis:.2f}")
 # %% [markdown]
 # **Answer 8:** [Count] houses fall into the newest bin.
 
+# %%
+year_built_quantiles = df_work['Year Built'].quantile(np.linspace(0, 1, 6))
+
+plt.figure(figsize=(10, 5))
+sns.histplot(df_work['Year Built'].dropna(), bins=30, color='teal')
+for boundary in year_built_quantiles.iloc[1:-1]:
+    plt.axvline(boundary, color='crimson', linestyle='--', linewidth=1.5)
+plt.title('Year Built distribution with qcut boundaries')
+plt.xlabel('Year Built')
+plt.ylabel('Frequency')
+plt.tight_layout()
+plt.show()
+
 # %% [markdown]
 # ### 3.3 One-Hot Categorical Count ✏️ TODO (⏱️ ~7 min)
 # Look at the nominal `Neighborhood` column.
@@ -322,6 +602,69 @@ print(f"Kurtosis of SalePrice: {kurtosis:.2f}")
 
 # %% [markdown]
 # **Answer 9:** [X] unique neighborhoods and [Y] added one-hot columns.
+
+# %% [markdown]
+# ### 3.4 Correlation Checks (Pre-filled)
+# 
+# Before building the final pipeline, it helps to quantify which numeric features move most strongly with `SalePrice`.
+# 
+# We look at:
+# - **Pearson correlation** for linear association
+# - **Spearman correlation** for monotonic association
+# 
+# Neither one proves causality, but both help you spot useful predictors and redundant features.
+
+# %%
+correlation_features = ['SalePrice', 'Gr Liv Area', 'Total Bsmt SF', 'Garage Area', 'Lot Frontage', 'Year Built']
+correlation_frame = df_work[correlation_features].dropna()
+
+pearson_to_target = correlation_frame.corr(numeric_only=True)['SalePrice'].drop('SalePrice').sort_values(ascending=False)
+spearman_to_target = correlation_frame.corr(method='spearman', numeric_only=True)['SalePrice'].drop('SalePrice').sort_values(ascending=False)
+
+correlation_summary = pd.DataFrame(
+    {
+        'pearson_with_saleprice': pearson_to_target,
+        'spearman_with_saleprice': spearman_to_target.reindex(pearson_to_target.index),
+    }
+)
+display(correlation_summary.round(3))
+
+plt.figure(figsize=(8, 4))
+correlation_summary['pearson_with_saleprice'].sort_values().plot(kind='barh', color='mediumpurple')
+plt.title('Pearson correlation with SalePrice')
+plt.xlabel('Correlation coefficient')
+plt.ylabel('Feature')
+plt.tight_layout()
+plt.show()
+
+corr_matrix = correlation_frame.corr(numeric_only=True)
+mask = np.triu(np.ones_like(corr_matrix, dtype=bool), k=1)
+
+sns.set_theme(style="white", font_scale=1.0)
+
+fig, ax = plt.subplots(figsize=(8, 6), facecolor="white")
+ax.set_facecolor("white")
+ax.grid(False)
+
+sns.heatmap(
+    corr_matrix,
+    mask=mask,
+    annot=True,
+    fmt=".2f",
+    cmap="coolwarm",
+    center=0,
+    vmin=-1,
+    vmax=1,
+    square=True,
+    linewidths=1,
+    linecolor="white",
+    cbar_kws={"shrink": 0.85, "label": "Correlation"},
+    ax=ax,
+)
+
+ax.set_title("Triangular correlation heatmap for selected numeric features", pad=12)
+plt.tight_layout()
+plt.show()
 
 # %% [markdown]
 # ## 4. Feature Engineering, Scaling, and Pipelines (⏱️ ~25 min)
@@ -359,6 +702,22 @@ print(f"Kurtosis of SalePrice: {kurtosis:.2f}")
 
 # %% [markdown]
 # **Answer 11:** Scaled value of the largest house is [Value].
+
+# %%
+scaled_candidates = ['Total_Square_Footage_RobustScaled', 'Total_Square_Footage_scaled', 'Total_Square_Footage_robust_scaled']
+available_scaled = next((column for column in scaled_candidates if column in df_work.columns), None)
+
+if 'Total_Square_Footage' in df_work.columns and available_scaled is not None:
+    plot_before_after_transform(
+        df_work['Total_Square_Footage'],
+        df_work[available_scaled],
+        original_label='Original total square footage',
+        transformed_label='Robust-scaled total square footage',
+        xlabel_original='Square footage',
+        xlabel_transformed='Scaled value',
+    )
+else:
+    print("Run Task 11 first to visualize the effect of RobustScaler on Total_Square_Footage.")
 
 # %% [markdown]
 # ### 4.3 The Final Pipeline Blueprint ✏️ TODO (⏱️ ~7 min)

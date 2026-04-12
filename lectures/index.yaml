@@ -71,6 +71,10 @@ lectures:
       - lecture_03_data_preparation_part_2/lecture_examples/example_04.py
       - lecture_03_data_preparation_part_2/lecture_examples/example_05.py
       - lecture_03_data_preparation_part_2/lecture_examples/example_06.py
+    practical_session_directory: lecture_03_data_preparation_part_2/practical_session
+    practical_session_readme: lecture_03_data_preparation_part_2/practical_session/README.md
+    practical_session_student_notebook: lecture_03_data_preparation_part_2/practical_session/data_preparation_part2_practical_student_90min.ipynb
+    practical_session_student_script: lecture_03_data_preparation_part_2/practical_session/data_preparation_part2_practical_student_90min.py
     raw_sources: ../incoming_materials/lecture_03_data_preparation_part_2
   - number: 4
     slug: lecture_04_regression
