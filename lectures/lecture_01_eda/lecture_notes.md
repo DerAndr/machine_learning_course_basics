@@ -3,10 +3,10 @@
 > Lecture number: 01
 > Lecture slug: `lecture_01_eda`
 > Role: student-facing recap and revision notes
-> Use this file: after the lecture, before or alongside the practice notebook
-> Related files: `README.md`, `slides/lecture.pdf`, `assignment/practice.ipynb`
+> Use this file: after the lecture, before or alongside the practical session
+> Related files: `README.md`, `slides/lecture.pdf`, `practical_session/README.md`, `practical_session/eda_practical_student_90min.ipynb`
 > Source basis: lecture slides and practical notebooks
-> Last updated: 2026-03-31
+> Last updated: 2026-04-13
 
 ## 1. What EDA Is
 
@@ -88,9 +88,9 @@ This means:
 
 In practice, this is why the notebooks begin with:
 
-- loading the Ames Housing dataset
-- reading the field descriptions
+- loading the Palmer Penguins (OpenML `42585`) dataset
 - using `df.info()`
+- inspecting column names and missing values
 - printing `df.describe()`
 
 ### Spot Patterns and Relationships
@@ -233,7 +233,7 @@ If the standard deviation is large, values vary widely around the center. If it 
 
 If spread is large, the average alone tells only part of the story.
 
-In the practical notebooks, this idea shows up when students inspect `SalePrice` and other housing variables. A central value is not enough; students also need to see how widely values vary.
+In the practical notebook, this idea shows up when students inspect `body_mass_g` and `flipper_length_mm`. A central value is not enough; students also need to see how widely values vary.
 
 ### 6.3 Distribution Shape
 
@@ -327,25 +327,24 @@ In practice, the notebooks inspect object-type columns using descriptive summari
 - how many unique groups exist
 - whether some columns have missing values
 
-## 8. Practical Dataset: Ames Housing
+## 8. Practical Dataset: Palmer Penguins
 
-The practical notebooks are centered on **Ames Housing**.
+The practical session is centered on **Palmer Penguins**.
 
 This is a strong dataset for EDA because it contains:
 
 - mixed data types
-- many explanatory features
-- a meaningful target variable: `SalePrice`
-- real variation in quality, size, and neighborhood information
+- clear numerical measurements
+- useful categorical groupings such as species, island, and sex
+- a manageable amount of missing data for discussion
 
-The notebooks begin with basic inspection:
+The practical begins with basic inspection:
 
 - load the dataset
-- inspect the description file
 - display sample rows
-- convert one row to dictionary form
 - run `df.info()`
-- run `df.describe()` on different column types
+- inspect missing values
+- compare numerical and categorical summaries
 
 This first block is not just setup. It is already EDA.
 
@@ -365,7 +364,7 @@ Its goals are:
 - detect anomalies
 - support cleaning decisions
 
-In the practice notebooks, the main univariate variable is `SalePrice`.
+In the practical session, the main numerical examples are `body_mass_g` and `flipper_length_mm`.
 
 ### 9.1 Quantile Analysis
 
@@ -384,15 +383,15 @@ The range between Q1 and Q3 is the **interquartile range (IQR)**.
 
 Practice:
 
-- the notebook computes quantiles for `SalePrice`
-- this helps students understand how house prices are distributed across the lower, middle, and upper parts of the market
+- the practical computes summary statistics and quantile-style reasoning for `body_mass_g`
+- this helps students understand how the penguin measurements are distributed across lower, middle, and upper ranges
 
 Why it matters:
 
-- quantiles are a direct way to reason about expensive vs inexpensive observations
+- quantiles are a direct way to reason about smaller vs larger observations
 - they prepare students for boxplots and outlier logic
 
-This is especially important in housing data, where a few very expensive houses can distort averages.
+This is especially important in biological measurement data, where a few unusually large observations can distort averages.
 
 ### 9.2 Histogram
 
@@ -452,7 +451,7 @@ Theory:
 
 Practice:
 
-- the notebook computes an ECDF-like cumulative view of `SalePrice`
+- the same logic can be applied to variables such as `body_mass_g` when students want a threshold-oriented cumulative view
 
 Why this matters:
 
@@ -469,7 +468,7 @@ Theory:
 
 Practice:
 
-- the notebook draws boxplots for `SalePrice`
+- the practical draws boxplots for variables such as `body_mass_g` and `flipper_length_mm`
 - students see which values sit far outside the interquartile range
 
 Why this matters:
@@ -490,8 +489,8 @@ Theory:
 
 Practice:
 
-- the notebook plots `SalePrice` with violin plots
-- one version also marks mean, median, and mode
+- the practical uses violin plots to compare grouped numeric distributions such as `flipper_length_mm` by species and sex
+- this complements the histogram and boxplot view from earlier cells
 
 Why this is useful:
 
@@ -519,13 +518,13 @@ Theory:
 
 Practice:
 
-- the notebook studies `SalePrice` versus `Gr Liv Area`
+- the practical studies relationships such as `flipper_length_mm` versus `body_mass_g`
 
 This is a very good example because it is interpretable:
 
-- larger living area often means higher price
+- larger flipper length often coincides with larger body mass
 - but the relationship is not perfect
-- unusual houses stand out visually
+- unusual penguins still stand out visually
 
 ### 10.2 Regression Line and Correlation
 
@@ -560,13 +559,13 @@ Theory:
 
 Practice:
 
-- the notebook computes a heatmap over selected numerical Ames variables
+- the practical computes a heatmap over the main penguin measurement variables
 - it also uses a masked triangular version
 
 Why this matters:
 
 - students can quickly identify which features move together
-- they can look for features strongly related to `SalePrice`
+- they can look for measurements that move together strongly
 
 But students should also remember:
 
@@ -584,7 +583,7 @@ Theory:
 
 Practice:
 
-- the notebook builds a cross-tab between variables such as `Overall Qual` and `Neighborhood`
+- the practical builds a cross-tab between variables such as `species` and `island`
 - the result is visualized as a heatmap
 
 This teaches students that not all relationship analysis is numeric-to-numeric.
@@ -602,7 +601,7 @@ Theory:
 
 Practice:
 
-- the notebook uses joint plots for `SalePrice` and `Gr Liv Area`
+- the same logic can be applied to penguin measurements such as `flipper_length_mm` and `body_mass_g`
 
 This is useful because students see:
 
@@ -632,7 +631,7 @@ Theory:
 
 Practice:
 
-- the notebook uses grouped comparisons involving housing-related categories
+- the practical uses grouped comparisons involving species, island, and sex
 
 This helps students learn when a categorical view is more appropriate than a scatter plot.
 
@@ -644,7 +643,7 @@ Theory:
 
 Practice:
 
-- the notebook builds pair plots for selected Ames features
+- the practical builds pair plots for selected penguin measurements
 
 Why this matters:
 
@@ -727,7 +726,7 @@ Theory:
 Practice:
 
 - the notebook installs and runs `ydata-profiling`
-- a sample of the Ames dataset is used to generate a report
+- a sample of the Palmer Penguins dataset can be used to generate a quick automated report
 
 This helps students see how quickly a broad overview can be generated.
 
@@ -867,27 +866,27 @@ The slides also point forward to later lectures, especially Data Preparation, wh
 
 ## 15. How the Practical Notebooks Fit the Theory
 
-### `EDA_1-4.ipynb`
+### `practical_session/eda_practical_student_90min.ipynb`
 
-This notebook is the manual EDA core.
+This practical session is the manual EDA core.
 
 It shows students how to:
 
-- inspect the Ames Housing dataset
+- inspect the Palmer Penguins dataset
 - compute basic descriptive statistics
 - analyze one variable at a time
 - study relationships between pairs of variables
-- extend analysis to multiple variables
+- extend analysis to grouped and multivariate views
 
-### `EDA_5-6.ipynb`
+### `lecture_examples/example_02.ipynb`
 
-This notebook expands the lecture into:
+This example expands the lecture into:
 
 - automated EDA reports
 - alternative visualization libraries
 - interactive EDA tools
 
-Together, the two notebooks follow the lecture structure very closely:
+Together, the practical session and the lecture examples follow the lecture structure very closely:
 
 1. basic understanding of data
 2. univariate analysis
@@ -927,4 +926,4 @@ After reviewing this lecture, you should be able to explain:
 - When should you use histogram, KDE, ECDF, boxplot, or violin plot?
 - What is the difference between scatter plots, heatmaps, cross-tabs, and pair plots?
 - Why is automated EDA useful, and why is it not enough on its own?
-- How do the Ames Housing notebooks illustrate the lecture concepts in practice?
+- How does the Palmer Penguins practical illustrate the lecture concepts in practice?
