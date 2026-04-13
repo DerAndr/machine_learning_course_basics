@@ -18,6 +18,7 @@ This directory contains the lecture materials for this topic.
 ## Practical Session
 
 - `practical_session/ensembles_practical_student_90min.ipynb`: student version with targeted TODO cells in the main model-building sections
+- `practical_session/ensembles_practical_student_90min.py`: Python companion script for the practical notebook
 - `practical_session/README.md`: practical overview, scope, and runtime notes
 
 The practical covers:

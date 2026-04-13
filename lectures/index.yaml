@@ -171,6 +171,7 @@ lectures:
     practical_session_directory: lecture_07_ensembles/practical_session
     practical_session_readme: lecture_07_ensembles/practical_session/README.md
     practical_session_student_notebook: lecture_07_ensembles/practical_session/ensembles_practical_student_90min.ipynb
+    practical_session_student_script: lecture_07_ensembles/practical_session/ensembles_practical_student_90min.py
     raw_sources: ../incoming_materials/lecture_07_ensembles
   - number: 8
     slug: lecture_08_time_series
