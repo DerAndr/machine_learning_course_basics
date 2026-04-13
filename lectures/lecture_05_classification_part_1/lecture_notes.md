@@ -3,10 +3,10 @@
 > Lecture number: 05
 > Lecture slug: `lecture_05_classification_part_1`
 > Role: student-facing recap and revision notes
-> Use this file: after the lecture, before or alongside the practice notebook
-> Related files: `README.md`, `slides/lecture.pdf`, `assignment/practice.ipynb`
+> Use this file: after the lecture, before or alongside the practical notebook
+> Related files: `README.md`, `slides/lecture.pdf`, `practical_session/classification_part1_practical_student_90min.ipynb`
 > Source basis: lecture slides and practical notebooks
-> Last updated: 2026-03-31
+> Last updated: 2026-04-13
 
 ## 1. What Classification Solves
 
@@ -322,7 +322,7 @@ Why this matters:
 
 This is one of the main reasons why trees can struggle on data with non-rectangular class separation unless ensembles or deeper trees are used.
 
-The `Classification - prep.ipynb` notebook includes simple synthetic visual illustrations of this idea.
+The lecture examples and the practical session include visual illustrations of this idea through KNN decision boundaries, tree-based splits, and probability-based diagnostics.
 
 ## 10. Complexity and Overfitting in Trees
 
@@ -717,103 +717,43 @@ If the positive and negative score distributions overlap strongly:
 - threshold selection becomes harder
 - the classifier is less confident and less separable
 
-## 28. Practical Notebooks and What They Add
+## 28. Practical Session and What It Adds
 
-### 28.1 `Classification - prep.ipynb`
+The practical session for this lecture is:
 
-This is a visual helper notebook.
+- `practical_session/classification_part1_practical_student_90min.ipynb`
 
-It contains synthetic examples for:
+It complements the lecture by putting the three model families into one shared tabular workflow on the Adult Census Income dataset.
 
-- distance calculations
-- decision boundaries
-- logistic regression intuition
-- SVM intuition
+### 28.1 What The Practical Covers
 
-It is mainly there to build geometric intuition rather than to serve as a full production workflow.
+- leakage-safe preprocessing with `Pipeline` and `ColumnTransformer`
+- mixed numeric and categorical features
+- `KNeighborsClassifier`, `DecisionTreeClassifier`, and `LogisticRegression`
+- train/validation/test thinking for classification
+- confusion matrices, ROC curves, precision-recall curves, and calibration plots
+- threshold tuning beyond the default `0.5`
+- coefficient-based and permutation-based interpretation
 
-### 28.2 `Classification-1.ipynb`
+### 28.2 Why This Practical Matters
 
-Focus:
+The slides introduce the intuition behind each classifier separately.
 
-- KNN classifier
+The practical is where students see the tradeoffs side by side:
 
-Dataset:
+- KNN depends strongly on scaling and neighborhood size
+- decision trees are easy to visualize but can overfit without constraints
+- logistic regression provides smooth probability estimates and interpretable signed coefficients
 
-- Breast Cancer Wisconsin dataset
+Because all three models are evaluated on the same dataset and with the same metrics, the comparison is much easier to understand than in isolated toy examples.
 
-Key practical topics:
+### 28.3 What The Practical Adds Beyond The Slides
 
-- train-test split with stratification
-- feature scaling with `StandardScaler`
-- default KNN
-- grid search over `n_neighbors`
-- cross-validation
-- weighted KNN
-- distance metric comparison
-- confusion matrix
-- classification report
-- `predict_proba`
-- ROC curve and AUC
-- precision-recall curve
-- average precision
-- threshold selection with `F1`
-- Youden's J
-
-This notebook is stronger than the slides because it turns abstract evaluation ideas into concrete plots and threshold decisions.
-
-### 28.3 `Classification-2.ipynb`
-
-Focus:
-
-- Decision Tree classifier
-
-Key practical topics:
-
-- default tree
-- hyperparameter tuning
-- cross-validation
-- feature importance
-- permutation importance
-- tree visualization
-- cost-complexity pruning
-- pre-pruning with depth and minimum-sample constraints
-- probability outputs
-- ROC/PR evaluation
-- threshold selection
-
-This notebook is valuable because it shows both:
-
-- how to tune the model
-- how to explain it
-
-### 28.4 `Classification-3.ipynb`
-
-Focus:
-
-- Logistic Regression classifier
-
-Key practical topics:
-
-- correlation inspection
-- removing highly correlated features
-- scaling
-- binary logistic regression
-- grid search for `C`, penalty, and solver
-- `L1`, `L2`, and Elastic Net variants
-- multinomial extension note
-- ROC/PR evaluation
-- average precision
-- threshold tuning
-- optional `statsmodels` logistic regression
-- coefficient-based importance
-- permutation importance
-- p-value-based interpretation through `statsmodels`
-
-This is especially useful because it links:
-
-- ML-style logistic regression in `scikit-learn`
-- statistical interpretation in `statsmodels`
+- realistic mixed-type preprocessing instead of toy numeric-only examples
+- calibration and probability-distribution views, not just hard labels
+- threshold tuning tied to business tradeoffs
+- practical model interpretation using both coefficients and permutation importance
+- optional hyperparameter tuning blocks for students who want to go deeper
 
 ## 29. Threshold Tuning
 
@@ -832,6 +772,12 @@ Different applications require different tradeoffs:
 - in medicine, recall may matter more
 - in fraud filtering, precision may matter more
 - in screening systems, threshold choice can be a business decision
+
+In the normalized practical session for this lecture, that idea appears directly through:
+
+- threshold sweeps for `F1`
+- class-separated probability density plots
+- side-by-side ROC and precision-recall diagnostics
 
 ## 30. Main Challenges Highlighted by the Lecture
 

@@ -128,6 +128,10 @@ lectures:
       - lecture_05_classification_part_1/lecture_examples/example_01.py
       - lecture_05_classification_part_1/lecture_examples/example_02.py
       - lecture_05_classification_part_1/lecture_examples/example_03.py
+    practical_session_directory: lecture_05_classification_part_1/practical_session
+    practical_session_readme: lecture_05_classification_part_1/practical_session/README.md
+    practical_session_student_notebook: lecture_05_classification_part_1/practical_session/classification_part1_practical_student_90min.ipynb
+    practical_session_student_script: lecture_05_classification_part_1/practical_session/classification_part1_practical_student_90min.py
     raw_sources: ../incoming_materials/lecture_05_classification_part_1
   - number: 6
     slug: lecture_06_classification_part_2
