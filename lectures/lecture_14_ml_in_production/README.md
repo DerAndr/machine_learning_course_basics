@@ -12,3 +12,7 @@ This directory contains the lecture materials for this topic.
 ## Lecture Examples
 
 - `lecture_examples/example_01.ipynb` and `lecture_examples/example_01.py`: ML in Production - Guided Practice. Guided practice for packaging, validation, and monitoring in production ML.
+
+---
+
+[← Previous](../lecture_13_responsible_ai/README.md) | [All Lectures](../README.md)

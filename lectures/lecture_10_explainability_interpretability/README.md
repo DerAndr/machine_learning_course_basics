@@ -14,3 +14,7 @@ This directory contains the lecture materials for this topic.
 - `lecture_examples/example_01.ipynb` and `lecture_examples/example_01.py`: Interpretability and Explainability. Model explainability workflow centered on PiML.
   Optional setup note: this example uses PiML. Install the lecture-specific extras with `uv sync --group xai_piml` if you are using a compatible Python version. The default Python 3.12 environment does not install PiML because compatible wheels are not available.
 - `lecture_examples/example_02.ipynb` and `lecture_examples/example_02.py`: Key Components of the ALE Plot. Interpretability methods with ALE, SHAP, LIME, Alibi, and Interpret.
+
+---
+
+[← Previous](../lecture_09_clustering/README.md) | [All Lectures](../README.md) | [Next →](../lecture_11_cross_validation_hpo/README.md)

@@ -15,3 +15,7 @@ This directory contains the lecture materials for this topic.
   Optional setup note: this example uses H2O AutoML. The baseline environment does not install it by default. Install the lecture-specific extras with `uv sync --group hpo_automl`.
 - `lecture_examples/example_02.ipynb` and `lecture_examples/example_02.py`: Example 02. Alternative hyperparameter-optimization libraries such as Optuna, Hyperopt, and scikit-optimize.
   Optional setup note: this example uses Optuna, Hyperopt, and scikit-optimize. The baseline environment does not install them by default. Install the lecture-specific extras with `uv sync --group hpo_automl`.
+
+---
+
+[← Previous](../lecture_10_explainability_interpretability/README.md) | [All Lectures](../README.md) | [Next →](../lecture_12_intro_neural_networks/README.md)

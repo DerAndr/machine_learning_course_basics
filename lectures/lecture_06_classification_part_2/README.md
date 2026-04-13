@@ -31,3 +31,7 @@ The practical covers:
 - a three-group classroom split with a final comparison of trade-offs and methodology
 
 The practical session is intentionally separate from `lecture_examples/`.
+
+---
+
+[← Previous](../lecture_05_classification_part_1/README.md) | [All Lectures](../README.md) | [Next →](../lecture_07_ensembles/README.md)

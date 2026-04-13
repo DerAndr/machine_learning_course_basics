@@ -13,3 +13,7 @@ This directory contains the lecture materials for this topic.
 
 - `lecture_examples/example_01.ipynb` and `lecture_examples/example_01.py`: Exploratory Data Analysis - Demos [1-4]. EDA basics: summary statistics, distributions, and pairwise visual analysis.
 - `lecture_examples/example_02.ipynb` and `lecture_examples/example_02.py`: Exploratory Data Analysis - Demos [5-6]. Automated EDA reports and interactive visualization tools for faster inspection.
+
+---
+
+[All Lectures](../README.md) | [Next →](../lecture_02_data_preparation_part_1/README.md)

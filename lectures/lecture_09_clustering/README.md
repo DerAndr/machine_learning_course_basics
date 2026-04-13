@@ -31,3 +31,7 @@ The practical covers:
 - image-based cluster interpretation, interactive cluster galleries, common clustering pitfalls, and optional extensions on stability and representation choices
 
 The practical session is intentionally separate from `lecture_examples/`.
+
+---
+
+[← Previous](../lecture_08_time_series/README.md) | [All Lectures](../README.md) | [Next →](../lecture_10_explainability_interpretability/README.md)

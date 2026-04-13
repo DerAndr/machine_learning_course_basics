@@ -28,3 +28,7 @@ The practical covers:
 - a final comparison of stability, metrics, and interpretability trade-offs
 
 The practical session is intentionally separate from `lecture_examples/`.
+
+---
+
+[← Previous](../lecture_06_classification_part_2/README.md) | [All Lectures](../README.md) | [Next →](../lecture_08_time_series/README.md)

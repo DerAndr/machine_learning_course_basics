@@ -32,3 +32,7 @@ The practical covers:
 - feature engineering, robust scaling, and a final preprocessing pipeline with `Ridge`
 
 The practical session is intentionally separate from `lecture_examples/`.
+
+---
+
+[← Previous](../lecture_01_eda/README.md) | [All Lectures](../README.md) | [Next →](../lecture_03_data_preparation_part_2/README.md)

@@ -29,3 +29,7 @@ The practical covers:
 - residual diagnostics for the best held-out model
 
 The practical session is intentionally separate from `lecture_examples/`.
+
+---
+
+[← Previous](../lecture_03_data_preparation_part_2/README.md) | [All Lectures](../README.md) | [Next →](../lecture_05_classification_part_1/README.md)

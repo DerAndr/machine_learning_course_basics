@@ -1,3 +1,18 @@
+# Machine-readable course index for lectures/.
+#
+# Schema (version 1):
+#   schema_version       – integer, current format version
+#   directory_role       – fixed "canonical_course_content"
+#   lecture_file_order   – canonical reading order within each lecture directory
+#   lectures[]           – one entry per lecture:
+#     number             – lecture number (1-based)
+#     slug / title       – stable identifier and human title
+#     directory          – lecture directory name
+#     readme / notes / metadata / slides_pdf – per-lecture core files
+#     lecture_examples_*  – directory, README, notebooks (.ipynb), scripts (.py)
+#     practical_session_* – (optional) directory, README, student notebook, student script
+#     raw_sources         – (optional) pointer to incoming_materials/ provenance
+
 schema_version: 1
 directory_role: canonical_course_content
 lecture_file_order:

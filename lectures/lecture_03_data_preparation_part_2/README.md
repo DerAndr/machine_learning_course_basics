@@ -33,3 +33,7 @@ The practical covers:
 - an explicit leakage contrast plus leakage-safe preprocessing with a `ColumnTransformer`, `Pipeline`, and cross-validation
 
 The practical session is intentionally separate from `lecture_examples/`.
+
+---
+
+[← Previous](../lecture_02_data_preparation_part_1/README.md) | [All Lectures](../README.md) | [Next →](../lecture_04_regression/README.md)

@@ -29,3 +29,7 @@ The practical covers:
 - an optional `tsfresh` section at the end
 
 The practical session is intentionally separate from `lecture_examples/`.
+
+---
+
+[← Previous](../lecture_07_ensembles/README.md) | [All Lectures](../README.md) | [Next →](../lecture_09_clustering/README.md)
