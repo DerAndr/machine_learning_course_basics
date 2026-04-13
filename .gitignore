@@ -18,3 +18,4 @@ private_materials/
 *.egg-info/
 *.log
 *.nbconvert.ipynb
+docs/practical-session-tracker.md

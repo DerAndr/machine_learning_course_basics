@@ -90,6 +90,10 @@ lectures:
       - lecture_04_regression/lecture_examples/example_01.ipynb
     lecture_example_scripts:
       - lecture_04_regression/lecture_examples/example_01.py
+    practical_session_directory: lecture_04_regression/practical_session
+    practical_session_readme: lecture_04_regression/practical_session/README.md
+    practical_session_student_notebook: lecture_04_regression/practical_session/regression_practical_student_90min.ipynb
+    practical_session_student_script: lecture_04_regression/practical_session/regression_practical_student_90min.py
     raw_sources: ../incoming_materials/lecture_04_regression
   - number: 5
     slug: lecture_05_classification_part_1
