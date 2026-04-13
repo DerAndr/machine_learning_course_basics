@@ -1,4 +1,4 @@
-# Lecture 10: Explainability and Interpretability
+# Lecture 11: Explainability and Interpretability
 
 This directory contains the lecture materials for this topic.
 
@@ -17,4 +17,4 @@ This directory contains the lecture materials for this topic.
 
 ---
 
-[← Previous](../lecture_09_clustering/README.md) | [All Lectures](../README.md) | [Next →](../lecture_11_cross_validation_hpo/README.md)
+[← Previous](../lecture_10_cross_validation_hpo/README.md) | [All Lectures](../README.md) | [Next →](../lecture_12_intro_neural_networks/README.md)

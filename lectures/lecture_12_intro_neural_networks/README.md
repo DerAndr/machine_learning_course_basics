@@ -16,4 +16,4 @@ This directory contains the lecture materials for this topic.
 
 ---
 
-[← Previous](../lecture_11_cross_validation_hpo/README.md) | [All Lectures](../README.md) | [Next →](../lecture_13_responsible_ai/README.md)
+[← Previous](../lecture_11_explainability_interpretability/README.md) | [All Lectures](../README.md) | [Next →](../lecture_13_responsible_ai/README.md)

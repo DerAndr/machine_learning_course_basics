@@ -1,6 +1,6 @@
 # Lecture Examples
 
-This directory contains the lecture example notebooks for Lecture 10: Explainability and Interpretability.
+This directory contains the lecture example notebooks for Lecture 11: Explainability and Interpretability.
 
 ## Files
 

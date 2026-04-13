@@ -35,4 +35,4 @@ The practical session is intentionally separate from `lecture_examples/`.
 
 ---
 
-[← Previous](../lecture_08_time_series/README.md) | [All Lectures](../README.md) | [Next →](../lecture_10_explainability_interpretability/README.md)
+[← Previous](../lecture_08_time_series/README.md) | [All Lectures](../README.md) | [Next →](../lecture_10_cross_validation_hpo/README.md)

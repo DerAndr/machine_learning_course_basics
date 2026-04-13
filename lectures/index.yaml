@@ -220,39 +220,39 @@ lectures:
     practical_session_student_script: lecture_09_clustering/practical_session/clustering_practical_student_90min.py
     raw_sources: ../incoming_materials/lecture_09_clustering
   - number: 10
-    slug: lecture_10_explainability_interpretability
-    title: Explainability and Interpretability
-    directory: lecture_10_explainability_interpretability
-    readme: lecture_10_explainability_interpretability/README.md
-    notes: lecture_10_explainability_interpretability/lecture_notes.md
-    metadata: lecture_10_explainability_interpretability/links.yaml
-    slides_pdf: lecture_10_explainability_interpretability/slides/lecture.pdf
-    lecture_examples_directory: lecture_10_explainability_interpretability/lecture_examples
-    lecture_examples_readme: lecture_10_explainability_interpretability/lecture_examples/README.md
-    lecture_example_notebooks:
-      - lecture_10_explainability_interpretability/lecture_examples/example_01.ipynb
-      - lecture_10_explainability_interpretability/lecture_examples/example_02.ipynb
-    lecture_example_scripts:
-      - lecture_10_explainability_interpretability/lecture_examples/example_01.py
-      - lecture_10_explainability_interpretability/lecture_examples/example_02.py
-    raw_sources: ../incoming_materials/lecture_10_explainability_interpretability
-  - number: 11
-    slug: lecture_11_cross_validation_hpo
+    slug: lecture_10_cross_validation_hpo
     title: Cross-Validation and Hyperparameter Optimization
-    directory: lecture_11_cross_validation_hpo
-    readme: lecture_11_cross_validation_hpo/README.md
-    notes: lecture_11_cross_validation_hpo/lecture_notes.md
-    metadata: lecture_11_cross_validation_hpo/links.yaml
-    slides_pdf: lecture_11_cross_validation_hpo/slides/lecture.pdf
-    lecture_examples_directory: lecture_11_cross_validation_hpo/lecture_examples
-    lecture_examples_readme: lecture_11_cross_validation_hpo/lecture_examples/README.md
+    directory: lecture_10_cross_validation_hpo
+    readme: lecture_10_cross_validation_hpo/README.md
+    notes: lecture_10_cross_validation_hpo/lecture_notes.md
+    metadata: lecture_10_cross_validation_hpo/links.yaml
+    slides_pdf: lecture_10_cross_validation_hpo/slides/lecture.pdf
+    lecture_examples_directory: lecture_10_cross_validation_hpo/lecture_examples
+    lecture_examples_readme: lecture_10_cross_validation_hpo/lecture_examples/README.md
     lecture_example_notebooks:
-      - lecture_11_cross_validation_hpo/lecture_examples/example_01.ipynb
-      - lecture_11_cross_validation_hpo/lecture_examples/example_02.ipynb
+      - lecture_10_cross_validation_hpo/lecture_examples/example_01.ipynb
+      - lecture_10_cross_validation_hpo/lecture_examples/example_02.ipynb
     lecture_example_scripts:
-      - lecture_11_cross_validation_hpo/lecture_examples/example_01.py
-      - lecture_11_cross_validation_hpo/lecture_examples/example_02.py
-    raw_sources: ../incoming_materials/lecture_11_cross_validation_hpo
+      - lecture_10_cross_validation_hpo/lecture_examples/example_01.py
+      - lecture_10_cross_validation_hpo/lecture_examples/example_02.py
+    raw_sources: ../incoming_materials/lecture_10_cross_validation_hpo
+  - number: 11
+    slug: lecture_11_explainability_interpretability
+    title: Explainability and Interpretability
+    directory: lecture_11_explainability_interpretability
+    readme: lecture_11_explainability_interpretability/README.md
+    notes: lecture_11_explainability_interpretability/lecture_notes.md
+    metadata: lecture_11_explainability_interpretability/links.yaml
+    slides_pdf: lecture_11_explainability_interpretability/slides/lecture.pdf
+    lecture_examples_directory: lecture_11_explainability_interpretability/lecture_examples
+    lecture_examples_readme: lecture_11_explainability_interpretability/lecture_examples/README.md
+    lecture_example_notebooks:
+      - lecture_11_explainability_interpretability/lecture_examples/example_01.ipynb
+      - lecture_11_explainability_interpretability/lecture_examples/example_02.ipynb
+    lecture_example_scripts:
+      - lecture_11_explainability_interpretability/lecture_examples/example_01.py
+      - lecture_11_explainability_interpretability/lecture_examples/example_02.py
+    raw_sources: ../incoming_materials/lecture_11_explainability_interpretability
   - number: 12
     slug: lecture_12_intro_neural_networks
     title: Introduction to Neural Networks

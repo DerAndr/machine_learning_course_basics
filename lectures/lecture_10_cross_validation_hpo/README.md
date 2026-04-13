@@ -1,4 +1,4 @@
-# Lecture 11: Cross-Validation and Hyperparameter Optimization
+# Lecture 10: Cross-Validation and Hyperparameter Optimization
 
 This directory contains the lecture materials for this topic.
 
@@ -18,4 +18,4 @@ This directory contains the lecture materials for this topic.
 
 ---
 
-[← Previous](../lecture_10_explainability_interpretability/README.md) | [All Lectures](../README.md) | [Next →](../lecture_12_intro_neural_networks/README.md)
+[← Previous](../lecture_09_clustering/README.md) | [All Lectures](../README.md) | [Next →](../lecture_11_explainability_interpretability/README.md)

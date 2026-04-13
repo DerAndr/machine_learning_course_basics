@@ -1,7 +1,7 @@
-# Lecture 11 Notes: Cross-Validation, Hyperparameter Tuning, Pipelines, and AutoML
+# Lecture 10 Notes: Cross-Validation, Hyperparameter Tuning, Pipelines, and AutoML
 
-> Lecture number: 11
-> Lecture slug: `lecture_11_cross_validation_hpo`
+> Lecture number: 10
+> Lecture slug: `lecture_10_cross_validation_hpo`
 > Role: student-facing recap and revision notes
 > Use this file: after the lecture, before or alongside the practice notebook
 > Related files: `README.md`, `slides/lecture.pdf`, `assignment/practice.ipynb`

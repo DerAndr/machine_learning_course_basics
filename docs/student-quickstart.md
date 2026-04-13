@@ -72,7 +72,7 @@ Use this when the lecture example needs:
 - `prophet`
 - `xgboost`
 
-### Lecture 11: Cross-Validation and Hyperparameter Optimization
+### Lecture 10: Cross-Validation and Hyperparameter Optimization
 
 ```bash
 uv sync --group hpo_automl
@@ -98,13 +98,13 @@ Use this when the lecture example needs:
 - `torch`
 - `torchvision`
 
-### Lecture 10: Optional PiML Example
+### Lecture 11: Explainability and Interpretability
 
 ```bash
 uv sync --group xai_piml
 ```
 
-This is optional and only relevant for the PiML-based explainability example.
+Use this when you want to run the PiML-based explainability example.
 On Python 3.12, PiML may be unavailable.
 
 ## 4. Daily workflow

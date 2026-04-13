@@ -1,7 +1,7 @@
-# Lecture 10 Notes: Explainability and Interpretability
+# Lecture 11 Notes: Explainability and Interpretability
 
-> Lecture number: 10
-> Lecture slug: `lecture_10_explainability_interpretability`
+> Lecture number: 11
+> Lecture slug: `lecture_11_explainability_interpretability`
 > Role: student-facing recap and revision notes
 > Use this file: after the lecture, before or alongside the practice notebook
 > Related files: `README.md`, `slides/lecture.pdf`, `assignment/practice.ipynb`

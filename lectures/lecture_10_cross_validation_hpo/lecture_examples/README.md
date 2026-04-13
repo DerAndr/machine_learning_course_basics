@@ -1,6 +1,6 @@
 # Lecture Examples
 
-This directory contains the lecture example notebooks for Lecture 11: Cross-Validation and Hyperparameter Optimization.
+This directory contains the lecture example notebooks for Lecture 10: Cross-Validation and Hyperparameter Optimization.
 
 ## Files
 
