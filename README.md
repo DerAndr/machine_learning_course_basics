@@ -65,10 +65,13 @@ lectures/
 │   ├── links.yaml
 │   ├── slides/
 │   │   └── lecture.pdf
-│   └── lecture_examples/
+│   ├── lecture_examples/
+│   │   ├── README.md
+│   │   ├── example_01.ipynb
+│   │   ├── example_01.py
+│   │   └── ...
+│   └── practical_session/   (when present)
 │       ├── README.md
-│       ├── example_01.ipynb
-│       ├── example_01.py
 │       └── ...
 └── ...
 ```
@@ -119,12 +122,15 @@ For humans:
 7. `lectures/<lecture_slug>/lecture_examples/README.md`
 8. `lectures/<lecture_slug>/lecture_examples/example_XX.ipynb`
 9. `lectures/<lecture_slug>/lecture_examples/example_XX.py`
+10. `lectures/<lecture_slug>/practical_session/README.md` (when present)
 
 For agents:
 
 1. `AGENTS.md`
 2. `lectures/README.md`
-3. `lectures/<lecture_slug>/README.md`
-4. `lectures/<lecture_slug>/lecture_notes.md`
-5. `lectures/<lecture_slug>/links.yaml`
-6. `lectures/<lecture_slug>/lecture_examples/README.md`
+3. `lectures/index.yaml`
+4. `lectures/<lecture_slug>/README.md`
+5. `lectures/<lecture_slug>/lecture_notes.md`
+6. `lectures/<lecture_slug>/links.yaml`
+7. `lectures/<lecture_slug>/lecture_examples/README.md`
+8. `lectures/<lecture_slug>/practical_session/README.md` (when present)

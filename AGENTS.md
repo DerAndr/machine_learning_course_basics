@@ -19,6 +19,7 @@ For each lecture, the main files are:
 - `lecture_examples/example_XX.py`
 
 Use `lectures/index.yaml` as the machine-readable course index.
+The file includes a schema description at the top.
 
 ## Canonical Traversal Order
 
@@ -37,6 +38,8 @@ For a specific lecture:
 5. `lectures/<lecture_slug>/lecture_examples/README.md`
 6. `lectures/<lecture_slug>/lecture_examples/example_XX.ipynb`
 7. `lectures/<lecture_slug>/lecture_examples/example_XX.py`
+8. `lectures/<lecture_slug>/practical_session/README.md` (when present)
+9. `lectures/<lecture_slug>/practical_session/*.ipynb` (when present)
 
 ## Lecture Layers
 
@@ -94,6 +97,13 @@ uv sync --group hpo_automl
 uv sync --group neural_networks
 ```
 
+## Supporting Directories
+
+- `docs/`: student-facing setup guides, workflow documentation, and repository overview
+- `publish/lectures.yaml`: tracks assignment and solution publication status per lecture
+- `src/mlcourse/`: shared Python helpers (paths, data utilities)
+- `tools/`: repository maintenance scripts (notebook sync, environment checks)
+
 ## Non-Canonical Sources
 
 Do not treat these as canonical course content unless explicitly requested:
@@ -101,7 +111,7 @@ Do not treat these as canonical course content unless explicitly requested:
 - `incoming_materials/`
 - `legacy_import/`
 
-These directories exist for source collection, migration history, and provenance.
+These directories exist for source collection, migration history, authoring, and provenance.
 
 ## Editing Guidance
 
