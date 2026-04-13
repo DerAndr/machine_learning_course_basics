@@ -5,6 +5,7 @@ This directory contains a 90-minute classroom practical for Lecture 09.
 ## Files
 
 - `clustering_practical_student_90min.ipynb`
+- `clustering_practical_student_90min.py`
 - `README.md`
 
 An internal instructor notebook and cheat sheet exist, but they are not part of the current public student release.
@@ -12,6 +13,7 @@ An internal instructor notebook and cheat sheet exist, but they are not part of 
 ## Format
 
 - The student notebook contains targeted TODO placeholders in the model-selection, algorithm-fitting, comparison, stability, and interpretation cells.
+- The Python companion script mirrors the notebook structure for lighter review and diffing.
 - The student notebook follows the same classroom flow as the internal instructor version, including a short `How To Work In Teams` section.
 - The practical uses the OpenML dataset `Fashion-MNIST` (`data_id=40996`): 70,000 grayscale `28 x 28` clothing images across 10 classes.
 - To keep the practical responsive in Google Colab, the notebook works with a fixed random subset of `5,000` images.

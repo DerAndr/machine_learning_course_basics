@@ -17,6 +17,7 @@ This directory contains the lecture materials for this topic.
 ## Practical Session
 
 - `practical_session/clustering_practical_student_90min.ipynb`: public student version with targeted TODO cells and built-in hints
+- `practical_session/clustering_practical_student_90min.py`: Python companion script for the practical notebook
 - `practical_session/README.md`: practical overview, scope, and runtime notes
 
 The instructor notebook and cheat sheet are maintained separately and are not part of the current public student release.

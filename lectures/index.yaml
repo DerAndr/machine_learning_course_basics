@@ -209,6 +209,7 @@ lectures:
     practical_session_directory: lecture_09_clustering/practical_session
     practical_session_readme: lecture_09_clustering/practical_session/README.md
     practical_session_student_notebook: lecture_09_clustering/practical_session/clustering_practical_student_90min.ipynb
+    practical_session_student_script: lecture_09_clustering/practical_session/clustering_practical_student_90min.py
     raw_sources: ../incoming_materials/lecture_09_clustering
   - number: 10
     slug: lecture_10_explainability_interpretability
