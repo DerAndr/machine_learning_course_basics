@@ -105,7 +105,8 @@ Use this when the lecture example needs:
 uv sync --group xai_piml
 ```
 
-Use this when you want to run the PiML-based explainability example.
+Use this only when you want to run the optional PiML-based explainability example.
+The main Lecture 11 materials, including the public practical session, run in the baseline environment after `uv sync`.
 On Python 3.12, PiML may be unavailable.
 
 ## 4. Daily workflow
