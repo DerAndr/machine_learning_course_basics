@@ -42,6 +42,7 @@ uv sync --group time_series
 uv sync --group hpo_automl
 uv sync --group neural_networks
 uv sync --group xai_piml
+uv sync --group ml_in_production
 ```
 
 Current lecture-specific groups:
@@ -51,6 +52,7 @@ Current lecture-specific groups:
 - `hpo_automl`: adds `h2o`, `optuna`, `hyperopt`, and `scikit-optimize` for Lecture 10
 - `neural_networks`: adds `torch` and `torchvision` for Lecture 12
 - `xai_piml`: adds `piml` for the optional PiML example in Lecture 11 on compatible Python versions
+- `ml_in_production`: adds `evidently` and `mlflow` for Lecture 14
 
 Validate an optional lecture environment explicitly:
 
@@ -59,6 +61,7 @@ uv run python tools/check_notebook_environment.py --group ensembles
 uv run python tools/check_notebook_environment.py --group time_series
 uv run python tools/check_notebook_environment.py --group hpo_automl
 uv run python tools/check_notebook_environment.py --group neural_networks
+uv run python tools/check_notebook_environment.py --group ml_in_production
 ```
 
 ### Run a command inside the project environment

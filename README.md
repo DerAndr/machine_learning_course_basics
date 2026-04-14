@@ -13,7 +13,7 @@ The repository is organized lecture by lecture and is meant to work both as:
 - lecture notes for revision and recap
 - canonical lecture PDFs
 - example notebooks for each lecture
-- selected lectures with separate classroom practical sessions
+- classroom practical sessions for every lecture
 - optional local setup with lecture-specific dependency groups
 
 ## Start Here
@@ -44,13 +44,13 @@ Student-oriented setup instructions live in `docs/student-quickstart.md`.
 - `lectures/<lecture_slug>/links.yaml` for compact lecture metadata
 - `lectures/<lecture_slug>/slides/lecture.pdf` for the canonical lecture deck
 - `lectures/<lecture_slug>/lecture_examples/` for example notebooks and paired scripts
-- `lectures/<lecture_slug>/practical_session/` for separate classroom practicals when a lecture includes them
+- `lectures/<lecture_slug>/practical_session/` for separate classroom practicals
 - `docs/student-quickstart.md` for local setup instructions
 
 ## Current Scope
 
-- The public layer is centered on lecture materials, notes, and example notebooks.
-- Some lectures also include separate public `practical_session/` materials for classroom work.
+- The public layer is centered on lecture materials, notes, example notebooks, and practical sessions.
+- Every lecture includes a separate public `practical_session/` with a student notebook for classroom work.
 - Instructor notebooks or cheat sheets may be kept out of the public student release.
 - Raw imports, migration history, and source collection remain outside the public course layer.
 
@@ -70,7 +70,7 @@ lectures/
 │   │   ├── example_01.ipynb
 │   │   ├── example_01.py
 │   │   └── ...
-│   └── practical_session/   (when present)
+│   └── practical_session/
 │       ├── README.md
 │       └── ...
 └── ...
@@ -95,6 +95,7 @@ There is no separate `requirements.txt` on purpose.
   - `uv sync --group hpo_automl` for Lecture 10 extras such as `h2o`, `optuna`, `hyperopt`, and `scikit-optimize`
   - `uv sync --group neural_networks` for Lecture 12 extras such as `torch` and `torchinfo`
   - `uv sync --group xai_piml` for the optional PiML example in Lecture 11 on compatible Python versions
+  - `uv sync --group ml_in_production` for Lecture 14 extras such as `evidently` and `mlflow`
 
 ## Working With Lecture Examples
 
@@ -106,6 +107,7 @@ There is no separate `requirements.txt` on purpose.
   - `uv run python tools/check_notebook_environment.py --group time_series`
   - `uv run python tools/check_notebook_environment.py --group hpo_automl`
   - `uv run python tools/check_notebook_environment.py --group neural_networks`
+  - `uv run python tools/check_notebook_environment.py --group ml_in_production`
 - To regenerate the `.py` companions and example READMEs after changing notebooks, run:
   - `uv run python tools/sync_lecture_examples.py`
 
@@ -122,7 +124,7 @@ For humans:
 7. `lectures/<lecture_slug>/lecture_examples/README.md`
 8. `lectures/<lecture_slug>/lecture_examples/example_XX.ipynb`
 9. `lectures/<lecture_slug>/lecture_examples/example_XX.py`
-10. `lectures/<lecture_slug>/practical_session/README.md` (when present)
+10. `lectures/<lecture_slug>/practical_session/README.md`
 
 For agents:
 
@@ -133,4 +135,4 @@ For agents:
 5. `lectures/<lecture_slug>/lecture_notes.md`
 6. `lectures/<lecture_slug>/links.yaml`
 7. `lectures/<lecture_slug>/lecture_examples/README.md`
-8. `lectures/<lecture_slug>/practical_session/README.md` (when present)
+8. `lectures/<lecture_slug>/practical_session/README.md`

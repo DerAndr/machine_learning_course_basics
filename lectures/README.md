@@ -1,6 +1,6 @@
 # Lectures
 
-This directory contains the canonical lecture layer for the first content commit.
+This directory contains the canonical lecture layer for the course.
 
 ## Per-Lecture Structure
 
@@ -13,12 +13,11 @@ Each lecture directory contains:
 - `lecture_examples/README.md`
 - `lecture_examples/example_XX.ipynb`
 - `lecture_examples/example_XX.py`
+- `practical_session/README.md`
+- `practical_session/<slug>_practical_student_90min.ipynb`
+- `practical_session/<slug>_practical_student_90min.py`
 
-Some lectures may also contain additional subdirectories such as:
-
-- `practical_session/`
-
-When `practical_session/` is present, the public release may contain only the student-facing notebook and README, while instructor materials stay unpublished.
+The public release of each practical session contains only the student-facing notebook and README; instructor materials stay unpublished.
 
 ## Lecture Map
 

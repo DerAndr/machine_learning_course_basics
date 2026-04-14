@@ -110,6 +110,18 @@ Use this only when you want to run the optional PiML-based explainability exampl
 The main Lecture 11 materials, including the public practical session, run in the baseline environment after `uv sync`.
 On Python 3.12, PiML may be unavailable.
 
+### Lecture 14: ML in Production
+
+```bash
+uv sync --group ml_in_production
+uv run python tools/check_notebook_environment.py --group ml_in_production
+```
+
+Use this when the practical session needs:
+
+- `evidently`
+- `mlflow`
+
 ## 4. Daily workflow
 
 Typical workflow:
@@ -151,4 +163,5 @@ uv sync --group time_series
 uv sync --group hpo_automl
 uv sync --group neural_networks
 uv sync --group xai_piml
+uv sync --group ml_in_production
 ```

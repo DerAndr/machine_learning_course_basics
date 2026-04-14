@@ -18,4 +18,6 @@ This repository stores the authoring version of the machine learning course.
 
 ## Current State
 
-The repository currently contains the bootstrap scaffold only. No legacy materials have been imported yet.
+All 14 lectures are in place with lecture notes, slide decks, example notebooks, and practical sessions.
+The normalization and bug-audit pass for lectures `01` to `14` is complete.
+Lecture-specific dependency groups are available for heavier libraries (ensembles, time series, HPO/AutoML, neural networks, XAI/PiML, ML in production).
