@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import openml
 import pandas as pd
+from IPython.display import display
 from catboost import CatBoostRegressor
 from prophet import Prophet
 from prophet.utilities import regressor_coefficients
@@ -506,22 +507,28 @@ supervised_train.head()
 # - explain why coefficients are on the original target scale
 
 
-comparison = (
-    pd.DataFrame(
-        [
-            baseline_metrics,
-            arima_metrics,
-            sarimax_metrics,
-            rf_metrics,
-            catboost_metrics,
-            prophet_metrics,
-        ]
-    )
-    .sort_values('RMSE')
-    .reset_index(drop=True)
-)
+available_metric_names = [
+    'baseline_metrics',
+    'arima_metrics',
+    'sarimax_metrics',
+    'rf_metrics',
+    'catboost_metrics',
+    'prophet_metrics',
+]
+available_metrics = [globals()[name] for name in available_metric_names if name in globals()]
 
-comparison.round(2)
+if available_metrics:
+    comparison = (
+        pd.DataFrame(available_metrics)
+        .sort_values('RMSE')
+        .reset_index(drop=True)
+    )
+    display(comparison.round(2))
+else:
+    print(
+        'Complete at least one forecasting model block above, then build the comparison table here. '
+        'The seasonal naive baseline is already available as baseline_metrics.'
+    )
 
 
 tsfresh_demo = build_tsfresh_demo_frame(train['rented_bike_count'], window=14, max_windows=8)
@@ -551,4 +558,3 @@ tsfresh_features.head()
 # Discussion prompt:
 # - did tsfresh add genuinely new signal, or mostly redundant summaries?
 # - why can automatic feature generation increase complexity without improving quality?
-
