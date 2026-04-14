@@ -45,13 +45,13 @@ lectures:
     assignments_ready: false
     solutions_released: false
   - number: 10
-    slug: lecture_10_explainability_interpretability
-    title: Explainability and Interpretability
+    slug: lecture_10_cross_validation_hpo
+    title: Cross-Validation and Hyperparameter Optimization
     assignments_ready: false
     solutions_released: false
   - number: 11
-    slug: lecture_11_cross_validation_hpo
-    title: Cross-Validation and Hyperparameter Optimization
+    slug: lecture_11_explainability_interpretability
+    title: Explainability and Interpretability
     assignments_ready: false
     solutions_released: false
   - number: 12

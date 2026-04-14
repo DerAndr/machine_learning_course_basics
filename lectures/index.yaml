@@ -256,6 +256,10 @@ lectures:
     lecture_example_scripts:
       - lecture_11_explainability_interpretability/lecture_examples/example_01.py
       - lecture_11_explainability_interpretability/lecture_examples/example_02.py
+    practical_session_directory: lecture_11_explainability_interpretability/practical_session
+    practical_session_readme: lecture_11_explainability_interpretability/practical_session/README.md
+    practical_session_student_notebook: lecture_11_explainability_interpretability/practical_session/xai_practical_student_90min.ipynb
+    practical_session_student_script: lecture_11_explainability_interpretability/practical_session/xai_practical_student_90min.py
     raw_sources: ../incoming_materials/lecture_11_explainability_interpretability
   - number: 12
     slug: lecture_12_intro_neural_networks

@@ -4,7 +4,7 @@
 > Lecture slug: `lecture_11_explainability_interpretability`
 > Role: student-facing recap and revision notes
 > Use this file: after the lecture, before or alongside the practice notebook
-> Related files: `README.md`, `slides/lecture.pdf`, `assignment/practice.ipynb`
+> Related files: `README.md`, `slides/lecture.pdf`, `practical_session/xai_practical_student_90min.ipynb`, `practical_session/README.md`
 > Source basis: lecture slides and practical notebooks
 > Last updated: 2026-03-31
 
@@ -704,13 +704,47 @@ Useful for:
 - PDP via `PartialDependenceDisplay`,
 - feature importance in tree models.
 
-## 18. Practical Notebook Map
+## 18. Recommended Reading
+
+If you want one especially strong external companion resource for this lecture, the recommended book is:
+
+- Christoph Molnar, *Interpretable Machine Learning*: [https://christophm.github.io/interpretable-ml-book](https://christophm.github.io/interpretable-ml-book)
+
+It is especially useful for:
+
+- building intuition about what different explanation methods actually answer,
+- understanding the differences between feature importance, total effects, main effects, and interaction effects,
+- reading about practical limitations such as correlation, instability, and non-causal interpretation.
+
+## 19. Practical Notebook Map
 
 This lecture is especially practical. The notebooks cover several distinct explainability workflows.
 
-### 1. `xAI - lecture.ipynb`
+### 1. `practical_session/xai_practical_student_90min.ipynb`
 
-This is the main lecture demo notebook. It contains a sequence of hands-on explainability examples:
+This is the current public student practical for Lecture 11.
+
+The practical covers:
+
+- a white-box logistic-regression baseline,
+- a black-box random-forest comparison,
+- permutation importance,
+- PDP and ALE on the same feature pair,
+- LIME,
+- SHAP global and local explanations,
+- a lightweight SHAP interaction view,
+- Explainable Boosting Machines via `InterpretML`,
+- separate case-by-case local explanation galleries for individual predictions.
+
+This notebook is the main public practice layer students should use alongside the lecture notes.
+
+### 2. Legacy / source notebooks
+
+The lecture also draws on older source notebooks that helped shape the current public materials.
+
+#### `xAI - lecture.ipynb`
+
+This older notebook contains a sequence of hands-on explainability examples:
 
 - a small decision-tree example with income and credit score,
 - permutation importance on synthetic data,
@@ -723,7 +757,7 @@ This is the main lecture demo notebook. It contains a sequence of hands-on expla
 
 This notebook is valuable because it mirrors the structure of the slides. It moves from intrinsically interpretable models to increasingly advanced post-hoc explainers.
 
-### 2. `xAI Demo - piml.ipynb`
+#### `xAI Demo - piml.ipynb`
 
 This notebook shows a workflow built around the `piml` library.
 
@@ -740,7 +774,7 @@ The main stages are:
 
 This notebook is useful because it shows explainability not as one isolated chart, but as part of a broader model development process.
 
-### 3. `xai - demo.ipynb`
+#### `xai - demo.ipynb`
 
 This notebook contains focused examples with:
 
@@ -751,7 +785,7 @@ This notebook contains focused examples with:
 
 It is useful as a compact sandbox for comparing explanation methods on a regression problem.
 
-## 19. What Students Should Remember Technically
+## 20. What Students Should Remember Technically
 
 After this lecture, students should be able to answer the following questions clearly.
 
@@ -794,7 +828,7 @@ After this lecture, students should be able to answer the following questions cl
 
 - Local approximation of complex model behavior for a single case.
 
-## 20. Key Takeaways
+## 21. Key Takeaways
 
 - Explainability is part of model validation, not just presentation.
 - Simpler models are easier to interpret, but may be less powerful.
@@ -803,7 +837,7 @@ After this lecture, students should be able to answer the following questions cl
 - Correlation, leakage, sparsity, instability, and bias can distort explanations.
 - Explanations are descriptive of model behavior, not proofs of causality.
 
-## 21. Quick Revision Questions
+## 22. Quick Revision Questions
 
 1. Why is a coefficient table interpretable, but SHAP usually considered post-hoc?
 2. Why can permutation importance underestimate a feature’s value when strong correlation exists?
