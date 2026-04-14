@@ -275,6 +275,10 @@ lectures:
       - lecture_12_intro_neural_networks/lecture_examples/example_01.ipynb
     lecture_example_scripts:
       - lecture_12_intro_neural_networks/lecture_examples/example_01.py
+    practical_session_directory: lecture_12_intro_neural_networks/practical_session
+    practical_session_readme: lecture_12_intro_neural_networks/practical_session/README.md
+    practical_session_student_notebook: lecture_12_intro_neural_networks/practical_session/nn_practical_student_90min.ipynb
+    practical_session_student_script: lecture_12_intro_neural_networks/practical_session/nn_practical_student_90min.py
     raw_sources: ../incoming_materials/lecture_12_intro_neural_networks
   - number: 13
     slug: lecture_13_responsible_ai

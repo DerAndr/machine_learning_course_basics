@@ -98,6 +98,7 @@ Use this when the lecture example needs:
 
 - `torch`
 - `torchvision`
+- `torchinfo`
 
 ### Lecture 11: Explainability and Interpretability
 
