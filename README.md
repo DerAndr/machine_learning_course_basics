@@ -92,9 +92,9 @@ There is no separate `requirements.txt` on purpose.
 - Heavy or lecture-specific packages can be added only when needed:
   - `uv sync --group ensembles` for Lecture 07 extras such as `catboost`, `lightgbm`, and `xgboost`
   - `uv sync --group time_series` for Lecture 08 extras such as `prophet`
-  - `uv sync --group hpo_automl` for Lecture 11 extras such as `h2o`, `optuna`, `hyperopt`, and `scikit-optimize`
+  - `uv sync --group hpo_automl` for Lecture 10 extras such as `h2o`, `optuna`, `hyperopt`, and `scikit-optimize`
   - `uv sync --group neural_networks` for Lecture 12 extras such as `torch`
-  - `uv sync --group xai_piml` for the optional PiML example in Lecture 10 on compatible Python versions
+  - `uv sync --group xai_piml` for the optional PiML example in Lecture 11 on compatible Python versions
 
 ## Working With Lecture Examples
 

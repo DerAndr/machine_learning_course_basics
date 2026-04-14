@@ -48,9 +48,9 @@ Current lecture-specific groups:
 
 - `ensembles`: adds `catboost`, `lightgbm`, and `xgboost` for Lecture 07
 - `time_series`: adds `prophet` for Lecture 08
-- `hpo_automl`: adds `h2o`, `optuna`, `hyperopt`, and `scikit-optimize` for Lecture 11
+- `hpo_automl`: adds `h2o`, `optuna`, `hyperopt`, and `scikit-optimize` for Lecture 10
 - `neural_networks`: adds `torch` and `torchvision` for Lecture 12
-- `xai_piml`: adds `piml` for the optional PiML example in Lecture 10 on compatible Python versions
+- `xai_piml`: adds `piml` for the optional PiML example in Lecture 11 on compatible Python versions
 
 Validate an optional lecture environment explicitly:
 

@@ -36,9 +36,9 @@ Current usage:
 
 - `ensembles`: Lecture 07 extras such as `catboost`, `lightgbm`, and `xgboost`
 - `time_series`: Lecture 08 extras such as `prophet`
-- `hpo_automl`: Lecture 11 extras such as `h2o`, `optuna`, `hyperopt`, and `scikit-optimize`
+- `hpo_automl`: Lecture 10 extras such as `h2o`, `optuna`, `hyperopt`, and `scikit-optimize`
 - `neural_networks`: Lecture 12 extras such as `torch` and `torchvision`
-- `xai_piml`: the optional PiML example in Lecture 10 on compatible Python versions
+- `xai_piml`: the optional PiML example in Lecture 11 on compatible Python versions
 
 To validate one of these environments explicitly:
 
