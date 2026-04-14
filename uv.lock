@@ -910,6 +910,18 @@ wheels = [
 ]
 
 [[package]]
+name = "flaml"
+version = "2.5.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numpy" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/c7/17/ad442044ee767f372648cfac827642dede76afc32ddac6f36d21baee991b/flaml-2.5.0.tar.gz", hash = "sha256:c1cbf0056ccc44a18539e0c3e18c0142706c72716fa56687fce52444b251c549", size = 307105, upload-time = "2026-01-21T08:50:18.299Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/4f/47/b0808d7dc09cb099027e878f687a846179489535e6ad284f8df041b17b3b/flaml-2.5.0-py3-none-any.whl", hash = "sha256:063ad97f410032aedc5f157226d3e4093705896102a9aa40c56b8c1d2c8b2e97", size = 337687, upload-time = "2026-01-21T08:50:16.324Z" },
+]
+
+[[package]]
 name = "flask"
 version = "3.0.3"
 source = { registry = "https://pypi.org/simple" }
@@ -2049,6 +2061,7 @@ ensembles = [
     { name = "xgboost" },
 ]
 hpo-automl = [
+    { name = "flaml" },
     { name = "h2o" },
     { name = "hyperopt" },
     { name = "optuna" },
@@ -2111,9 +2124,10 @@ dev = [
 ensembles = [
     { name = "catboost", specifier = ">=1.2.8" },
     { name = "lightgbm", specifier = ">=4.6.0" },
-    { name = "xgboost", specifier = ">=2.1.4" },
+    { name = "xgboost", specifier = ">=3.2.0" },
 ]
 hpo-automl = [
+    { name = "flaml", specifier = ">=2.5.0" },
     { name = "h2o", specifier = ">=3" },
     { name = "hyperopt", specifier = ">=0.2.7" },
     { name = "optuna", specifier = ">=4.2.1" },
@@ -2125,7 +2139,7 @@ neural-networks = [
 ]
 time-series = [
     { name = "prophet", specifier = ">=1.1.6" },
-    { name = "xgboost", specifier = ">=2.1.4" },
+    { name = "xgboost", specifier = ">=3.2.0" },
 ]
 xai-piml = [{ name = "piml", marker = "python_full_version < '3.12'", specifier = ">=0.6.0.post2" }]
 

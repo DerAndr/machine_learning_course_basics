@@ -81,6 +81,7 @@ uv run python tools/check_notebook_environment.py --group hpo_automl
 
 Use this when the lecture example needs:
 
+- `flaml`
 - `h2o`
 - `optuna`
 - `hyperopt`

@@ -46,17 +46,18 @@ course = [
 ensembles = [
   "catboost>=1.2.8",
   "lightgbm>=4.6.0",
-  "xgboost>=2.1.4",
+  "xgboost>=3.2.0",
 ]
 time_series = [
   "prophet>=1.1.6",
-  "xgboost>=2.1.4",
+  "xgboost>=3.2.0",
 ]
 neural_networks = [
   "torch>=2.6.0",
   "torchvision>=0.21.0",
 ]
 hpo_automl = [
+  "flaml>=2.5.0",
   "h2o>=3",
   "hyperopt>=0.2.7",
   "optuna>=4.2.1",

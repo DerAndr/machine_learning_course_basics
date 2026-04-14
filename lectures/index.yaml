@@ -235,6 +235,10 @@ lectures:
     lecture_example_scripts:
       - lecture_10_cross_validation_hpo/lecture_examples/example_01.py
       - lecture_10_cross_validation_hpo/lecture_examples/example_02.py
+    practical_session_directory: lecture_10_cross_validation_hpo/practical_session
+    practical_session_readme: lecture_10_cross_validation_hpo/practical_session/README.md
+    practical_session_student_notebook: lecture_10_cross_validation_hpo/practical_session/crossval_hpo_practical_student_90min.ipynb
+    practical_session_student_script: lecture_10_cross_validation_hpo/practical_session/crossval_hpo_practical_student_90min.py
     raw_sources: ../incoming_materials/lecture_10_cross_validation_hpo
   - number: 11
     slug: lecture_11_explainability_interpretability

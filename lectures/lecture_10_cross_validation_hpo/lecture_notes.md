@@ -4,9 +4,9 @@
 > Lecture slug: `lecture_10_cross_validation_hpo`
 > Role: student-facing recap and revision notes
 > Use this file: after the lecture, before or alongside the practice notebook
-> Related files: `README.md`, `slides/lecture.pdf`, `assignment/practice.ipynb`
+> Related files: `README.md`, `slides/lecture.pdf`, `practical_session/README.md`, `practical_session/crossval_hpo_practical_student_90min.ipynb`
 > Source basis: lecture slides and practical notebooks
-> Last updated: 2026-03-31
+> Last updated: 2026-04-14
 
 ## 1. What This Lecture Is About
 
@@ -640,6 +640,7 @@ The main idea is to automate part of the ML workflow, often including:
 The lecture mentions:
 
 - H2O AutoML,
+- FLAML,
 - auto-sklearn,
 - TPOT,
 - MLJAR AutoML,
@@ -675,51 +676,45 @@ Complex pipelines and AutoML outputs may perform well, but they can become harde
 
 ## 24. Practical Notebook Map
 
-This lecture has three main practical notebooks, each emphasizing a different part of the workflow.
+This lecture currently exposes three main notebook layers in the public repository.
 
-### 1. `crossval.ipynb`
+### 1. `practical_session/crossval_hpo_practical_student_90min.ipynb`
 
-This notebook is more conceptual and tool-oriented. It includes:
+This is the main classroom practical. It includes:
 
-- SVG illustrations of CV strategies,
-- a visual comparison of Grid Search vs Random Search,
-- MLflow demo setup,
-- examples of AutoML-style tooling such as H2O.
+- accuracy paradox on an imbalanced classification task,
+- leakage via a synthetic feature,
+- `KFold`, `StratifiedKFold`, `RepeatedStratifiedKFold`, and a small `LOOCV` demo,
+- validation curve, `RandomizedSearchCV`, and adaptive tuning with Optuna,
+- nested CV,
+- pipeline-inside-CV comparison,
+- optional AutoML-style tooling such as H2O and FLAML.
 
-This notebook is useful for building intuition around workflow structure, rather than for one single end-to-end model.
+This notebook is the clearest end-to-end student workflow for the lecture topic.
 
-### 2. `Hyperparameter_search.ipynb`
+### 2. `lecture_examples/example_01.ipynb`
 
-This is the direct tuning notebook. It uses a Random Forest Regressor on the Diabetes dataset and compares:
+This example notebook is more conceptual and workflow-oriented. It demonstrates:
 
-- Grid Search,
-- Randomized Search,
-- Hyperopt,
-- Optuna,
-- Bayesian search via scikit-optimize.
-
-This notebook is important because it moves beyond theory and lets students compare optimization strategies on the same predictive task.
-
-It reinforces the idea that:
-
-- different search methods explore the space differently,
-- search budget matters,
-- “best method” depends on cost, search space, and practical constraints.
-
-### 3. `CrossValidation_and_pipelines.ipynb`
-
-This is the most workflow-oriented notebook. It demonstrates:
-
-- classification on the Wine dataset,
-- regression on the California Housing dataset,
 - train/test splitting,
 - cross-validation,
 - pipelines,
 - feature selection,
-- GridSearchCV,
-- H2O AutoML.
+- data leakage,
+- and why preprocessing must live inside the modeling workflow.
 
-This notebook is especially valuable because it shows how cross-validation, preprocessing, tuning, and model execution fit together in one reproducible structure.
+It is useful for intuition about structure and validation discipline.
+
+### 3. `lecture_examples/example_02.ipynb`
+
+This example notebook is the library-comparison layer. It shows:
+
+- Optuna,
+- Hyperopt,
+- scikit-optimize,
+- and related tuning tooling.
+
+It is useful once students already understand why the validation protocol matters.
 
 ## 25. What Students Should Understand Technically
 
