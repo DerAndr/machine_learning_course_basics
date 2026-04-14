@@ -247,7 +247,7 @@ TimeSeriesSplit is reserved for temporal data to maintain chronological order.
 """)
 
 # %%
-# 2.4 Pipelines and Hyperparameter Tuningё
+# 2.4 Pipelines and Hyperparameter Tuning
 print("\n--- PIPELINES DEMO (Regression) ---")
 
 # Construct a machine learning pipeline

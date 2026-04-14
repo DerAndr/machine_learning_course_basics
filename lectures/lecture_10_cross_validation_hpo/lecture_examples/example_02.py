@@ -372,28 +372,6 @@ summary = pd.DataFrame({
         np.sqrt(-bayes_search.best_score_)
     ],
     'Test RMSE': [
-        test_r2,  # Last test_rmse corresponds to BayesSearch
-        test_r2,
-        test_r2,
-        test_r2,
-        test_r2
-    ]
-})
-
-# Note: To accurately capture test RMSE for each method, we need to store them separately.
-# Adjusting the code to store test RMSE for each method.
-
-# Re-initialize summary with correct test RMSE
-summary = pd.DataFrame({
-    'Method': ['Grid Search', 'Random Search', 'Hyperopt', 'Optuna', 'Bayesian Search'],
-    'Best CV RMSE': [
-        np.sqrt(-grid_search.best_score_),
-        np.sqrt(-random_search.best_score_),
-        np.sqrt(-min([trial['loss'] for trial in trials.results])),
-        np.sqrt(study.best_value),
-        np.sqrt(-bayes_search.best_score_)
-    ],
-    'Test RMSE': [
         np.sqrt(mean_squared_error(y_test, grid_search.predict(X_test))),
         np.sqrt(mean_squared_error(y_test, random_search.predict(X_test))),
         np.sqrt(mean_squared_error(y_test, best_hyperopt_rf.predict(X_test))),

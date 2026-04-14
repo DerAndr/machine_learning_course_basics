@@ -301,9 +301,6 @@ def main() -> None:
         for nb_path in sorted(examples_dir.glob("example_*.ipynb")):
             notebook_to_percent_script(nb_path, examples_dir / f"{nb_path.stem}.py")
 
-        (examples_dir / "README.md").write_text(build_examples_readme(lecture_dir))
-        (lecture_dir / "README.md").write_text(build_lecture_readme(lecture_dir))
-
 
 if __name__ == "__main__":
     main()

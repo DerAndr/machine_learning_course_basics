@@ -50,7 +50,7 @@ shap.dependence_plot('bmi', shap_values, X_test)
 # Select a specific test instance
 i = 0  # Index of the instance to explain
 shap.force_plot(
-    explainer.expected_value[0],
+    explainer.expected_value,
     shap_values[i],
     X_test.iloc[i],
     matplotlib=True,
