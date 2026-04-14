@@ -313,4 +313,8 @@ lectures:
       - lecture_14_ml_in_production/lecture_examples/example_01.ipynb
     lecture_example_scripts:
       - lecture_14_ml_in_production/lecture_examples/example_01.py
+    practical_session_directory: lecture_14_ml_in_production/practical_session
+    practical_session_readme: lecture_14_ml_in_production/practical_session/README.md
+    practical_session_student_notebook: lecture_14_ml_in_production/practical_session/ml_in_production_practical_student_90min.ipynb
+    practical_session_student_script: lecture_14_ml_in_production/practical_session/ml_in_production_practical_student_90min.py
     raw_sources: ../incoming_materials/lecture_14_ml_in_production

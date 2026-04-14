@@ -3,3 +3,28 @@ lecture_slug: lecture_14_ml_in_production
 lecture_title: ML in Production
 youtube: https://youtu.be/mFC2H1OgTsM
 slides: https://drive.google.com/file/d/1C-ATwkxKqk_HU2XhntCOxI8Focnw6r5-/view?usp=drive_link
+
+practical_session_tools:
+  - name: MLflow
+    url: https://mlflow.org/
+    role: Experiment tracking and model registry
+  - name: Evidently
+    url: https://github.com/evidentlyai/evidently
+    role: Data drift detection and model monitoring
+  - name: Weights & Biases
+    url: https://wandb.ai/
+    role: Experiment tracking and collaboration
+  - name: ClearML
+    url: https://clear.ml/
+    role: End-to-end MLOps with auto-logging
+  - name: BentoML
+    url: https://github.com/bentoml/BentoML
+    role: Model serving and API packaging
+
+further_reading:
+  - title: "Hidden Technical Debt in Machine Learning Systems"
+    url: https://papers.nips.cc/paper/5656-hidden-technical-debt-in-machine-learning-systems
+  - title: "Google — Rules of Machine Learning"
+    url: https://developers.google.com/machine-learning/guides/rules-of-ml
+  - title: "Made With ML — MLOps Course"
+    url: https://madewithml.com/

@@ -64,6 +64,10 @@ hpo_automl = [
   "optuna>=4.2.1",
   "scikit-optimize>=0.10.2",
 ]
+ml_in_production = [
+  "evidently>=0.5",
+  "mlflow>=2.10",
+]
 xai_piml = [
   "piml>=0.6.0.post2; python_version < '3.12'",
 ]
