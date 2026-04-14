@@ -1,135 +1,113 @@
 # Agent Guide
 
-This repository is a public machine learning course repository.
+This repository is an introductory machine learning course.
+It contains lecture notes, slide decks, example notebooks, and classroom practicals covering 14 topics — from exploratory data analysis to production deployment.
 
-Its primary purpose is to distribute lecture materials in a clean, stable structure for students and for agent-based navigation.
+Use this file to understand what the repository contains and where to find things.
 
-## Canonical Course Content
+## Course Topics
 
-The canonical course materials live in `lectures/`.
+| # | Lecture | Directory |
+|---|--------|-----------|
+| 01 | Exploratory Data Analysis | `lecture_01_eda` |
+| 02 | Data Preparation Part 1 | `lecture_02_data_preparation_part_1` |
+| 03 | Data Preparation Part 2 | `lecture_03_data_preparation_part_2` |
+| 04 | Regression | `lecture_04_regression` |
+| 05 | Classification Part 1 | `lecture_05_classification_part_1` |
+| 06 | Classification Part 2 | `lecture_06_classification_part_2` |
+| 07 | Ensembles | `lecture_07_ensembles` |
+| 08 | Time Series | `lecture_08_time_series` |
+| 09 | Clustering | `lecture_09_clustering` |
+| 10 | Cross-Validation and HPO | `lecture_10_cross_validation_hpo` |
+| 11 | Explainability and Interpretability | `lecture_11_explainability_interpretability` |
+| 12 | Introduction to Neural Networks | `lecture_12_intro_neural_networks` |
+| 13 | Responsible AI | `lecture_13_responsible_ai` |
+| 14 | ML in Production | `lecture_14_ml_in_production` |
 
-For each lecture, the main files are:
+## Where Things Live
 
-- `README.md`
-- `lecture_notes.md`
-- `links.yaml`
-- `slides/lecture.pdf`
-- `lecture_examples/README.md`
-- `lecture_examples/example_XX.ipynb`
-- `lecture_examples/example_XX.py`
+All course materials are in `lectures/`. Each lecture directory has:
+
+- `README.md` — lecture overview with links to all files
+- `lecture_notes.md` — student-facing recap and revision notes
+- `links.yaml` — compact lecture metadata
+- `slides/lecture.pdf` — canonical lecture deck
+- `lecture_examples/` — example notebooks with paired `.py` scripts
+- `practical_session/` — 90-minute classroom practical with TODO cells for students
 
 Use `lectures/index.yaml` as the machine-readable course index.
-The file includes a schema description at the top.
 
-## Canonical Traversal Order
+## How to Navigate
 
-For general repository navigation:
+To explore the full course:
 
-1. `README.md`
-2. `lectures/README.md`
-3. `lectures/index.yaml`
+1. `README.md` — repository overview
+2. `lectures/README.md` — lecture map with links
+3. `lectures/index.yaml` — machine-readable index (all paths, all lectures)
 
-For a specific lecture:
+To explore a specific lecture:
 
-1. `lectures/<lecture_slug>/README.md`
-2. `lectures/<lecture_slug>/lecture_notes.md`
-3. `lectures/<lecture_slug>/links.yaml`
-4. `lectures/<lecture_slug>/slides/lecture.pdf`
-5. `lectures/<lecture_slug>/lecture_examples/README.md`
-6. `lectures/<lecture_slug>/lecture_examples/example_XX.ipynb`
-7. `lectures/<lecture_slug>/lecture_examples/example_XX.py`
-8. `lectures/<lecture_slug>/practical_session/README.md` (when present)
-9. `lectures/<lecture_slug>/practical_session/*.ipynb` (when present)
+1. `lectures/<slug>/README.md` — what's in this lecture
+2. `lectures/<slug>/lecture_notes.md` — summary and key concepts
+3. `lectures/<slug>/links.yaml` — metadata
+4. `lectures/<slug>/slides/lecture.pdf` — slide deck
+5. `lectures/<slug>/lecture_examples/README.md` — list of example notebooks
+6. `lectures/<slug>/lecture_examples/example_XX.ipynb` — example notebook
+7. `lectures/<slug>/practical_session/README.md` — practical overview
+8. `lectures/<slug>/practical_session/*_student_90min.ipynb` — student practical notebook
 
-## Lecture Layers
+## Practical Sessions
 
-Within a lecture directory:
+Every lecture has a `practical_session/` containing:
 
-- `lecture_notes.md`: student-facing recap and revision notes
-- `slides/lecture.pdf`: canonical lecture deck
-- `lecture_examples/`: notebooks that accompany the lecture
-- `practical_session/`: separate classroom practical materials when present
+- A **student notebook** (`*_practical_student_90min.ipynb`) with TODO cells where students write code.
+- A paired **Python script** (`*_practical_student_90min.py`) for lightweight reading and diffing.
+- A **README.md** with teaching intent, scope, and environment notes.
 
-Important distinction:
+The practicals are designed for 90 minutes and use real datasets fetched from OpenML or generated synthetically.
 
-- `lecture_examples/` are lecture companion materials
-- `practical_session/` is a separate practice layer and should not be merged conceptually into lecture examples
+## Lecture Examples vs Practical Sessions
 
-Do not assume that every lecture has `practical_session/`.
+These are separate layers — do not mix them:
 
-## Notebook Contract
+- `lecture_examples/` — demos shown during the lecture to illustrate concepts
+- `practical_session/` — hands-on exercises students complete during class
+
+## Notebook Files
 
 - `.ipynb` is the source notebook
-- `.py` is a generated companion script
-- generated lecture-example scripts should stay in sync with the notebooks
+- `.py` is an auto-generated companion script for reading and diffing
+- After editing notebooks in `lecture_examples/`, regenerate scripts: `uv run python tools/sync_lecture_examples.py`
 
-After editing notebooks in `lecture_examples/`, run:
+## Local Setup
 
-```bash
-uv run python tools/sync_lecture_examples.py
-```
-
-## Local Tooling
-
-Use `uv` as the default environment manager.
-
-Baseline environment:
+Use `uv` as the environment manager:
 
 ```bash
 uv sync
 uv run python tools/check_notebook_environment.py
+uv run jupyter lab
 ```
 
-Optional lecture-specific dependency groups:
+Some lectures need extra dependencies:
 
-- `ensembles`
-- `time_series`
-- `hpo_automl`
-- `neural_networks`
-- `xai_piml`
+| Group | Lecture | Key packages |
+|-------|---------|-------------|
+| `ensembles` | 07 | catboost, lightgbm, xgboost |
+| `time_series` | 08 | prophet |
+| `hpo_automl` | 10 | h2o, optuna, hyperopt, scikit-optimize |
+| `neural_networks` | 12 | torch, torchinfo |
+| `xai_piml` | 11 | piml (compatible Python versions only) |
+| `ml_in_production` | 14 | evidently, mlflow |
 
-Examples:
+Install with: `uv sync --group <group_name>`
 
-```bash
-uv sync --group ensembles
-uv sync --group time_series
-uv sync --group hpo_automl
-uv sync --group neural_networks
-```
+Detailed setup: `docs/student-quickstart.md`
 
 ## Supporting Directories
 
-- `docs/`: student-facing setup guides, workflow documentation, and repository overview
-- `publish/lectures.yaml`: tracks assignment and solution publication status per lecture
-- `src/mlcourse/`: shared Python helpers (paths, data utilities)
-- `tools/`: repository maintenance scripts (notebook sync, environment checks)
-
-## Non-Canonical Sources
-
-Do not treat these as canonical course content unless explicitly requested:
-
-- `incoming_materials/`
-- `legacy_import/`
-
-These directories exist for source collection, migration history, authoring, and provenance.
-
-## Editing Guidance
-
-When refining the repository:
-
-- prefer English-only repository text
-- keep lecture slugs stable
-- avoid re-introducing raw duplication into `lectures/`
-- treat `lectures/` as the public course layer
-- keep setup instructions aligned with `pyproject.toml` and `uv.lock`
-- do not move lecture examples back into ad hoc notebook folders
-
-## What To Ignore By Default
-
-Unless the task explicitly requires them, do not depend on:
-
-- `incoming_materials/`
-- `legacy_import/`
-- unpublished cleanup notes
-- temporary migration leftovers
+- `docs/` — student-facing setup guides and workflow documentation
+- `src/mlcourse/` — shared Python helpers (paths, data utilities)
+- `tools/` — repository maintenance scripts (notebook sync, environment checks)
+- `publish/lectures.yaml` — assignment and solution publication status
 
