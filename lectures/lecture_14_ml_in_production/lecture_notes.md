@@ -4,7 +4,7 @@
 > Lecture slug: `lecture_14_ml_in_production`
 > Role: student-facing recap and revision notes
 > Use this file: after the lecture, before or alongside the practice notebook
-> Related files: `README.md`, `slides/lecture.pdf`, `assignment/practice.ipynb`
+> Related files: `README.md`, `slides/lecture.pdf`, `practical_session/ml_in_production_practical_student_90min.ipynb`
 > Source basis: lecture slides and practical notebooks
 > Last updated: 2026-03-31
 
