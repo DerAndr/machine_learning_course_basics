@@ -171,6 +171,23 @@ def evaluate_labels(X, labels, y_true=None):
     return result
 
 
+def safe_silhouette_for_metric(X, labels, metric):
+    labels = np.asarray(labels)
+    noise_mask = labels != -1
+    n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
+
+    if n_clusters < 2 or noise_mask.sum() <= n_clusters:
+        return np.nan
+
+    X_eval = X[noise_mask] if -1 in labels else X
+    labels_eval = labels[noise_mask] if -1 in labels else labels
+
+    if len(np.unique(labels_eval)) < 2:
+        return np.nan
+
+    return silhouette_score(X_eval, labels_eval, metric=metric)
+
+
 def _sort_labels(values):
     def key(value):
         value = str(value)
@@ -671,6 +688,7 @@ print(
 
 # %%
 X_pca_2d = X_pca_full[:, :2]
+X_pca_3d = X_pca_full[:, :3]
 
 umap_rng = np.random.default_rng(RANDOM_STATE)
 umap_idx = np.sort(umap_rng.choice(len(X_cluster), size=min(UMAP_SAMPLE_SIZE, len(X_cluster)), replace=False))
@@ -1361,9 +1379,14 @@ print("TODO: build a restart-stability experiment here.")
 # This block is **optional** for the core practical. Keep it if you want students to compare what happens when we change the feature representation or the distance metric.
 # 
 # Two quick benchmark checks:
-# 
+#
 # - compare agglomerative clustering under different distance metrics
 # - compare KMeans on raw normalized pixels vs on the PCA-based clustering representation
+#
+# Important note:
+#
+# - if the clustering model uses `manhattan` or `cosine`, the silhouette should be recomputed with the same metric
+# - otherwise we would be fitting in one geometry and scoring in another
 
 # %%
 if "selected_k" not in globals():
@@ -1376,9 +1399,19 @@ else:
         model = AgglomerativeClustering(n_clusters=selected_k, linkage="average", metric=metric_name)
         labels = model.fit_predict(X_cluster)
         distance_labels[metric_name] = labels
-        distance_rows.append({"metric": metric_name, **evaluate_labels(X_cluster, labels)})
+        benchmark_metrics = evaluate_labels(X_cluster, labels, y_reference)
+        distance_rows.append(
+            {
+                "metric": metric_name,
+                "n_clusters": benchmark_metrics["n_clusters"],
+                "noise_fraction": benchmark_metrics["noise_fraction"],
+                "silhouette_fit_metric": safe_silhouette_for_metric(X_cluster, labels, metric_name),
+                "ari": benchmark_metrics["ari"],
+                "nmi": benchmark_metrics["nmi"],
+            }
+        )
 
-    distance_df = pd.DataFrame(distance_rows).sort_values("silhouette", ascending=False)
+    distance_df = pd.DataFrame(distance_rows).sort_values("silhouette_fit_metric", ascending=False)
     display(distance_df.round(3))
 
 # %%
