@@ -11,12 +11,24 @@ The repository is organized lecture by lecture and is meant to work both as:
 
 ## At a Glance
 
-- 14 lecture topics across core machine learning subjects
-- lecture notes for revision and recap
-- canonical lecture PDFs
-- example notebooks for each lecture
-- classroom practical sessions for every lecture
-- optional local setup with lecture-specific dependency groups
+| # | Lecture | Notes | Practical |
+|---|--------|-------|-----------|
+| 01 | [Exploratory Data Analysis](lectures/lecture_01_eda/README.md) | [notes](lectures/lecture_01_eda/lecture_notes.md) | [practical](lectures/lecture_01_eda/practical_session/README.md) |
+| 02 | [Data Preparation Part 1](lectures/lecture_02_data_preparation_part_1/README.md) | [notes](lectures/lecture_02_data_preparation_part_1/lecture_notes.md) | [practical](lectures/lecture_02_data_preparation_part_1/practical_session/README.md) |
+| 03 | [Data Preparation Part 2](lectures/lecture_03_data_preparation_part_2/README.md) | [notes](lectures/lecture_03_data_preparation_part_2/lecture_notes.md) | [practical](lectures/lecture_03_data_preparation_part_2/practical_session/README.md) |
+| 04 | [Regression](lectures/lecture_04_regression/README.md) | [notes](lectures/lecture_04_regression/lecture_notes.md) | [practical](lectures/lecture_04_regression/practical_session/README.md) |
+| 05 | [Classification Part 1](lectures/lecture_05_classification_part_1/README.md) | [notes](lectures/lecture_05_classification_part_1/lecture_notes.md) | [practical](lectures/lecture_05_classification_part_1/practical_session/README.md) |
+| 06 | [Classification Part 2](lectures/lecture_06_classification_part_2/README.md) | [notes](lectures/lecture_06_classification_part_2/lecture_notes.md) | [practical](lectures/lecture_06_classification_part_2/practical_session/README.md) |
+| 07 | [Ensembles](lectures/lecture_07_ensembles/README.md) | [notes](lectures/lecture_07_ensembles/lecture_notes.md) | [practical](lectures/lecture_07_ensembles/practical_session/README.md) |
+| 08 | [Time Series](lectures/lecture_08_time_series/README.md) | [notes](lectures/lecture_08_time_series/lecture_notes.md) | [practical](lectures/lecture_08_time_series/practical_session/README.md) |
+| 09 | [Clustering](lectures/lecture_09_clustering/README.md) | [notes](lectures/lecture_09_clustering/lecture_notes.md) | [practical](lectures/lecture_09_clustering/practical_session/README.md) |
+| 10 | [Cross-Validation and HPO](lectures/lecture_10_cross_validation_hpo/README.md) | [notes](lectures/lecture_10_cross_validation_hpo/lecture_notes.md) | [practical](lectures/lecture_10_cross_validation_hpo/practical_session/README.md) |
+| 11 | [Explainability and Interpretability](lectures/lecture_11_explainability_interpretability/README.md) | [notes](lectures/lecture_11_explainability_interpretability/lecture_notes.md) | [practical](lectures/lecture_11_explainability_interpretability/practical_session/README.md) |
+| 12 | [Introduction to Neural Networks](lectures/lecture_12_intro_neural_networks/README.md) | [notes](lectures/lecture_12_intro_neural_networks/lecture_notes.md) | [practical](lectures/lecture_12_intro_neural_networks/practical_session/README.md) |
+| 13 | [Responsible AI](lectures/lecture_13_responsible_ai/README.md) | [notes](lectures/lecture_13_responsible_ai/lecture_notes.md) | [practical](lectures/lecture_13_responsible_ai/practical_session/README.md) |
+| 14 | [ML in Production](lectures/lecture_14_ml_in_production/README.md) | [notes](lectures/lecture_14_ml_in_production/lecture_notes.md) | [practical](lectures/lecture_14_ml_in_production/practical_session/README.md) |
+
+Each lecture also has a slide deck (`slides/lecture.pdf`) and example notebooks (`lecture_examples/`).
 
 ## Start Here
 
