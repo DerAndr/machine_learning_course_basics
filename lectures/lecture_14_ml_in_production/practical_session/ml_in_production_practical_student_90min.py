@@ -83,8 +83,12 @@ from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
-from evidently.report import Report
-from evidently.metric_preset import DataDriftPreset
+try:  # evidently >= 0.6
+    from evidently import Report
+    from evidently.presets import DataDriftPreset
+except ImportError:  # evidently 0.5.x
+    from evidently.report import Report
+    from evidently.metric_preset import DataDriftPreset
 
 import mlflow
 from mlflow.models import infer_signature
