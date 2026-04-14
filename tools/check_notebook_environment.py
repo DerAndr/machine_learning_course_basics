@@ -77,6 +77,13 @@ OPTIONAL_GROUPS = {
         },
         "install_hint": "uv sync --group xai_piml",
     },
+    "ml_in_production": {
+        "modules": {
+            "evidently": "evidently",
+            "mlflow": "mlflow",
+        },
+        "install_hint": "uv sync --group ml_in_production",
+    },
 }
 
 
