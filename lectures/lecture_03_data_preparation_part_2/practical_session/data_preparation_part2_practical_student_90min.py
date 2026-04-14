@@ -39,6 +39,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import umap
+from IPython.display import display
 from sklearn.compose import ColumnTransformer
 from sklearn.datasets import fetch_openml
 from sklearn.decomposition import PCA
