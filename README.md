@@ -1,6 +1,7 @@
 # Machine Learning Course
 
-[![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+[![License: MIT](https://img.shields.io/badge/Code-MIT-blue.svg)](LICENSE)
+[![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/Content-CC%20BY--NC--SA%204.0-lightgrey.svg)](LICENSE-CONTENT)
 
 Lecture notes, slide decks, and example notebooks for an introductory machine learning course.
 
@@ -150,3 +151,10 @@ For agents:
 6. `lectures/<lecture_slug>/links.yaml`
 7. `lectures/<lecture_slug>/lecture_examples/README.md`
 8. `lectures/<lecture_slug>/practical_session/README.md`
+
+## License
+
+Unless stated otherwise:
+
+- Source code in `src/`, `tests/`, `tools/`, and standalone `.py` files is licensed under the [MIT License](LICENSE).
+- Lecture notes, slide decks, PDFs, images, notebooks, and other course content are licensed under [CC BY-NC-SA 4.0](LICENSE-CONTENT).
