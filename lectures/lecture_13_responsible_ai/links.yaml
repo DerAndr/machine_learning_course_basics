@@ -3,3 +3,25 @@ lecture_slug: lecture_13_responsible_ai
 lecture_title: Responsible AI
 youtube: https://youtu.be/bWbplDCqUh4
 slides: https://drive.google.com/file/d/1QJZ_Tc5L56CV_XlhWKWtM59zSf3ylBqi/view?usp=drive_link
+references:
+  - title: "Fairlearn User Guide"
+    url: https://fairlearn.org/main/user_guide/index.html
+    type: documentation
+  - title: "Fairlearn — Common Fairness Metrics"
+    url: https://fairlearn.org/main/user_guide/assessment/common_fairness_metrics.html
+    type: documentation
+  - title: "Fairlearn GitHub Repository"
+    url: https://github.com/fairlearn/fairlearn
+    type: repository
+  - title: "What-If Tool — Interactive Model Exploration"
+    url: https://pair-code.github.io/what-if-tool/
+    type: tool
+  - title: "VerifyML — Model Card Toolkit"
+    url: https://github.com/cylynx/verifyml
+    type: repository
+  - title: "Fairness and Machine Learning (Barocas, Hardt, Narayanan)"
+    url: http://www.fairmlbook.org/
+    type: book
+  - title: "Model Cards for Model Reporting (Mitchell et al., 2019)"
+    url: https://arxiv.org/abs/1810.03993
+    type: paper

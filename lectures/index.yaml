@@ -294,6 +294,10 @@ lectures:
       - lecture_13_responsible_ai/lecture_examples/example_01.ipynb
     lecture_example_scripts:
       - lecture_13_responsible_ai/lecture_examples/example_01.py
+    practical_session_directory: lecture_13_responsible_ai/practical_session
+    practical_session_readme: lecture_13_responsible_ai/practical_session/README.md
+    practical_session_student_notebook: lecture_13_responsible_ai/practical_session/responsible_ai_practical_student_90min.ipynb
+    practical_session_student_script: lecture_13_responsible_ai/practical_session/responsible_ai_practical_student_90min.py
     raw_sources: ../incoming_materials/lecture_13_responsible_ai
   - number: 14
     slug: lecture_14_ml_in_production
