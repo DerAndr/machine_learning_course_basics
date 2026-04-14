@@ -74,19 +74,19 @@ SUMMARY_OVERRIDES: dict[str, str] = {
     "lecture_09_clustering/example_01": (
         "Clustering workflow with internal metrics, visualization, and multiple algorithms."
     ),
-    "lecture_10_explainability_interpretability/example_01": (
-        "Model explainability workflow centered on PiML."
-    ),
-    "lecture_10_explainability_interpretability/example_02": (
-        "Interpretability methods with ALE, SHAP, LIME, Alibi, and Interpret."
-    ),
-    "lecture_11_cross_validation_hpo/example_01": (
+    "lecture_10_cross_validation_hpo/example_01": (
         "Cross-validation, pipelines, and hyperparameter search on classification and "
         "regression demos."
     ),
-    "lecture_11_cross_validation_hpo/example_02": (
+    "lecture_10_cross_validation_hpo/example_02": (
         "Alternative hyperparameter-optimization libraries such as Optuna, Hyperopt, and "
         "scikit-optimize."
+    ),
+    "lecture_11_explainability_interpretability/example_01": (
+        "Model explainability workflow centered on PiML."
+    ),
+    "lecture_11_explainability_interpretability/example_02": (
+        "Interpretability methods with ALE, SHAP, LIME, Alibi, and Interpret."
     ),
     "lecture_12_intro_neural_networks/example_01": (
         "Neural-network introduction on MNIST with PyTorch."
@@ -110,7 +110,17 @@ OPTIONAL_NOTES: dict[str, str] = {
         "The baseline environment does not install it by default. "
         "Install the lecture-specific extras with `uv sync --group time_series`."
     ),
-    "lecture_10_explainability_interpretability/example_01": (
+    "lecture_10_cross_validation_hpo/example_01": (
+        "Optional setup note: this example uses H2O AutoML. "
+        "The baseline environment does not install it by default. "
+        "Install the lecture-specific extras with `uv sync --group hpo_automl`."
+    ),
+    "lecture_10_cross_validation_hpo/example_02": (
+        "Optional setup note: this example uses Optuna, Hyperopt, and scikit-optimize. "
+        "The baseline environment does not install them by default. "
+        "Install the lecture-specific extras with `uv sync --group hpo_automl`."
+    ),
+    "lecture_11_explainability_interpretability/example_01": (
         "Optional setup note: this example uses PiML. "
         "Install the lecture-specific extras with `uv sync --group xai_piml` if you are using "
         "a compatible Python version. The default Python 3.12 environment does not install PiML "
@@ -120,16 +130,6 @@ OPTIONAL_NOTES: dict[str, str] = {
         "Optional setup note: this example uses PyTorch. "
         "The baseline environment does not install it by default. "
         "Install the lecture-specific extras with `uv sync --group neural_networks`."
-    ),
-    "lecture_11_cross_validation_hpo/example_01": (
-        "Optional setup note: this example uses H2O AutoML. "
-        "The baseline environment does not install it by default. "
-        "Install the lecture-specific extras with `uv sync --group hpo_automl`."
-    ),
-    "lecture_11_cross_validation_hpo/example_02": (
-        "Optional setup note: this example uses Optuna, Hyperopt, and scikit-optimize. "
-        "The baseline environment does not install them by default. "
-        "Install the lecture-specific extras with `uv sync --group hpo_automl`."
     ),
 }
 
