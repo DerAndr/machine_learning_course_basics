@@ -1,8 +1,3 @@
-# /// script
-# source-notebook = "example_05.ipynb"
-# generated-by = "tools/sync_lecture_examples.py"
-# ///
-
 # %% [markdown]
 # # Data Leakage Examples
 

@@ -1,8 +1,3 @@
-# /// script
-# source-notebook = "clustering_practical_student_90min.ipynb"
-# generated-by = "Codex notebook export"
-# ///
-
 # %% [markdown]
 # # Clustering: Practical Session - STUDENT VERSION (90 minutes)
 # 

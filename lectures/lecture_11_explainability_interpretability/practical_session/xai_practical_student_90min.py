@@ -1,8 +1,4 @@
 # %%
-# /// script
-# source-notebook = "xai_practical_student_90min.ipynb"
-# generated-by = "Codex notebook export"
-# ///
 
 # %% [markdown]
 # # Explainability and Interpretability: Practical Session - STUDENT VERSION (90 minutes)

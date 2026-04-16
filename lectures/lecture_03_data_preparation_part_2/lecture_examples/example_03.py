@@ -1,8 +1,3 @@
-# /// script
-# source-notebook = "example_03.ipynb"
-# generated-by = "tools/sync_lecture_examples.py"
-# ///
-
 # %% [markdown]
 # # Dimentionality Reduction
 

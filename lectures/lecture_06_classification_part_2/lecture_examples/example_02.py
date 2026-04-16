@@ -1,8 +1,3 @@
-# /// script
-# source-notebook = "example_02.ipynb"
-# generated-by = "tools/sync_lecture_examples.py"
-# ///
-
 # %% [markdown]
 # # Multiclass Classification with Logistic Regression using One-vs-Rest and One-vs-One Strategies
 

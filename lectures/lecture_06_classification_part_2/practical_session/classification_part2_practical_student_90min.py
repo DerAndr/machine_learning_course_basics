@@ -1,8 +1,3 @@
-# /// script
-# source-notebook = "classification_part2_practical_student_90min.ipynb"
-# generated-by = "Codex notebook export"
-# ///
-
 # %% [markdown]
 # # Classification Part 2: Practical Session - STUDENT VERSION (90 minutes)
 #

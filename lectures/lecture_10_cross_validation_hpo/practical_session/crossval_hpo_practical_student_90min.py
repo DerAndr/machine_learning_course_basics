@@ -1,8 +1,3 @@
-# /// script
-# source-notebook = "crossval_hpo_practical_student_90min.ipynb"
-# generated-by = "Codex notebook export"
-# ///
-
 # %% [markdown]
 # # Cross-Validation and Hyperparameter Optimization: Practical Session - STUDENT VERSION (90 minutes)
 # 

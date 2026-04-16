@@ -1,8 +1,3 @@
-# /// script
-# source-notebook = "example_01.ipynb"
-# generated-by = "tools/sync_lecture_examples.py"
-# ///
-
 # %% [markdown]
 # # Regression Demo
 # * [Initialization](#scrollTo=TgugYuo_yRLh&line=1&uniqifier=1)

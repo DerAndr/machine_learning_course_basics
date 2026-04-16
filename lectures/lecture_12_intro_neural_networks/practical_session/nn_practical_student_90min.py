@@ -1,8 +1,3 @@
-# /// script
-# source-notebook = "nn_practical_student_90min.ipynb"
-# generated-by = "tools/sync_lecture_examples.py"
-# ///
-
 # %% [markdown]
 # # Introduction to Neural Networks: Practical Session — STUDENT VERSION (90 minutes)
 # 

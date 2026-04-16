@@ -1,8 +1,3 @@
-# /// script
-# source-notebook = "ensembles_practical_student_90min.ipynb"
-# generated-by = "Codex notebook export"
-# ///
-
 # %% [markdown]
 # # Ensembles: Practical Session - STUDENT VERSION (90 minutes, 2-group format)
 # 

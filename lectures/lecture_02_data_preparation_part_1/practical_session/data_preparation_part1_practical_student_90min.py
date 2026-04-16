@@ -1,8 +1,3 @@
-# /// script
-# source-notebook = "data_preparation_part1_practical_student_90min.ipynb"
-# generated-by = "Codex notebook export"
-# ///
-
 # %% [markdown]
 # # Data Preparation Part 1: Practical Session - STUDENT VERSION (90 minutes)
 # 

@@ -1,8 +1,3 @@
-# /// script
-# source-notebook = "example_02.ipynb"
-# generated-by = "tools/sync_lecture_examples.py"
-# ///
-
 # %%
 # connect to google drive
 # NOTE: Colab-only import commented for local script use: from google.colab import drive

@@ -1,8 +1,3 @@
-# /// script
-# source-notebook = "example_01.ipynb"
-# generated-by = "tools/sync_lecture_examples.py"
-# ///
-
 # %% [markdown]
 # # Ensemble Models and Techniques with Hyperparameter Tuning, PR Curves, and Class Separation Diagrams
 

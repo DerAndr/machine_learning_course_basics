@@ -166,13 +166,7 @@ def sanitize_code_line(line: str) -> str:
 
 def notebook_to_percent_script(nb_path: Path, py_path: Path) -> None:
     nb = nbformat.read(nb_path, as_version=4)
-    lines: list[str] = [
-        "# /// script",
-        f"# source-notebook = \"{nb_path.name}\"",
-        "# generated-by = \"tools/sync_lecture_examples.py\"",
-        "# ///",
-        "",
-    ]
+    lines: list[str] = []
 
     for cell in nb.cells:
         if cell.cell_type == "markdown":

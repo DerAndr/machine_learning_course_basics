@@ -1,8 +1,3 @@
-# /// script
-# source-notebook = "example_01.ipynb"
-# generated-by = "tools/sync_lecture_examples.py"
-# ///
-
 # %%
 # Install required libraries (if not already installed)
 # NOTE: notebook magic commented for local script use: !pip install statsmodels matplotlib pandas numpy scikit-learn xgboost prophet

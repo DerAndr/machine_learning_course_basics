@@ -1,8 +1,3 @@
-# /// script
-# source-notebook = "responsible_ai_practical_student_90min.ipynb"
-# generated-by = "tools/sync_lecture_examples.py"
-# ///
-
 # %% [markdown]
 # # Responsible AI: Practical Session — STUDENT VERSION (90 minutes)
 # 

@@ -1,8 +1,3 @@
-# /// script
-# source-notebook = "example_01.ipynb"
-# generated-by = "tools/sync_lecture_examples.py"
-# ///
-
 # %%
 import numpy as np
 import matplotlib.pyplot as plt
