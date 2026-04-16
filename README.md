@@ -31,6 +31,11 @@ The repository is organized lecture by lecture and is meant to work both as:
 
 Each lecture also has a slide deck (`slides/lecture.pdf`) and example notebooks (`lecture_examples/`).
 
+## Assignments & Exams
+
+- **[Mini-Project: NYC Airbnb Price Prediction](mini_projects/airbnb_nyc/README.md)**
+- **[Midterm Exam: Example Questions](docs/midterm_examples.md)**
+
 ## Start Here
 
 If you are a student:
