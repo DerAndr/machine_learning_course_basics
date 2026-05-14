@@ -136,6 +136,12 @@ def ensure_rgb(image: np.ndarray) -> np.ndarray:
     return np.clip(arr, 0, 1)
 
 
+def pil_from_array(image: np.ndarray) -> Image.Image:
+    """Convert a NumPy image array to RGB PIL.Image."""
+    arr = ensure_rgb(image)
+    return Image.fromarray((arr * 255).astype(np.uint8))
+
+
 def to_gray(image: np.ndarray) -> np.ndarray:
     """Return a grayscale float image in [0, 1]."""
     arr = img_as_float(image)
@@ -1079,11 +1085,6 @@ else:
 # Here we use pretrained ResNet-18 from `torchvision` and remove its final classification layer. The model was trained on ImageNet, so its intermediate features are often useful for edges, textures, parts, and object-level visual patterns. For the embedding gallery, we use a small balanced CIFAR-10 sample so students see more than the four `skimage` demo images.
 
 # %%
-def pil_from_array(image: np.ndarray) -> Image.Image:
-    arr = ensure_rgb(image)
-    return Image.fromarray((arr * 255).astype(np.uint8))
-
-
 def center_crop_fraction(image: Image.Image, fraction=0.72) -> Image.Image:
     width, height = image.size
     crop_w = int(width * fraction)
