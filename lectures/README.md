@@ -4,7 +4,7 @@ This directory contains the canonical lecture layer for the course.
 
 ## Per-Lecture Structure
 
-Each lecture directory contains:
+Fully packaged lecture directories contain:
 
 - `README.md`
 - `lecture_notes.md`
@@ -18,6 +18,7 @@ Each lecture directory contains:
 - `practical_session/<slug>_practical_student_90min.py`
 
 The public release of each practical session contains only the student-facing notebook and README; instructor materials stay unpublished.
+Lecture 15 is currently a practical-first draft, so it does not yet include a slide deck or separate lecture example notebooks.
 
 ## Lecture Map
 
@@ -35,3 +36,4 @@ The public release of each practical session contains only the student-facing no
 12. [Lecture 12: Introduction to Neural Networks](lecture_12_intro_neural_networks/README.md)
 13. [Lecture 13: Responsible AI](lecture_13_responsible_ai/README.md)
 14. [Lecture 14: ML in Production](lecture_14_ml_in_production/README.md)
+15. [Lecture 15: Computer Vision](lecture_15_computer_vision/README.md)

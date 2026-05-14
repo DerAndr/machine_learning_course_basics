@@ -318,3 +318,15 @@ lectures:
     practical_session_student_notebook: lecture_14_ml_in_production/practical_session/ml_in_production_practical_student_90min.ipynb
     practical_session_student_script: lecture_14_ml_in_production/practical_session/ml_in_production_practical_student_90min.py
     raw_sources: ../incoming_materials/lecture_14_ml_in_production
+  - number: 15
+    slug: lecture_15_computer_vision
+    title: Computer Vision
+    status: practical_first_draft
+    directory: lecture_15_computer_vision
+    readme: lecture_15_computer_vision/README.md
+    notes: lecture_15_computer_vision/lecture_notes.md
+    metadata: lecture_15_computer_vision/links.yaml
+    practical_session_directory: lecture_15_computer_vision/practical_session
+    practical_session_readme: lecture_15_computer_vision/practical_session/README.md
+    practical_session_student_notebook: lecture_15_computer_vision/practical_session/computer_vision_practical_student_90min.ipynb
+    practical_session_student_script: lecture_15_computer_vision/practical_session/computer_vision_practical_student_90min.py

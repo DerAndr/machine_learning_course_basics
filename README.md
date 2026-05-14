@@ -28,8 +28,9 @@ The repository is organized lecture by lecture and is meant to work both as:
 | 12 | [Introduction to Neural Networks](lectures/lecture_12_intro_neural_networks/README.md) | [notes](lectures/lecture_12_intro_neural_networks/lecture_notes.md) | [practical](lectures/lecture_12_intro_neural_networks/practical_session/README.md) |
 | 13 | [Responsible AI](lectures/lecture_13_responsible_ai/README.md) | [notes](lectures/lecture_13_responsible_ai/lecture_notes.md) | [practical](lectures/lecture_13_responsible_ai/practical_session/README.md) |
 | 14 | [ML in Production](lectures/lecture_14_ml_in_production/README.md) | [notes](lectures/lecture_14_ml_in_production/lecture_notes.md) | [practical](lectures/lecture_14_ml_in_production/practical_session/README.md) |
+| 15 | [Computer Vision](lectures/lecture_15_computer_vision/README.md) | [notes](lectures/lecture_15_computer_vision/lecture_notes.md) | [practical](lectures/lecture_15_computer_vision/practical_session/README.md) |
 
-Each lecture also has a slide deck (`slides/lecture.pdf`) and example notebooks (`lecture_examples/`).
+Lectures 01-14 also have slide decks (`slides/lecture.pdf`) and example notebooks (`lecture_examples/`). Lecture 15 is currently a practical-first Computer Vision draft.
 
 ## Assignments & Exams
 
@@ -70,6 +71,7 @@ Student-oriented setup instructions live in `docs/student-quickstart.md`.
 ## Current Scope
 
 - The public layer is centered on lecture materials, notes, example notebooks, and practical sessions.
+- Lectures 01-14 are fully packaged; Lecture 15 is currently a practical-first Computer Vision draft.
 - Every lecture includes a separate public `practical_session/` with a student notebook for classroom work.
 - Instructor notebooks or cheat sheets may be kept out of the public student release.
 - Raw imports, migration history, and source collection remain outside the public course layer.

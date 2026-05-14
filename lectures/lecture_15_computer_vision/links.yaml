@@ -1,0 +1,32 @@
+lecture_number: 15
+lecture_slug: lecture_15_computer_vision
+lecture_title: Computer Vision
+status: practical_first_draft
+
+practical_session:
+  student_notebook: practical_session/computer_vision_practical_student_90min.ipynb
+
+datasets_and_images:
+  - name: scikit-image sample data
+    role: Neutral sample images used for tensor and filtering demos
+  - name: Fashion-MNIST
+    role: Small grayscale dataset used for CNN training
+  - name: CIFAR-10
+    role: Small multi-class image set used for embedding similarity examples
+  - name: Lenna
+    url: https://raw.githubusercontent.com/opencv/opencv/master/samples/data/lena.jpg
+    role: Historical test image included briefly with context
+
+modern_cv_references:
+  - title: Meta Segment Anything Model 2
+    url: https://ai.meta.com/sam2/
+  - title: Ultralytics YOLO26 documentation
+    url: https://docs.ultralytics.com/models/yolo26/
+  - title: RF-DETR
+    url: https://github.com/roboflow/rf-detr
+  - title: Meta DINOv3
+    url: https://ai.meta.com/dinov3/
+  - title: SigLIP 2
+    url: https://huggingface.co/blog/siglip2
+  - title: Florence-2
+    url: https://huggingface.co/docs/transformers/model_doc/florence2
