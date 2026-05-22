@@ -1,0 +1,85 @@
+lecture_number: 16
+lecture_slug: lecture_16_nlp_overview
+lecture_title: Natural Language Processing
+status: practical_first_draft
+
+practical_session:
+  student_notebook: practical_session/nlp_overview_practical_student_90min.ipynb
+  student_script: practical_session/nlp_overview_practical_student_90min.py
+
+datasets:
+  - name: 20 Newsgroups
+    url: https://scikit-learn.org/stable/datasets/real_world.html#newsgroups-dataset
+    role: Main English text-classification dataset for corpus EDA, sparse baselines, and retrieval demos
+
+models_and_libraries:
+  - title: scikit-learn text feature extraction
+    url: https://scikit-learn.org/stable/modules/feature_extraction.html#text-feature-extraction
+  - title: scikit-learn 20 Newsgroups example
+    url: https://scikit-learn.org/stable/auto_examples/text/plot_document_classification_20newsgroups.html
+  - title: scikit-learn classification metrics
+    url: https://scikit-learn.org/stable/modules/model_evaluation.html#classification-metrics
+  - title: Sentence Transformers documentation
+    url: https://www.sbert.net/
+  - title: all-MiniLM-L6-v2 model card
+    url: https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2
+  - title: Hugging Face Transformers task summary
+    url: https://huggingface.co/docs/transformers/task_summary
+  - title: UMAP documentation
+    url: https://umap-learn.readthedocs.io/
+
+nlp_package_references:
+  installed_in_nlp_group:
+    - package: scikit-learn
+      url: https://scikit-learn.org/stable/modules/feature_extraction.html#text-feature-extraction
+      role: Sparse text features, TF-IDF baselines, classification metrics
+    - package: transformers
+      url: https://huggingface.co/docs/transformers/index
+      role: Pretrained tokenizers, encoder checkpoints, model loading
+    - package: tokenizers
+      url: https://huggingface.co/docs/tokenizers/index
+      role: Fast modern tokenization library used by many Hugging Face models
+    - package: datasets
+      url: https://huggingface.co/docs/datasets/index
+      role: Dataset loading and preprocessing ecosystem for later NLP work
+    - package: evaluate
+      url: https://huggingface.co/docs/evaluate/index
+      role: Reusable metric implementations and evaluation helpers
+    - package: gensim
+      url: https://radimrehurek.com/gensim/
+      role: Word2Vec training, nearest-word inspection, and vector-space demos
+    - package: sentence-transformers
+      url: https://www.sbert.net/
+      role: Sentence embeddings, semantic search, retrieval, reranking
+    - package: torch
+      url: https://pytorch.org/docs/stable/index.html
+      role: Tensor backend for transformer encoder demos
+    - package: umap-learn
+      url: https://umap-learn.readthedocs.io/
+      role: Nonlinear 2D visualization of dense embedding vectors
+  ecosystem_pointers:
+    - package: spaCy
+      url: https://spacy.io/usage
+      role: Industrial NLP pipelines, tokenization, NER, linguistic annotations
+    - package: NLTK
+      url: https://www.nltk.org/
+      role: Classic NLP teaching library, corpora, tokenizers, linguistic algorithms
+    - package: Gensim
+      url: https://radimrehurek.com/gensim/
+      role: Topic modeling, vector-space models, word/document embeddings
+
+llm_bridge_references:
+  - title: The Illustrated Transformer
+    url: https://jalammar.github.io/illustrated-transformer/
+  - title: Attention Is All You Need
+    url: https://arxiv.org/abs/1706.03762
+  - title: BERT paper
+    url: https://arxiv.org/abs/1810.04805
+
+course_design_references:
+  - title: Elena Voita NLP Course For You
+    url: https://lena-voita.github.io/nlp_course.html
+    role: Inspired the interactive, analysis-oriented, research-thinking task style
+  - title: Yandex Data School NLP course repository
+    url: https://github.com/yandexdataschool/nlp_course
+    role: Inspired the notebook-task structure for tokenization, embeddings, classification, and nearest-neighbor exercises

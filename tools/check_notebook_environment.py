@@ -62,6 +62,19 @@ OPTIONAL_GROUPS = {
         },
         "install_hint": "uv sync --group neural_networks",
     },
+    "nlp": {
+        "modules": {
+            "datasets": "datasets",
+            "evaluate": "evaluate",
+            "gensim": "gensim",
+            "sentence_transformers": "sentence-transformers",
+            "tokenizers": "tokenizers",
+            "torch": "torch",
+            "transformers": "transformers",
+            "umap": "umap-learn",
+        },
+        "install_hint": "uv sync --group nlp",
+    },
     "hpo_automl": {
         "modules": {
             "h2o": "h2o",

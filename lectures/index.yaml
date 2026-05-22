@@ -330,3 +330,15 @@ lectures:
     practical_session_readme: lecture_15_computer_vision/practical_session/README.md
     practical_session_student_notebook: lecture_15_computer_vision/practical_session/computer_vision_practical_student_90min.ipynb
     practical_session_student_script: lecture_15_computer_vision/practical_session/computer_vision_practical_student_90min.py
+  - number: 16
+    slug: lecture_16_nlp_overview
+    title: Natural Language Processing
+    status: practical_first_draft
+    directory: lecture_16_nlp_overview
+    readme: lecture_16_nlp_overview/README.md
+    notes: lecture_16_nlp_overview/lecture_notes.md
+    metadata: lecture_16_nlp_overview/links.yaml
+    practical_session_directory: lecture_16_nlp_overview/practical_session
+    practical_session_readme: lecture_16_nlp_overview/practical_session/README.md
+    practical_session_student_notebook: lecture_16_nlp_overview/practical_session/nlp_overview_practical_student_90min.ipynb
+    practical_session_student_script: lecture_16_nlp_overview/practical_session/nlp_overview_practical_student_90min.py

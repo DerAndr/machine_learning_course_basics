@@ -29,6 +29,7 @@ uv sync --group ensembles
 uv sync --group time_series
 uv sync --group hpo_automl
 uv sync --group neural_networks
+uv sync --group nlp
 uv sync --group xai_piml
 uv sync --group ml_in_production
 ```
@@ -39,6 +40,7 @@ Current usage:
 - `time_series`: Lecture 08 extras such as `prophet`
 - `hpo_automl`: Lecture 10 extras such as `h2o`, `optuna`, `hyperopt`, and `scikit-optimize`
 - `neural_networks`: Lecture 12 extras such as `torch` and `torchvision`
+- `nlp`: Lecture 16 extras such as `transformers`, `sentence-transformers`, `datasets`, and `gensim`
 - `xai_piml`: the optional PiML example in Lecture 11 on compatible Python versions
 - `ml_in_production`: Lecture 14 extras such as `evidently` and `mlflow`
 
@@ -49,6 +51,7 @@ uv run python tools/check_notebook_environment.py --group ensembles
 uv run python tools/check_notebook_environment.py --group time_series
 uv run python tools/check_notebook_environment.py --group hpo_automl
 uv run python tools/check_notebook_environment.py --group neural_networks
+uv run python tools/check_notebook_environment.py --group nlp
 uv run python tools/check_notebook_environment.py --group ml_in_production
 ```
 

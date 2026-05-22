@@ -19,6 +19,7 @@ Fully packaged lecture directories contain:
 
 The public release of each practical session contains only the student-facing notebook and README; instructor materials stay unpublished.
 Lecture 15 is currently a practical-first draft, so it does not yet include a slide deck or separate lecture example notebooks.
+Lecture 16 is also a practical-first draft, focused on NLP foundations before LLM applications.
 
 ## Lecture Map
 
@@ -37,3 +38,4 @@ Lecture 15 is currently a practical-first draft, so it does not yet include a sl
 13. [Lecture 13: Responsible AI](lecture_13_responsible_ai/README.md)
 14. [Lecture 14: ML in Production](lecture_14_ml_in_production/README.md)
 15. [Lecture 15: Computer Vision](lecture_15_computer_vision/README.md)
+16. [Lecture 16: Natural Language Processing](lecture_16_nlp_overview/README.md)
