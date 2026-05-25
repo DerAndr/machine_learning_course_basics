@@ -1,6 +1,6 @@
 # Lecture 17 Practical Session
 
-This directory contains the recommender systems foundations practical for an instructor-led demo.
+This directory contains the recommender systems foundations practical.
 
 ## Files
 
@@ -8,9 +8,6 @@ This directory contains the recommender systems foundations practical for an ins
 | --- | --- |
 | `recsys_practical_student_90min.ipynb` | Student notebook with guided TODO cells and by-hand exercises |
 | `recsys_practical_student_90min.py` | Student companion script for review and diffing |
-| `recsys_practical_teacher_90min.ipynb` | Teacher notebook with full demo code and solutions |
-| `recsys_practical_teacher_90min.py` | Teacher companion script for review and diffing |
-| `teacher_cheat_sheet.md` | Teaching quick-reference |
 
 ## Structure
 
@@ -37,12 +34,12 @@ uv sync
 uv run jupyter lab
 ```
 
-No GPU is needed. The practical uses pandas, NumPy, scikit-learn, Matplotlib, and Seaborn.
+No GPU is needed for the foundations practical. The production-pipeline plan also includes optional PyTorch and Colab/T4 discussion for instructor demos.
 
 ## Notes
 
-- The teacher notebook is the canonical demo notebook.
-- The student notebook keeps the same narrative but replaces selected cells with TODOs.
+- The student notebook is the public practical notebook.
 - MovieLens Latest Small is downloaded from `https://files.grouplens.org/datasets/movielens/ml-latest-small.zip`.
 - The evaluation section intentionally rebuilds item similarities on `train` only to avoid leaking hidden test interactions.
-- Matrix factorization is included as a by-hand numeric demo. SGD, ALS, and production-scale retrieval are left for later material.
+- Matrix factorization is included as a by-hand numeric demo.
+- The Part 2 plan covers production-style RecSys: candidate generation, two-tower retrieval, ranking, reranking, metrics, latency, storage, and recomputation costs.
