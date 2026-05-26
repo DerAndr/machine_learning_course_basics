@@ -1,7 +1,7 @@
 # Agent Guide
 
 This repository is an introductory machine learning course.
-It contains lecture notes, slide decks, example notebooks, and classroom practicals covering 14 topics — from exploratory data analysis to production deployment.
+It contains lecture notes, slide decks, example notebooks, and classroom practicals covering 17 lecture blocks from exploratory data analysis to recommender systems.
 
 Use this file to understand what the repository contains and where to find things.
 
@@ -23,10 +23,13 @@ Use this file to understand what the repository contains and where to find thing
 | 12 | Introduction to Neural Networks | `lecture_12_intro_neural_networks` |
 | 13 | Responsible AI | `lecture_13_responsible_ai` |
 | 14 | ML in Production | `lecture_14_ml_in_production` |
+| 15 | Computer Vision | `lecture_15_computer_vision` |
+| 16 | Natural Language Processing | `lecture_16_nlp_overview` |
+| 17 | Recommender Systems | `lecture_17_recsys` |
 
 ## Where Things Live
 
-All course materials are in `lectures/`. Each lecture directory has:
+All course materials are in `lectures/`. Fully packaged lecture directories have:
 
 - `README.md` — lecture overview with links to all files
 - `lecture_notes.md` — student-facing recap and revision notes
@@ -34,6 +37,8 @@ All course materials are in `lectures/`. Each lecture directory has:
 - `slides/lecture.pdf` — canonical lecture deck
 - `lecture_examples/` — example notebooks with paired `.py` scripts
 - `practical_session/` — 90-minute classroom practical with TODO cells for students
+
+Lectures `15` to `17` are practical-first drafts. They have lecture READMEs, notes/metadata, practical sessions, and student materials, but do not yet have packaged slide decks or separate `lecture_examples/`.
 
 Use `lectures/index.yaml` as the machine-readable course index.
 
@@ -58,13 +63,13 @@ To explore a specific lecture:
 
 ## Practical Sessions
 
-Every lecture has a `practical_session/` containing:
+Every packaged lecture and practical-first draft has a `practical_session/` containing:
 
 - A **student notebook** (`*_practical_student_90min.ipynb`) with TODO cells where students write code.
 - A paired **Python script** (`*_practical_student_90min.py`) for lightweight reading and diffing.
 - A **README.md** with teaching intent, scope, and environment notes.
 
-The practicals are designed for 90 minutes and use real datasets fetched from OpenML or generated synthetically.
+The practicals are designed for 90 minutes and use real datasets from OpenML, library datasets, public downloads, or small generated examples.
 
 ## Lecture Examples vs Practical Sessions
 
@@ -97,6 +102,7 @@ Some lectures need extra dependencies:
 | `time_series` | 08 | prophet |
 | `hpo_automl` | 10 | h2o, optuna, hyperopt, scikit-optimize |
 | `neural_networks` | 12 | torch, torchinfo |
+| `nlp` | 16 | transformers, sentence-transformers, datasets, gensim |
 | `xai_piml` | 11 | piml (compatible Python versions only) |
 | `ml_in_production` | 14 | evidently, mlflow |
 

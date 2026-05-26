@@ -29,8 +29,10 @@ The repository is organized lecture by lecture and is meant to work both as:
 | 13 | [Responsible AI](lectures/lecture_13_responsible_ai/README.md) | [notes](lectures/lecture_13_responsible_ai/lecture_notes.md) | [practical](lectures/lecture_13_responsible_ai/practical_session/README.md) |
 | 14 | [ML in Production](lectures/lecture_14_ml_in_production/README.md) | [notes](lectures/lecture_14_ml_in_production/lecture_notes.md) | [practical](lectures/lecture_14_ml_in_production/practical_session/README.md) |
 | 15 | [Computer Vision](lectures/lecture_15_computer_vision/README.md) | [notes](lectures/lecture_15_computer_vision/lecture_notes.md) | [practical](lectures/lecture_15_computer_vision/practical_session/README.md) |
+| 16 | [Natural Language Processing](lectures/lecture_16_nlp_overview/README.md) | [notes](lectures/lecture_16_nlp_overview/lecture_notes.md) | [practical](lectures/lecture_16_nlp_overview/practical_session/README.md) |
+| 17 | [Recommender Systems](lectures/lecture_17_recsys/README.md) | [notes](lectures/lecture_17_recsys/lecture_notes.md) | [practical](lectures/lecture_17_recsys/practical_session/README.md) |
 
-Lectures 01-14 also have slide decks (`slides/lecture.pdf`) and example notebooks (`lecture_examples/`). Lecture 15 is currently a practical-first Computer Vision draft.
+Lectures 01-14 are fully packaged with slide decks (`slides/lecture.pdf`) and example notebooks (`lecture_examples/`). Lectures 15-17 are practical-first drafts for Computer Vision, Natural Language Processing, and Recommender Systems.
 
 ## Assignments & Exams
 
@@ -44,7 +46,7 @@ If you are a student:
 1. Open `lectures/README.md`
 2. Choose a lecture directory
 3. Read `lecture_notes.md`
-4. Open `slides/lecture.pdf`
+4. Open `slides/lecture.pdf` when the lecture has a packaged slide deck
 5. Run notebooks from `lecture_examples/` if needed
 
 For local setup, start with:
@@ -66,12 +68,13 @@ Student-oriented setup instructions live in `docs/student-quickstart.md`.
 - `lectures/<lecture_slug>/slides/lecture.pdf` for the canonical lecture deck
 - `lectures/<lecture_slug>/lecture_examples/` for example notebooks and paired scripts
 - `lectures/<lecture_slug>/practical_session/` for separate classroom practicals
+- `lectures/<lecture_slug>/plan/` for draft planning notes when a practical-first lecture is still being packaged
 - `docs/student-quickstart.md` for local setup instructions
 
 ## Current Scope
 
 - The public layer is centered on lecture materials, notes, example notebooks, and practical sessions.
-- Lectures 01-14 are fully packaged; Lecture 15 is currently a practical-first Computer Vision draft.
+- Lectures 01-14 are fully packaged; Lectures 15-17 are currently practical-first drafts.
 - Every lecture includes a separate public `practical_session/` with a student notebook for classroom work.
 - Instructor notebooks or cheat sheets may be kept out of the public student release.
 - Raw imports, migration history, and source collection remain outside the public course layer.
@@ -116,6 +119,7 @@ There is no separate `requirements.txt` on purpose.
   - `uv sync --group time_series` for Lecture 08 extras such as `prophet`
   - `uv sync --group hpo_automl` for Lecture 10 extras such as `h2o`, `optuna`, `hyperopt`, and `scikit-optimize`
   - `uv sync --group neural_networks` for Lecture 12 extras such as `torch` and `torchinfo`
+  - `uv sync --group nlp` for Lecture 16 extras such as `transformers`, `sentence-transformers`, `datasets`, and `gensim`
   - `uv sync --group xai_piml` for the optional PiML example in Lecture 11 on compatible Python versions
   - `uv sync --group ml_in_production` for Lecture 14 extras such as `evidently` and `mlflow`
 
@@ -129,6 +133,7 @@ There is no separate `requirements.txt` on purpose.
   - `uv run python tools/check_notebook_environment.py --group time_series`
   - `uv run python tools/check_notebook_environment.py --group hpo_automl`
   - `uv run python tools/check_notebook_environment.py --group neural_networks`
+  - `uv run python tools/check_notebook_environment.py --group nlp`
   - `uv run python tools/check_notebook_environment.py --group ml_in_production`
 - To regenerate the `.py` companions and example READMEs after changing notebooks, run:
   - `uv run python tools/sync_lecture_examples.py`

@@ -177,6 +177,9 @@ uv sync --group ensembles
 uv sync --group time_series
 uv sync --group hpo_automl
 uv sync --group neural_networks
+uv sync --group nlp
+uv sync --group xai_piml
+uv sync --group ml_in_production
 ```
 
 2. Open notebooks.

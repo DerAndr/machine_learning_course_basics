@@ -136,6 +136,17 @@ Use this when the practical session needs:
 - `datasets`
 - `gensim`
 
+### Lecture 17: Recommender Systems
+
+The Part 1 foundations practical runs in the baseline environment:
+
+```bash
+uv sync
+uv run python tools/check_notebook_environment.py
+```
+
+If your instructor asks you to run optional embedding or PyTorch retrieval demos from the production-pipeline material, use the relevant optional group they specify.
+
 ## 4. Daily workflow
 
 Typical workflow:
@@ -176,6 +187,7 @@ uv sync --group ensembles
 uv sync --group time_series
 uv sync --group hpo_automl
 uv sync --group neural_networks
+uv sync --group nlp
 uv sync --group xai_piml
 uv sync --group ml_in_production
 ```

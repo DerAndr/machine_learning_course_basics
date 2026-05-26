@@ -52,4 +52,4 @@ The practical notebook is the canonical working artifact for now.
 
 ---
 
-[← Previous](../lecture_15_computer_vision/README.md) | [All Lectures](../README.md)
+[<- Previous](../lecture_15_computer_vision/README.md) | [All Lectures](../README.md) | [Next ->](../lecture_17_recsys/README.md)

@@ -1,0 +1,24 @@
+lecture_number: 17
+lecture_slug: lecture_17_recsys
+lecture_title: Recommender Systems
+status: practical_first_two_part_draft
+
+plans:
+  part_1_foundations: plan/recsys_part_1_foundations.md
+  part_2_production_pipeline: plan/recsys_part_2_production_pipeline.md
+
+practical_session:
+  student_notebook: practical_session/recsys_practical_student_90min.ipynb
+
+datasets:
+  - name: MovieLens Latest Small
+    url: https://files.grouplens.org/datasets/movielens/ml-latest-small.zip
+    role: Main user-item interaction dataset for popularity, content-based, collaborative filtering, matrix factorization intuition, retrieval, ranking, and evaluation demos
+
+references:
+  - title: GroupLens MovieLens datasets
+    url: https://grouplens.org/datasets/movielens/
+  - title: scikit-learn cosine similarity
+    url: https://scikit-learn.org/stable/modules/generated/sklearn.metrics.pairwise.cosine_similarity.html
+  - title: PyTorch embeddings
+    url: https://pytorch.org/docs/stable/generated/torch.nn.Embedding.html

@@ -69,3 +69,18 @@ lectures:
     title: ML in Production
     assignments_ready: false
     solutions_released: false
+  - number: 15
+    slug: lecture_15_computer_vision
+    title: Computer Vision
+    assignments_ready: false
+    solutions_released: false
+  - number: 16
+    slug: lecture_16_nlp_overview
+    title: Natural Language Processing
+    assignments_ready: false
+    solutions_released: false
+  - number: 17
+    slug: lecture_17_recsys
+    title: Recommender Systems
+    assignments_ready: false
+    solutions_released: false

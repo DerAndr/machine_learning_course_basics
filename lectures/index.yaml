@@ -342,3 +342,19 @@ lectures:
     practical_session_readme: lecture_16_nlp_overview/practical_session/README.md
     practical_session_student_notebook: lecture_16_nlp_overview/practical_session/nlp_overview_practical_student_90min.ipynb
     practical_session_student_script: lecture_16_nlp_overview/practical_session/nlp_overview_practical_student_90min.py
+  - number: 17
+    slug: lecture_17_recsys
+    title: Recommender Systems
+    status: practical_first_two_part_draft
+    directory: lecture_17_recsys
+    readme: lecture_17_recsys/README.md
+    notes: lecture_17_recsys/lecture_notes.md
+    metadata: lecture_17_recsys/links.yaml
+    plan_directory: lecture_17_recsys/plan
+    plan_files:
+      - lecture_17_recsys/plan/recsys_part_1_foundations.md
+      - lecture_17_recsys/plan/recsys_part_2_production_pipeline.md
+    practical_session_directory: lecture_17_recsys/practical_session
+    practical_session_readme: lecture_17_recsys/practical_session/README.md
+    practical_session_student_notebook: lecture_17_recsys/practical_session/recsys_practical_student_90min.ipynb
+    practical_session_student_script: lecture_17_recsys/practical_session/recsys_practical_student_90min.py
