@@ -1,0 +1,31 @@
+lecture_number: 18
+lecture_slug: lecture_18_llm_overview
+lecture_title: LLM Overview
+status: practical_full_dual_notebook_draft
+
+practical_session:
+  dependency_group: llm
+  text_notebook: practical_session/LLMs_hands_on.ipynb
+  text_script: practical_session/LLMs_hands_on.py
+  multimodal_notebook: practical_session/Multimodal_LLMs_Hands_on.ipynb
+  multimodal_script: practical_session/Multimodal_LLMs_Hands_on.py
+
+models:
+  - name: Qwen3 1.7B
+    role: Text LLM notebook for tokenization, generation behavior, attention inspection, and LoRA adaptation
+  - name: Gemma 4 E2B IT
+    role: Multimodal notebook for image-first prompting and optional audio input
+
+platforms:
+  - name: Google Colab T4
+    role: Reference runtime for both practical notebooks
+
+references:
+  - title: Hugging Face Transformers documentation
+    url: https://huggingface.co/docs/transformers/index
+  - title: PEFT documentation
+    url: https://huggingface.co/docs/peft/index
+  - title: LoRA paper
+    url: https://arxiv.org/abs/2106.09685
+  - title: Google Gemma documentation
+    url: https://ai.google.dev/gemma

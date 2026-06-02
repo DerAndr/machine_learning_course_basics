@@ -147,6 +147,26 @@ uv run python tools/check_notebook_environment.py
 
 If your instructor asks you to run optional embedding or PyTorch retrieval demos from the production-pipeline material, use the relevant optional group they specify.
 
+### Lecture 18: LLM Overview
+
+Lecture 18 is currently a practical-first draft with full notebooks that are primarily designed for Google Colab GPU runtimes.
+
+For local exploration of surrounding materials, use the baseline setup:
+
+```bash
+uv sync
+uv run python tools/check_notebook_environment.py
+```
+
+For transformer, LoRA, and multimodal package coverage when trying selected local cells, add the LLM group:
+
+```bash
+uv sync --group llm
+uv run python tools/check_notebook_environment.py --group llm
+```
+
+Large-model inference and LoRA cells may exceed local hardware limits and are best run in Colab.
+
 ## 4. Daily workflow
 
 Typical workflow:
@@ -188,6 +208,7 @@ uv sync --group time_series
 uv sync --group hpo_automl
 uv sync --group neural_networks
 uv sync --group nlp
+uv sync --group llm
 uv sync --group xai_piml
 uv sync --group ml_in_production
 ```

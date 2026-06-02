@@ -358,3 +358,17 @@ lectures:
     practical_session_readme: lecture_17_recsys/practical_session/README.md
     practical_session_student_notebook: lecture_17_recsys/practical_session/recsys_practical_student_90min.ipynb
     practical_session_student_script: lecture_17_recsys/practical_session/recsys_practical_student_90min.py
+  - number: 18
+    slug: lecture_18_llm_overview
+    title: LLM Overview
+    status: practical_full_dual_notebook_draft
+    directory: lecture_18_llm_overview
+    readme: lecture_18_llm_overview/README.md
+    notes: lecture_18_llm_overview/lecture_notes.md
+    metadata: lecture_18_llm_overview/links.yaml
+    practical_session_directory: lecture_18_llm_overview/practical_session
+    practical_session_readme: lecture_18_llm_overview/practical_session/README.md
+    practical_session_text_notebook: lecture_18_llm_overview/practical_session/LLMs_hands_on.ipynb
+    practical_session_text_script: lecture_18_llm_overview/practical_session/LLMs_hands_on.py
+    practical_session_multimodal_notebook: lecture_18_llm_overview/practical_session/Multimodal_LLMs_Hands_on.ipynb
+    practical_session_multimodal_script: lecture_18_llm_overview/practical_session/Multimodal_LLMs_Hands_on.py

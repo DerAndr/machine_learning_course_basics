@@ -18,8 +18,9 @@ Fully packaged lecture directories contain:
 - `practical_session/<slug>_practical_student_90min.py`
 
 The public release of each practical session contains only the student-facing notebook and README; instructor materials stay unpublished.
-Lectures 15-17 are currently practical-first drafts, so they do not yet include slide decks or separate lecture example notebooks.
+Lectures 15-18 are currently practical-first drafts, so they do not yet include slide decks or separate lecture example notebooks.
 Lecture 17 also includes draft planning notes under `plan/` for the two recommender-systems parts.
+Lecture 18 currently publishes two full practical notebooks rather than a separate student TODO notebook.
 
 ## Lecture Map
 
@@ -40,3 +41,4 @@ Lecture 17 also includes draft planning notes under `plan/` for the two recommen
 15. [Lecture 15: Computer Vision](lecture_15_computer_vision/README.md)
 16. [Lecture 16: Natural Language Processing](lecture_16_nlp_overview/README.md)
 17. [Lecture 17: Recommender Systems](lecture_17_recsys/README.md)
+18. [Lecture 18: LLM Overview](lecture_18_llm_overview/README.md)

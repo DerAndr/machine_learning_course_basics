@@ -19,6 +19,6 @@ This repository stores the authoring version of the machine learning course.
 ## Current State
 
 Lectures `01` to `14` are in place with lecture notes, slide decks, example notebooks, and practical sessions.
-Lectures `15` to `17` are practical-first drafts covering Computer Vision, Natural Language Processing, and Recommender Systems.
+Lectures `15` to `18` are practical-first drafts covering Computer Vision, Natural Language Processing, Recommender Systems, and LLM Overview.
 The normalization and bug-audit pass for lectures `01` to `14` is complete.
-Lecture-specific dependency groups are available for heavier libraries (ensembles, time series, HPO/AutoML, neural networks, NLP, XAI/PiML, ML in production).
+Lecture-specific dependency groups are available for heavier libraries (ensembles, time series, HPO/AutoML, neural networks, NLP, LLM, XAI/PiML, ML in production).

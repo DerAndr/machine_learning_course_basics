@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import importlib.util
+import platform
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -75,6 +76,30 @@ OPTIONAL_GROUPS = {
         },
         "install_hint": "uv sync --group nlp",
     },
+    "llm": {
+        "modules": {
+            "accelerate": "accelerate",
+            "GPUtil": "gputil",
+            "huggingface_hub": "huggingface-hub",
+            "humanize": "humanize",
+            "outlines": "outlines",
+            "peft": "peft",
+            "PIL": "pillow",
+            "pydantic": "pydantic",
+            "tiktoken": "tiktoken",
+            "torch": "torch",
+            "torchaudio": "torchaudio",
+            "torchvision": "torchvision",
+            "transformers": "transformers",
+        },
+        "platform_modules": {
+            "Linux": {
+                "bitsandbytes": "bitsandbytes",
+                "torchao": "torchao",
+            }
+        },
+        "install_hint": "uv sync --group llm",
+    },
     "hpo_automl": {
         "modules": {
             "h2o": "h2o",
@@ -138,6 +163,8 @@ def main() -> int:
     required_modules = dict(BASE_REQUIRED_MODULES)
     for group_name in requested_groups:
         required_modules.update(OPTIONAL_GROUPS[group_name]["modules"])
+        platform_modules = OPTIONAL_GROUPS[group_name].get("platform_modules", {})
+        required_modules.update(platform_modules.get(platform.system(), {}))
 
     missing_packages = check_module_imports(required_modules)
     missing_pairs = check_example_pairs()
@@ -156,7 +183,9 @@ def main() -> int:
     for group_name, config in OPTIONAL_GROUPS.items():
         if group_name in requested_groups:
             continue
-        missing = check_module_imports(config["modules"])
+        modules = dict(config["modules"])
+        modules.update(config.get("platform_modules", {}).get(platform.system(), {}))
+        missing = check_module_imports(modules)
         if missing:
             optional_missing_by_group[group_name] = missing
 
