@@ -203,13 +203,13 @@ def _metadata_badges_html(page: Page) -> str:
     )
 
 
-def _learning_objectives_html(page: Page) -> str:
-    objectives = _string_list(page.metadata.get("learning_objectives"))
-    if not objectives:
+def _skills_html(page: Page) -> str:
+    skills = _string_list(page.metadata.get("learning_objectives"))
+    if not skills:
         return ""
     return (
-        '<section class="objectives"><h2>Learning objective</h2><ul>'
-        + "".join(f"<li>{html.escape(item)}</li>" for item in objectives)
+        '<section class="skills"><h2>Skills</h2><ul>'
+        + "".join(f"<li>{html.escape(item)}</li>" for item in skills)
         + "</ul></section>"
     )
 
@@ -250,6 +250,7 @@ def _relationship_cards_html(
 
 
 def _manifest_entry(page: Page, output: Path) -> dict[str, object]:
+    skills = _string_list(page.metadata.get("learning_objectives"))
     return {
         "id": page.okf_path.removeprefix("/").removesuffix(".md"),
         "okf_path": page.okf_path,
@@ -258,7 +259,8 @@ def _manifest_entry(page: Page, output: Path) -> dict[str, object]:
         "type": page.metadata.get("type"),
         "status": page.metadata.get("status"),
         "tags": _string_list(page.metadata.get("tags")),
-        "learning_objectives": _string_list(page.metadata.get("learning_objectives")),
+        "learning_objectives": skills,
+        "skills": skills,
         "prerequisites": _string_list(page.metadata.get("prerequisites")),
         "related_concepts": _string_list(page.metadata.get("related_concepts")),
         "related_labs": _string_list(page.metadata.get("related_labs")),
@@ -389,7 +391,7 @@ def _render_page(page: Page, pages: list[Page], output: Path, data_path: Path) -
     home_href = _relative_href(page.output, output / "index.html")
     body = _markdown_to_html(page.body)
     badges = _metadata_badges_html(page)
-    objectives = _learning_objectives_html(page)
+    skills = _skills_html(page)
     relationships = _relationship_cards_html(page, pages, output)
     lab = _interactive_lab_html(page, output, data_path)
     sources = _source_materials_html(page)
@@ -413,7 +415,7 @@ def _render_page(page: Page, pages: list[Page], output: Path, data_path: Path) -
     <main>
       {badges}
       {body}
-      {objectives}
+      {skills}
       {relationships}
       {lab}
       {sources}

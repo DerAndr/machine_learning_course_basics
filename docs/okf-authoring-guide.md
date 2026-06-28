@@ -6,6 +6,8 @@ The `okf/` directory is a concise, independently conformant Open Knowledge Forma
 
 The long-term product shape is an interactive textbook. Concepts should be useful as plain Markdown, but they should also carry enough structure for a renderer to build guided navigation, browser-based labs, search, and accessible fallbacks.
 
+Descriptions and skills have one source of truth: OKF frontmatter. Index descriptions must match the target page's `description`, and agent-facing `skills` are generated from `learning_objectives` rather than authored separately.
+
 ## Before writing
 
 1. Identify one learner question and one practical outcome.

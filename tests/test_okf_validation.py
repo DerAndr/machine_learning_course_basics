@@ -104,7 +104,7 @@ learning_objectives:
 
 def test_unknown_type_is_a_warning_not_an_error(tmp_path: Path) -> None:
     bundle = tmp_path / "bundle"
-    root_index(bundle, "# Test\n\n* [Custom](custom.md) - Custom concept.")
+    root_index(bundle, "# Test\n\n* [Custom](custom.md) - A concise test concept.")
     concept(bundle, "custom.md", concept_type="Domain Note")
     result = validate_bundle(bundle)
     assert not result.errors
@@ -120,6 +120,14 @@ def test_nested_index_rejects_frontmatter_and_bad_entry(tmp_path: Path) -> None:
     )
     result = validate_bundle(bundle)
     assert {"OKF012", "OKF013"} <= codes(result)
+
+
+def test_index_description_must_match_target_frontmatter(tmp_path: Path) -> None:
+    bundle = tmp_path / "bundle"
+    root_index(bundle, "# Test\n\n* [First](first.md) - Different description.")
+    concept(bundle, "first.md")
+    result = validate_bundle(bundle)
+    assert "OKF027" in codes(result)
 
 
 def test_relationship_paths_resolve_from_bundle_root(tmp_path: Path) -> None:

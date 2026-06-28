@@ -304,6 +304,22 @@ def _validate_index(
         )
         if resolved is not None and resolved.exists():
             linked.add(resolved)
+            if resolved.name != "index.md":
+                target_parsed = parse_markdown(resolved.read_text(encoding="utf-8-sig"))
+                target_description = (
+                    target_parsed.metadata.get("description")
+                    if isinstance(target_parsed.metadata, dict)
+                    else None
+                )
+                if isinstance(target_description, str) and description != target_description:
+                    _add(
+                        diagnostics,
+                        display,
+                        "OKF027",
+                        "error",
+                        "index description must match target frontmatter description",
+                        line_number,
+                    )
     _validate_headings(parsed.body, display, diagnostics)
     return linked
 

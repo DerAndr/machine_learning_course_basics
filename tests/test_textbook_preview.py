@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import sys
 from pathlib import Path
 
@@ -37,7 +38,11 @@ def test_textbook_preview_builds_interactive_lab(tmp_path: Path) -> None:
     assert "Learning route" in lab_html
     assert "Classification Metrics" in lab_html
     assert "Agent manifest" in lab_html
+    assert "<h2>Skills</h2>" in lab_html
 
     manifest_text = manifest.read_text(encoding="utf-8")
     assert "ml-course-okf-manifest-v1" in manifest_text
     assert "supervised-learning/classification/classification-metrics" in manifest_text
+    manifest_data = json.loads(manifest_text)
+    for concept in manifest_data["concepts"]:
+        assert concept["skills"] == concept["learning_objectives"]

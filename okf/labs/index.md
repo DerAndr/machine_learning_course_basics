@@ -1,3 +1,3 @@
 # Interactive Labs
 
-* [Classification threshold explorer](classification-threshold-explorer.md) - Change a decision threshold and inspect classification metrics.
+* [Classification threshold explorer](classification-threshold-explorer.md) - Move a threshold and inspect how binary classification metrics change.
