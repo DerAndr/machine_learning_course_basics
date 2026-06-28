@@ -51,8 +51,8 @@ def test_repository_scaffold_validates_without_findings() -> None:
     result = validate_bundle(Path("okf"), repository_root=Path.cwd())
     assert result.errors == ()
     assert result.warnings == ()
-    assert result.index_count == 5
-    assert result.concept_count == 5
+    assert result.index_count == 6
+    assert result.concept_count == 6
 
 
 def test_parse_markdown_preserves_unknown_fields() -> None:
@@ -182,6 +182,17 @@ def test_teacher_only_sources_are_rejected(tmp_path: Path) -> None:
     )
     result = validate_bundle(bundle)
     assert "OKF018" in codes(result)
+
+
+def test_public_docs_sources_are_allowed(tmp_path: Path) -> None:
+    bundle = tmp_path / "bundle"
+    repo = tmp_path / "repo"
+    root_index(bundle, "# Test\n\n* [Guide](guide.md) - A concise test concept.")
+    write(repo / "docs" / "guide.md", "# Guide")
+    concept(bundle, "guide.md", extra="source_materials:\n  - /docs/guide.md\n")
+    result = validate_bundle(bundle, repository_root=repo)
+    assert "OKF019" not in codes(result)
+    assert "OKF022" not in codes(result)
 
 
 def test_orphan_and_citation_findings_are_warnings(tmp_path: Path) -> None:

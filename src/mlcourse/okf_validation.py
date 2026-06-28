@@ -14,6 +14,7 @@ import yaml
 RESERVED_FILES = {"index.md", "log.md"}
 REQUIRED_FIELDS = ("type", "title", "description", "tags", "timestamp", "status")
 RELATIONSHIP_FIELDS = ("prerequisites", "related_concepts", "related_labs")
+PUBLIC_REPOSITORY_SOURCE_PREFIXES = ("/docs/", "/lectures/")
 VALID_STATUSES = {"draft", "review", "published", "deprecated"}
 VALID_DIFFICULTIES = {"introductory", "intermediate", "advanced"}
 CONTROLLED_TYPES = {
@@ -475,7 +476,7 @@ def _validate_concept(
                     f"teacher-only source is forbidden: {source}",
                 )
             elif (
-                source.startswith("/lectures/")
+                source.startswith(PUBLIC_REPOSITORY_SOURCE_PREFIXES)
                 and not (repository_root / source.lstrip("/")).exists()
             ):
                 _add(
@@ -485,13 +486,13 @@ def _validate_concept(
                     "error",
                     f"repository source does not exist: {source}",
                 )
-            elif not source.startswith("/lectures/") and not _is_url(source):
+            elif not source.startswith(PUBLIC_REPOSITORY_SOURCE_PREFIXES) and not _is_url(source):
                 _add(
                     diagnostics,
                     display,
                     "OKF022",
                     "error",
-                    f"source_materials must use /lectures/ paths or external URLs: {source}",
+                    f"source_materials must use /docs/, /lectures/, or external URLs: {source}",
                 )
 
     for target in MARKDOWN_LINK_RE.findall(_strip_fenced_code(parsed.body)):

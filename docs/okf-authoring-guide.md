@@ -56,7 +56,7 @@ Unknown metadata fields and types remain valid under OKF. Add a controlled type 
 
 - Use relative Markdown links in concept bodies and indexes.
 - Use bundle-root paths in `prerequisites`, `related_concepts`, and `related_labs`.
-- Use repository-root `/lectures/...` paths or stable external URLs in `source_materials`.
+- Use repository-root `/lectures/...`, repository-root `/docs/...`, or stable external URLs in `source_materials`.
 - Treat published concept paths as stable identifiers. Record a migration decision before moving one.
 - Never reference non-public solutions, answer keys, private drafts, raw migration sources, or other non-public materials from the production bundle.
 

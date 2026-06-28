@@ -9,3 +9,4 @@ This bundle is the public-safe content backbone for an interactive machine learn
 * [Supervised learning](supervised-learning/) - Concise concepts and learning paths for supervised machine learning.
 * [Learning paths](learning-paths/) - Guided routes through selected course topics.
 * [Interactive labs](labs/) - Browser-based labs with accessible fallbacks.
+* [Contributing](contributing/) - How students and agents can improve the interactive textbook safely.

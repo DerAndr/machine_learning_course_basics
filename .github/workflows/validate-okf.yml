@@ -7,22 +7,30 @@ on:
       - "codex/okf-*"
     paths:
       - "okf/**"
+      - ".codex/skills/**"
+      - "docs/contributing-to-textbook.md"
+      - "docs/okf-authoring-guide.md"
       - "src/mlcourse/okf_validation.py"
       - "tools/validate_okf.py"
       - "tools/build_textbook_preview.py"
       - "tests/test_okf_validation.py"
       - "tests/test_textbook_preview.py"
+      - "tests/test_textbook_contribution_skill.py"
       - "pyproject.toml"
       - "uv.lock"
       - ".github/workflows/validate-okf.yml"
   pull_request:
     paths:
       - "okf/**"
+      - ".codex/skills/**"
+      - "docs/contributing-to-textbook.md"
+      - "docs/okf-authoring-guide.md"
       - "src/mlcourse/okf_validation.py"
       - "tools/validate_okf.py"
       - "tools/build_textbook_preview.py"
       - "tests/test_okf_validation.py"
       - "tests/test_textbook_preview.py"
+      - "tests/test_textbook_contribution_skill.py"
       - "pyproject.toml"
       - "uv.lock"
       - ".github/workflows/validate-okf.yml"
@@ -48,11 +56,11 @@ jobs:
 
       - name: Check validator formatting and lint
         run: |
-          uv run --no-sync ruff format --check src/mlcourse/okf_validation.py tools/validate_okf.py tools/build_textbook_preview.py tests/test_okf_validation.py tests/test_textbook_preview.py
-          uv run --no-sync ruff check src/mlcourse/okf_validation.py tools/validate_okf.py tools/build_textbook_preview.py tests/test_okf_validation.py tests/test_textbook_preview.py
+          uv run --no-sync ruff format --check src/mlcourse/okf_validation.py tools/validate_okf.py tools/build_textbook_preview.py tests/test_okf_validation.py tests/test_textbook_preview.py tests/test_textbook_contribution_skill.py
+          uv run --no-sync ruff check src/mlcourse/okf_validation.py tools/validate_okf.py tools/build_textbook_preview.py tests/test_okf_validation.py tests/test_textbook_preview.py tests/test_textbook_contribution_skill.py
 
       - name: Run validator tests
-        run: uv run --no-sync pytest tests/test_okf_validation.py tests/test_textbook_preview.py
+        run: uv run --no-sync pytest tests/test_okf_validation.py tests/test_textbook_preview.py tests/test_textbook_contribution_skill.py
 
       - name: Validate bundle
         run: uv run --no-sync python tools/validate_okf.py okf/

@@ -7,12 +7,16 @@ on:
       - "codex/okf-*"
     paths:
       - "okf/**"
+      - ".codex/skills/**"
+      - "docs/contributing-to-textbook.md"
+      - "docs/okf-authoring-guide.md"
       - "site/**"
       - "src/mlcourse/okf_validation.py"
       - "tools/validate_okf.py"
       - "tools/build_textbook_preview.py"
       - "tests/test_okf_validation.py"
       - "tests/test_textbook_preview.py"
+      - "tests/test_textbook_contribution_skill.py"
       - "pyproject.toml"
       - "uv.lock"
       - ".github/workflows/build-textbook-preview.yml"
@@ -39,11 +43,11 @@ jobs:
 
       - name: Check formatting and lint
         run: |
-          uv run --no-sync ruff format --check src/mlcourse/okf_validation.py tools/validate_okf.py tools/build_textbook_preview.py tests/test_okf_validation.py tests/test_textbook_preview.py
-          uv run --no-sync ruff check src/mlcourse/okf_validation.py tools/validate_okf.py tools/build_textbook_preview.py tests/test_okf_validation.py tests/test_textbook_preview.py
+          uv run --no-sync ruff format --check src/mlcourse/okf_validation.py tools/validate_okf.py tools/build_textbook_preview.py tests/test_okf_validation.py tests/test_textbook_preview.py tests/test_textbook_contribution_skill.py
+          uv run --no-sync ruff check src/mlcourse/okf_validation.py tools/validate_okf.py tools/build_textbook_preview.py tests/test_okf_validation.py tests/test_textbook_preview.py tests/test_textbook_contribution_skill.py
 
       - name: Run preview tests
-        run: uv run --no-sync pytest tests/test_okf_validation.py tests/test_textbook_preview.py
+        run: uv run --no-sync pytest tests/test_okf_validation.py tests/test_textbook_preview.py tests/test_textbook_contribution_skill.py
 
       - name: Build textbook preview
         run: uv run --no-sync python tools/build_textbook_preview.py

@@ -60,6 +60,8 @@ uv run jupyter lab
 
 Student-oriented setup instructions live in `docs/student-quickstart.md`.
 
+To improve the interactive textbook, start with `docs/contributing-to-textbook.md`.
+
 ## Repository Contents
 
 - `lectures/README.md` for top-level lecture navigation

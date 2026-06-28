@@ -52,6 +52,14 @@ To explore the full course:
 2. `lectures/README.md` — lecture map with links
 3. `lectures/index.yaml` — machine-readable index (all paths, all lectures)
 
+To improve the interactive textbook:
+
+1. `.codex/skills/ml-course-textbook-contributor/SKILL.md` — agent workflow
+2. `docs/contributing-to-textbook.md` — student and maintainer workflow
+3. `docs/okf-authoring-guide.md` — OKF authoring rules
+4. `okf/` — source knowledge bundle
+5. `tools/build_textbook_preview.py` — renderer for the current preview
+
 To explore a specific lecture:
 
 1. `lectures/<slug>/README.md` — what's in this lecture
