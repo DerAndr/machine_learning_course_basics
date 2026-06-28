@@ -1,0 +1,42 @@
+name: Validate OKF
+
+on:
+  pull_request:
+    paths:
+      - "okf/**"
+      - "src/mlcourse/okf_validation.py"
+      - "tools/validate_okf.py"
+      - "tests/test_okf_validation.py"
+      - "pyproject.toml"
+      - "uv.lock"
+      - ".github/workflows/validate-okf.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Install project environment
+        run: uv sync --locked --no-default-groups --group dev
+
+      - name: Check validator formatting and lint
+        run: |
+          uv run --no-sync ruff format --check src/mlcourse/okf_validation.py tools/validate_okf.py tests/test_okf_validation.py
+          uv run --no-sync ruff check src/mlcourse/okf_validation.py tools/validate_okf.py tests/test_okf_validation.py
+
+      - name: Run validator tests
+        run: uv run --no-sync pytest tests/test_okf_validation.py
+
+      - name: Validate bundle
+        run: uv run --no-sync python tools/validate_okf.py okf/
