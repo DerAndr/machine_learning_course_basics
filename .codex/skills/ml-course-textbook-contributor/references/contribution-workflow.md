@@ -5,7 +5,8 @@
 1. `lectures/<slug>/lecture_notes.md` for student-facing course explanations.
 2. `lectures/<slug>/README.md` and `links.yaml` for scope and canonical assets.
 3. `lecture_examples/` and public practical notebooks for workflow-level provenance.
-4. External primary sources only when the course source is insufficient or a claim needs independent support.
+4. `docs/` only when the page is about repository workflow, textbook contribution, or OKF authoring.
+5. External primary sources only when the course source is insufficient or a claim needs independent support.
 
 ## OKF page checklist
 
@@ -18,7 +19,7 @@
 - Practical pages include assumptions, limitations, and common failure modes.
 - Relationship metadata points to existing OKF pages.
 - Body links are relative Markdown links.
-- `source_materials` points only to public-safe lecture paths or stable URLs.
+- `source_materials` points only to public-safe lecture paths, public documentation paths, or stable URLs.
 
 ## Textbook renderer checklist
 
@@ -58,3 +59,4 @@ Ask these before accepting a contribution:
 4. Does the page say when the idea fails or becomes misleading?
 5. Can an agent discover this page through the manifest and relationships?
 6. Do local and online checks prove that the rendered textbook updated?
+7. If navigation or contribution workflow changed, were README files, guides, and the agent skill updated together?

@@ -2,6 +2,8 @@
 
 This directory contains the canonical lecture layer for the course.
 
+The interactive textbook lives beside this lecture layer, not inside it. Use `okf/` for concise textbook concepts, learning paths, and lab descriptions; use `lectures/` as the full course source and provenance layer.
+
 ## Per-Lecture Structure
 
 Fully packaged lecture directories contain:
@@ -21,6 +23,12 @@ The public release of each practical session contains only the student-facing no
 Lectures 15-18 are currently practical-first drafts, so they do not yet include slide decks or separate lecture example notebooks.
 Lecture 17 also includes draft planning notes under `plan/` for the two recommender-systems parts.
 Lecture 18 currently publishes two full practical notebooks rather than a separate student TODO notebook.
+
+## Relationship to the Interactive Textbook
+
+Textbook pages should link back to lecture material for provenance and deeper study. Lecture notes, examples, and practical sessions stay canonical here; textbook pages in `okf/` should summarize and connect concepts rather than duplicate full lectures.
+
+When a lecture explanation changes in a way that affects a textbook concept, review the related OKF page, index entry, and rendered preview.
 
 ## Lecture Map
 

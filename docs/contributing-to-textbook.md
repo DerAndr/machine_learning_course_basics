@@ -2,6 +2,21 @@
 
 The interactive textbook is built from the Open Knowledge Format bundle in `okf/`. It is meant for both humans and agents: students should be able to read and improve concepts, while agents should be able to navigate the same knowledge through metadata, links, and `okf-manifest.json`.
 
+Read the current preview online:
+
+<https://derandr.github.io/machine_learning_course_basics/>
+
+## Fast path
+
+For a small content improvement:
+
+1. Find the target concept in `okf/`.
+2. Read the relevant lecture source in `lectures/`.
+3. Improve the page, keeping the first H1 equal to the frontmatter `title`.
+4. If the frontmatter `description` changes, update every index card that links to the page with the exact same sentence.
+5. Run validation and rebuild the preview.
+6. Check the rendered page locally or after GitHub Pages deploys.
+
 ## What to contribute
 
 Good contributions include:
@@ -12,6 +27,7 @@ Good contributions include:
 - adding a small browser-based lab with a no-JavaScript fallback;
 - improving textbook rendering without moving pedagogy out of `okf/`;
 - improving validation when a drift pattern is discovered.
+- improving README files and guides when navigation or contribution workflow changes.
 
 Avoid drive-by wording changes that do not improve learning.
 
@@ -64,6 +80,8 @@ source_materials:
 
 Instructional `learning_objectives` become agent-facing `skills`, so write them as concrete learner capabilities.
 
+Each concept page must have exactly one H1, and that H1 must match frontmatter `title`.
+
 ## Indexes and links
 
 - Every populated OKF directory has an `index.md`.
@@ -97,6 +115,8 @@ Agents improving the textbook should use the repo skill:
 ```
 
 That skill summarizes the contribution workflow and points to a reference checklist.
+
+When the workflow itself changes, update the skill, this guide, `docs/okf-authoring-guide.md`, and any affected README navigation together.
 
 ## Local checks
 

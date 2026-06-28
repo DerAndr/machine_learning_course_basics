@@ -37,11 +37,13 @@ source_materials:
   - /lectures/lecture_05_classification_part_1/lecture_notes.md
 ---
 
-# Core idea
+# K-Nearest Neighbors
+
+## Core idea
 
 Write a concise explanation in original language.
 
-# Go deeper
+## Go deeper
 
 Link to the full lecture or notebook with a standard relative Markdown link when the target is inside the bundle.
 ```
@@ -49,6 +51,8 @@ Link to the full lecture or notebook with a standard relative Markdown link when
 ## Required metadata
 
 Every concept requires `type`, `title`, `description`, `tags`, `timestamp`, and `status`. Instructional concepts also require one to three `learning_objectives`. Use these statuses: `draft`, `review`, `published`, or `deprecated`.
+
+The first H1 must match `title`, and each concept page must have exactly one H1. Use H2 and lower headings for sections such as "Core idea", "Formula", "Example", "Failure modes", and "Citations".
 
 Unknown metadata fields and types remain valid under OKF. Add a controlled type only when it materially improves filtering or presentation.
 
@@ -70,14 +74,17 @@ Use this entry format:
 * [Display title](relative-path/) - One-sentence description.
 ```
 
+The one-sentence description must exactly match the target page's frontmatter `description`. The validator treats drift here as an error because indexes, cards, and the agent manifest must not fork into separate descriptions.
+
 Keep pedagogical sequences in teaching order. Use alphabetical order only for reference collections.
 
 ## Content and citations
 
 - Target 3-8 minutes of reading and roughly 400-1,200 words.
-- Prefer one central idea, one example, and one or two equations at most.
+- Prefer one central idea, one example, and the formulas needed to explain the idea rigorously.
+- For mathematical ML topics, include formulas when formulas are the clearest explanation, then explain every symbol in prose.
 - Link to notebooks for full workflows.
-- Put external claim support in a numbered `# Citations` section.
+- Put external claim support in a numbered `## Citations` section.
 - Use `source_materials` for course provenance; it is not a substitute for citations.
 - Do not copy long passages, slide narration, or classroom administration text.
 
@@ -93,8 +100,11 @@ Keep pedagogical sequences in teaching order. Use alphabetical order only for re
 ## Validate
 
 ```bash
+uv run ruff check src/mlcourse/okf_validation.py tools/validate_okf.py tools/build_textbook_preview.py tests/test_okf_validation.py tests/test_textbook_preview.py tests/test_smoke.py
+uv run pytest
 uv run python tools/validate_okf.py okf/
-uv run pytest tests/test_okf_validation.py
+uv run python tools/validate_okf.py okf/ --strict-warnings
+uv run python tools/build_textbook_preview.py
 ```
 
 Errors are mechanical and block integration. Warnings identify editorial review items such as orphan concepts or heading structure.

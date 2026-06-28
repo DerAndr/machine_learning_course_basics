@@ -4,16 +4,20 @@ This repository can be used in two ways:
 
 - as a lecture-material library with PDFs, notes, and example notebooks
 - as a local notebook workspace with `uv`
+- as a source for the interactive textbook preview
 
 ## 0. If you only want to read the materials
 
 You do not need to install anything to:
 
+- read the interactive textbook at <https://derandr.github.io/machine_learning_course_basics/>
 - read `lecture_notes.md`
 - open lecture PDFs
 - browse the repository on GitHub
 
 Local setup is only needed when you want to run notebooks on your machine.
+
+The interactive textbook is the guided concept layer. The lecture folders remain the full course layer with notes, slides, examples, and practical notebooks.
 
 ## 1. Install the baseline environment
 
@@ -37,6 +41,18 @@ Then open the lecture you need:
 - `lectures/<lecture_slug>/lecture_notes.md`
 - `lectures/<lecture_slug>/slides/lecture.pdf`
 - `lectures/<lecture_slug>/lecture_examples/`
+
+If you are reading the textbook source locally, start with:
+
+- `okf/index.md`
+- `okf/supervised-learning/classification/index.md`
+- `docs/contributing-to-textbook.md`
+
+To rebuild the local static preview after changing textbook pages:
+
+```bash
+uv run python tools/build_textbook_preview.py
+```
 
 ## 3. Install extra packages only for specific lectures
 
@@ -211,4 +227,12 @@ uv sync --group nlp
 uv sync --group llm
 uv sync --group xai_piml
 uv sync --group ml_in_production
+```
+
+Textbook contribution checks:
+
+```bash
+uv run pytest
+uv run python tools/validate_okf.py okf/ --strict-warnings
+uv run python tools/build_textbook_preview.py
 ```

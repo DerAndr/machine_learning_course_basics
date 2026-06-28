@@ -3,12 +3,13 @@
 [![License: MIT](https://img.shields.io/badge/Code-MIT-blue.svg)](LICENSE)
 [![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/Content-CC%20BY--NC--SA%204.0-lightgrey.svg)](LICENSE-CONTENT)
 
-Lecture notes, slide decks, and example notebooks for an introductory machine learning course.
+Lecture notes, slide decks, example notebooks, classroom practicals, and an early interactive textbook for an introductory machine learning course.
 
 The repository is organized lecture by lecture and is meant to work both as:
 
 - a course library for students who want to read notes and browse examples
 - a local notebook workspace for students who want to run materials with `uv`
+- a source repository for the interactive textbook and its agent-readable knowledge bundle
 
 ## At a Glance
 
@@ -35,6 +36,21 @@ The repository is organized lecture by lecture and is meant to work both as:
 
 Lectures 01-14 are fully packaged with slide decks (`slides/lecture.pdf`) and example notebooks (`lecture_examples/`). Lectures 15-18 are practical-first drafts for Computer Vision, Natural Language Processing, Recommender Systems, and LLM Overview.
 
+## Interactive Textbook
+
+The interactive textbook preview is published on GitHub Pages:
+
+<https://derandr.github.io/machine_learning_course_basics/>
+
+The textbook is built from the Open Knowledge Format bundle in `okf/`. The same source powers:
+
+- readable concept pages for students;
+- learning paths and browser-based labs;
+- `okf-manifest.json` for agents and tools;
+- generated textbook pages under `site/_build/` during preview builds.
+
+The current pilot focuses on Classification Part 1: classification, metrics, threshold choice, one learning path, and one browser-only threshold lab.
+
 ## Assignments & Exams
 
 - **[Mini-Project: NYC Airbnb Price Prediction](mini_projects/airbnb_nyc/README.md)**
@@ -44,11 +60,12 @@ Lectures 01-14 are fully packaged with slide decks (`slides/lecture.pdf`) and ex
 
 If you are a student:
 
-1. Open `lectures/README.md`
-2. Choose a lecture directory
-3. Read `lecture_notes.md`
-4. Open `slides/lecture.pdf` when the lecture has a packaged slide deck
-5. Run notebooks from `lecture_examples/` if needed
+1. Open the [interactive textbook](https://derandr.github.io/machine_learning_course_basics/) for the guided concept layer.
+2. Open `lectures/README.md` for the full lecture map.
+3. Choose a lecture directory.
+4. Read `lecture_notes.md`.
+5. Open `slides/lecture.pdf` when the lecture has a packaged slide deck.
+6. Run notebooks from `lecture_examples/` if needed.
 
 For local setup, start with:
 
@@ -72,11 +89,17 @@ To improve the interactive textbook, start with `docs/contributing-to-textbook.m
 - `lectures/<lecture_slug>/lecture_examples/` for example notebooks and paired scripts
 - `lectures/<lecture_slug>/practical_session/` for separate classroom practicals
 - `lectures/<lecture_slug>/plan/` for draft planning notes when a practical-first lecture is still being packaged
+- `okf/` for concise textbook concepts, learning paths, labs, and metadata
+- `docs/okf-authoring-guide.md` for OKF authoring rules
+- `docs/contributing-to-textbook.md` for student, maintainer, and agent contribution workflow
 - `docs/student-quickstart.md` for local setup instructions
+- `site/assets/` and `site/data/` for committed browser-lab assets and public-safe data
+- `site/_build/` for generated textbook preview output; this directory is not committed
 
 ## Current Scope
 
 - The public layer is centered on lecture materials, notes, example notebooks, and practical sessions.
+- The interactive textbook layer is a public-safe pilot built from `okf/` and published through GitHub Pages.
 - Lectures 01-14 are fully packaged; Lectures 15-18 are currently practical-first drafts.
 - Most lectures include a separate public `practical_session/` with a student notebook for classroom work; Lecture 18 currently publishes full practical notebooks.
 - Instructor notebooks or cheat sheets may be kept out of the public student release.
@@ -85,6 +108,13 @@ To improve the interactive textbook, start with `docs/contributing-to-textbook.m
 ## Directory Layout
 
 ```text
+okf/
+├── index.md
+├── supervised-learning/
+├── learning-paths/
+├── labs/
+└── contributing/
+
 lectures/
 ├── README.md
 ├── lecture_01_eda/
@@ -102,6 +132,11 @@ lectures/
 │       ├── README.md
 │       └── ...
 └── ...
+
+site/
+├── assets/
+├── data/
+└── _build/
 ```
 
 ## Local Setup
@@ -148,26 +183,31 @@ There is no separate `requirements.txt` on purpose.
 For humans:
 
 1. `README.md`
-2. `lectures/README.md`
-3. `lectures/<lecture_slug>/README.md`
-4. `lectures/<lecture_slug>/lecture_notes.md`
-5. `lectures/<lecture_slug>/links.yaml`
-6. `lectures/<lecture_slug>/slides/lecture.pdf`
-7. `lectures/<lecture_slug>/lecture_examples/README.md`
-8. `lectures/<lecture_slug>/lecture_examples/example_XX.ipynb`
-9. `lectures/<lecture_slug>/lecture_examples/example_XX.py`
-10. `lectures/<lecture_slug>/practical_session/README.md`
+2. [Interactive textbook](https://derandr.github.io/machine_learning_course_basics/)
+3. `lectures/README.md`
+4. `lectures/<lecture_slug>/README.md`
+5. `lectures/<lecture_slug>/lecture_notes.md`
+6. `lectures/<lecture_slug>/links.yaml`
+7. `lectures/<lecture_slug>/slides/lecture.pdf`
+8. `lectures/<lecture_slug>/lecture_examples/README.md`
+9. `lectures/<lecture_slug>/lecture_examples/example_XX.ipynb`
+10. `lectures/<lecture_slug>/lecture_examples/example_XX.py`
+11. `lectures/<lecture_slug>/practical_session/README.md`
 
 For agents:
 
 1. `AGENTS.md`
-2. `lectures/README.md`
-3. `lectures/index.yaml`
-4. `lectures/<lecture_slug>/README.md`
-5. `lectures/<lecture_slug>/lecture_notes.md`
-6. `lectures/<lecture_slug>/links.yaml`
-7. `lectures/<lecture_slug>/lecture_examples/README.md`
-8. `lectures/<lecture_slug>/practical_session/README.md`
+2. `.codex/skills/ml-course-textbook-contributor/SKILL.md` for textbook work
+3. `docs/contributing-to-textbook.md`
+4. `docs/okf-authoring-guide.md`
+5. `okf/index.md`
+6. `lectures/README.md`
+7. `lectures/index.yaml`
+8. `lectures/<lecture_slug>/README.md`
+9. `lectures/<lecture_slug>/lecture_notes.md`
+10. `lectures/<lecture_slug>/links.yaml`
+11. `lectures/<lecture_slug>/lecture_examples/README.md`
+12. `lectures/<lecture_slug>/practical_session/README.md`
 
 ## License
 

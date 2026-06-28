@@ -1,7 +1,7 @@
 # Agent Guide
 
-This repository is an introductory machine learning course.
-It contains lecture notes, slide decks, example notebooks, and classroom practicals covering 18 lecture blocks from exploratory data analysis to LLM overview.
+This repository is an introductory machine learning course and the public student source for the interactive textbook.
+It contains lecture notes, slide decks, example notebooks, classroom practicals, OKF knowledge modules, and browser-based textbook assets covering 18 lecture blocks from exploratory data analysis to LLM overview.
 
 Use this file to understand what the repository contains and where to find things.
 
@@ -44,6 +44,21 @@ Lecture 18 currently publishes full practical notebooks rather than a separate s
 
 Use `lectures/index.yaml` as the machine-readable course index.
 
+## Interactive Textbook Layer
+
+The interactive textbook is published at:
+
+<https://derandr.github.io/machine_learning_course_basics/>
+
+The source of truth is `okf/`. Keep durable pedagogy, concept metadata, prerequisites, learning objectives, lab descriptions, and source links there. The renderer, JavaScript, CSS, and public-safe lab data live outside `okf/`:
+
+- `tools/build_textbook_preview.py` — static preview renderer
+- `site/assets/` — committed CSS and browser-lab JavaScript
+- `site/data/` — committed public-safe data for browser labs
+- `site/_build/` — generated output, not committed
+
+For agent-facing discovery, the generated `okf-manifest.json` must preserve the same descriptions and learning objectives as the OKF source. Do not maintain a separate hand-written skills list; agent-facing `skills` are generated from `learning_objectives`.
+
 ## How to Navigate
 
 To explore the full course:
@@ -59,6 +74,9 @@ To improve the interactive textbook:
 3. `docs/okf-authoring-guide.md` — OKF authoring rules
 4. `okf/` — source knowledge bundle
 5. `tools/build_textbook_preview.py` — renderer for the current preview
+6. `tests/test_textbook_preview.py` and `tests/test_okf_validation.py` — regression checks
+
+When improving textbook content, keep the student page, OKF metadata, index card description, rendered page, and manifest in sync.
 
 To explore a specific lecture:
 
@@ -125,7 +143,23 @@ Detailed setup: `docs/student-quickstart.md`
 ## Supporting Directories
 
 - `docs/` — student-facing setup guides and workflow documentation
+- `okf/` — concise textbook concepts, learning paths, lab descriptions, and contribution modules
+- `.codex/skills/ml-course-textbook-contributor/` — agent workflow for safe textbook contributions
+- `site/assets/` and `site/data/` — committed assets and public-safe data used by the textbook preview
 - `src/mlcourse/` — shared Python helpers (paths, data utilities)
-- `tools/` — repository maintenance scripts (notebook sync, environment checks)
-- `publish/lectures.yaml` — assignment and solution publication status
+- `tools/` — repository maintenance scripts, notebook sync, environment checks, OKF validation, and textbook rendering
+- `publish/lectures.yaml` — assignment and publication metadata
+
+## Textbook Change Checks
+
+Before committing textbook or OKF changes, run:
+
+```bash
+uv run ruff check src/mlcourse/okf_validation.py tools/validate_okf.py tools/build_textbook_preview.py tests/test_okf_validation.py tests/test_textbook_preview.py tests/test_smoke.py
+uv run pytest
+uv run python tools/validate_okf.py okf/ --strict-warnings
+uv run python tools/build_textbook_preview.py
+```
+
+After merging to `main`, verify GitHub Actions and the deployed GitHub Pages URL.
 

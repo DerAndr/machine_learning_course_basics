@@ -21,8 +21,9 @@ Treat `okf/` as the source of truth. The rendered textbook, `okf-manifest.json`,
 6. Keep `description` and `learning_objectives` in frontmatter precise; these drive indexes, rendered skills, and the manifest.
 7. Update directory `index.md` entries with descriptions that exactly match target frontmatter.
 8. Update relationships: `prerequisites`, `related_concepts`, and `related_labs`.
-9. Run validation and preview checks.
-10. Push changes and verify the deployed textbook online.
+9. If navigation, contribution policy, or workflow changes, update README files and guides together.
+10. Run validation and preview checks.
+11. Push changes and verify the deployed textbook online.
 
 ## Quality bar
 
@@ -52,6 +53,7 @@ For interactive labs, require:
 - Do not put contribution planning boards into Git unless they are student-facing.
 - Do not reference non-public solutions, answer keys, private drafts, raw migration sources, or other non-public course materials.
 - Keep generated output under `site/_build/` ignored.
+- Keep `README.md`, `AGENTS.md`, `docs/contributing-to-textbook.md`, and `docs/okf-authoring-guide.md` aligned when contribution workflow changes.
 
 ## Required commands
 
