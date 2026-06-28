@@ -16,7 +16,11 @@ related_concepts:
 related_labs:
   - /labs/classification-threshold-explorer.md
 source_materials:
+  - /lectures/lecture_05_classification_part_1/README.md
   - /lectures/lecture_05_classification_part_1/lecture_notes.md
+  - /lectures/lecture_05_classification_part_1/slides/lecture.pdf
+  - /lectures/lecture_05_classification_part_1/practical_session/README.md
+  - /lectures/lecture_05_classification_part_1/practical_session/classification_part1_practical_student_90min.ipynb
 ---
 
 # Classification Part 1

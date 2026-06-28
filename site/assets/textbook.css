@@ -156,9 +156,30 @@ main h2 {
 }
 
 .relationship-card span,
-.relationship-card small {
+.relationship-card small,
+.source-materials small {
   color: var(--muted);
   display: block;
+}
+
+.source-materials ul {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.source-materials li {
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+}
+
+.source-materials a {
+  font-weight: 700;
+  text-decoration: none;
 }
 
 .relationship-card strong {

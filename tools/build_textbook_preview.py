@@ -286,6 +286,34 @@ def _write_manifest(pages: list[Page], output: Path) -> None:
     )
 
 
+def _repository_href(source: str) -> str:
+    return f"{REPOSITORY_URL}/blob/main/{quote(source.lstrip('/'), safe='/#-.')}"
+
+
+def _course_material_label(source: str) -> tuple[str, str]:
+    normalized = source.strip("/")
+    parts = normalized.split("/")
+    fallback = source
+    if len(parts) >= 3 and parts[0] == "lectures":
+        lecture = parts[1].replace("_", " ").title()
+        path_tail = "/".join(parts[2:])
+        if path_tail == "README.md":
+            return ("Lecture overview", lecture)
+        if path_tail == "lecture_notes.md":
+            return ("Lecture notes", lecture)
+        if path_tail == "slides/lecture.pdf":
+            return ("Slides PDF", lecture)
+        if path_tail == "practical_session/README.md":
+            return ("Practical assignment", lecture)
+        if path_tail.startswith("practical_session/") and path_tail.endswith(".ipynb"):
+            return ("Practical notebook", lecture)
+        if path_tail == "lecture_examples/README.md":
+            return ("Lecture examples", lecture)
+    if normalized.startswith("docs/"):
+        return ("Supporting guide", source)
+    return ("Source material", fallback)
+
+
 def _source_materials_html(page: Page) -> str:
     sources = page.metadata.get("source_materials")
     if not isinstance(sources, list):
@@ -295,16 +323,20 @@ def _source_materials_html(page: Page) -> str:
         if not isinstance(source, str):
             continue
         if source.startswith("/"):
-            href = f"{REPOSITORY_URL}/blob/main/{quote(source.lstrip('/'), safe='/#-.')}"
+            href = _repository_href(source)
         else:
             href = source
+        label, detail = _course_material_label(source)
         items.append(
-            f'<li><a href="{html.escape(href, quote=True)}">{html.escape(source)}</a></li>'
+            "<li>"
+            f'<a href="{html.escape(href, quote=True)}">{html.escape(label)}</a>'
+            f"<small>{html.escape(detail)}</small>"
+            "</li>"
         )
     if not items:
         return ""
     return (
-        '<section class="source-materials"><h2>Source materials</h2><ul>'
+        '<section class="source-materials"><h2>Course materials</h2><ul>'
         + "".join(items)
         + "</ul></section>"
     )

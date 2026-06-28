@@ -34,7 +34,11 @@ prerequisites:
 related_labs:
   - /labs/knn-decision-boundary.md
 source_materials:
+  - /lectures/lecture_05_classification_part_1/README.md
   - /lectures/lecture_05_classification_part_1/lecture_notes.md
+  - /lectures/lecture_05_classification_part_1/slides/lecture.pdf
+  - /lectures/lecture_05_classification_part_1/practical_session/README.md
+  - /lectures/lecture_05_classification_part_1/practical_session/classification_part1_practical_student_90min.ipynb
 ---
 
 # K-Nearest Neighbors
@@ -61,6 +65,7 @@ Unknown metadata fields and types remain valid under OKF. Add a controlled type 
 - Use relative Markdown links in concept bodies and indexes.
 - Use bundle-root paths in `prerequisites`, `related_concepts`, and `related_labs`.
 - Use repository-root `/lectures/...`, repository-root `/docs/...`, or stable external URLs in `source_materials`.
+- For lecture-backed textbook pages, include the lecture overview, lecture notes, slides PDF, practical assignment README, and student practical notebook when they exist.
 - Treat published concept paths as stable identifiers. Record a migration decision before moving one.
 - Never reference non-public solutions, answer keys, private drafts, raw migration sources, or other non-public materials from the production bundle.
 

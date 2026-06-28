@@ -36,7 +36,8 @@ Reject shallow content. A good contribution should usually include:
 - examples or counterexamples;
 - assumptions and limitations;
 - links to related concepts or labs;
-- public-safe provenance in `source_materials`.
+- public-safe provenance in `source_materials`;
+- links from the rendered textbook page to lecture notes, slides PDF, and practical assignments when those course assets exist.
 
 For interactive labs, require:
 

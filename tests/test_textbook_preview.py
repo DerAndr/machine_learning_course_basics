@@ -41,6 +41,10 @@ def test_textbook_preview_builds_interactive_lab(tmp_path: Path) -> None:
     assert "Classification Metrics" in lab_html
     assert "Agent manifest" in lab_html
     assert "<h2>Skills</h2>" in lab_html
+    assert "<h2>Course materials</h2>" in lab_html
+    assert "Slides PDF" in lab_html
+    assert "Practical assignment" in lab_html
+    assert "classification_part1_practical_student_90min.ipynb" in lab_html
     assert "mathjax" in lab_html.lower()
 
     manifest_text = manifest.read_text(encoding="utf-8")
@@ -50,6 +54,19 @@ def test_textbook_preview_builds_interactive_lab(tmp_path: Path) -> None:
     manifest_data = json.loads(manifest_text)
     for concept in manifest_data["concepts"]:
         assert concept["skills"] == concept["learning_objectives"]
+    classification = next(
+        concept
+        for concept in manifest_data["concepts"]
+        if concept["id"] == "supervised-learning/classification/classification"
+    )
+    assert (
+        "/lectures/lecture_05_classification_part_1/slides/lecture.pdf"
+        in classification["source_materials"]
+    )
+    assert (
+        "/lectures/lecture_05_classification_part_1/practical_session/"
+        "classification_part1_practical_student_90min.ipynb" in classification["source_materials"]
+    )
 
     metrics_html = (
         output / "supervised-learning" / "classification" / "classification-metrics.html"

@@ -20,6 +20,7 @@
 - Relationship metadata points to existing OKF pages.
 - Body links are relative Markdown links.
 - `source_materials` points only to public-safe lecture paths, public documentation paths, or stable URLs.
+- Lecture-backed pages link to lecture overview, lecture notes, slides PDF, practical assignment README, and student practical notebook when those files exist.
 
 ## Textbook renderer checklist
 

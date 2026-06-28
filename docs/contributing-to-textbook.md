@@ -75,12 +75,18 @@ learning_objectives:
 difficulty: introductory
 estimated_reading_minutes: 5
 source_materials:
+  - /lectures/lecture_05_classification_part_1/README.md
   - /lectures/lecture_05_classification_part_1/lecture_notes.md
+  - /lectures/lecture_05_classification_part_1/slides/lecture.pdf
+  - /lectures/lecture_05_classification_part_1/practical_session/README.md
+  - /lectures/lecture_05_classification_part_1/practical_session/classification_part1_practical_student_90min.ipynb
 ```
 
 Instructional `learning_objectives` become agent-facing `skills`, so write them as concrete learner capabilities.
 
 Each concept page must have exactly one H1, and that H1 must match frontmatter `title`.
+
+For lecture-backed pages, `source_materials` should connect the textbook back to the full course: lecture overview, lecture notes, slides PDF, practical assignment README, and the student practical notebook when those files exist.
 
 ## Indexes and links
 
