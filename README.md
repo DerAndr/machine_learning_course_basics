@@ -60,12 +60,13 @@ The current pilot focuses on Classification Part 1: classification, metrics, thr
 
 If you are a student:
 
-1. Open the [interactive textbook](https://derandr.github.io/machine_learning_course_basics/) for the guided concept layer.
-2. Open `lectures/README.md` for the full lecture map.
-3. Choose a lecture directory.
-4. Read `lecture_notes.md`.
-5. Open `slides/lecture.pdf` when the lecture has a packaged slide deck.
-6. Run notebooks from `lecture_examples/` if needed.
+1. Use your local AI agent (via the `.agents/skills/ml-course-student-navigator/` skill) to help you navigate materials and troubleshoot environments.
+2. Open the [interactive textbook](https://derandr.github.io/machine_learning_course_basics/) for the guided concept layer.
+3. Open `lectures/README.md` for the full lecture map.
+4. Choose a lecture directory.
+5. Read `lecture_notes.md`.
+6. Open `slides/lecture.pdf` when the lecture has a packaged slide deck.
+7. Run notebooks from `lecture_examples/` if needed.
 
 For local setup, start with:
 
@@ -75,7 +76,7 @@ uv run python tools/check_notebook_environment.py
 uv run jupyter lab
 ```
 
-Student-oriented setup instructions live in `docs/student-quickstart.md`.
+Student-oriented setup instructions live in `docs/student-quickstart.md`. For heavy deep learning workloads, read `docs/deep-learning-colab-guide.md`.
 
 To improve the interactive textbook, start with `docs/contributing-to-textbook.md`.
 
@@ -93,6 +94,7 @@ To improve the interactive textbook, start with `docs/contributing-to-textbook.m
 - `docs/okf-authoring-guide.md` for OKF authoring rules
 - `docs/contributing-to-textbook.md` for student, maintainer, and agent contribution workflow
 - `docs/student-quickstart.md` for local setup instructions
+- `docs/deep-learning-colab-guide.md` for running heavy deep learning models locally or in Colab
 - `site/assets/` and `site/data/` for committed browser-lab assets and public-safe data
 - `site/_build/` for generated textbook preview output; this directory is not committed
 
@@ -197,17 +199,18 @@ For humans:
 For agents:
 
 1. `AGENTS.md`
-2. `.codex/skills/ml-course-textbook-contributor/SKILL.md` for textbook work
-3. `docs/contributing-to-textbook.md`
-4. `docs/okf-authoring-guide.md`
-5. `okf/index.md`
-6. `lectures/README.md`
-7. `lectures/index.yaml`
-8. `lectures/<lecture_slug>/README.md`
-9. `lectures/<lecture_slug>/lecture_notes.md`
-10. `lectures/<lecture_slug>/links.yaml`
-11. `lectures/<lecture_slug>/lecture_examples/README.md`
-12. `lectures/<lecture_slug>/practical_session/README.md`
+2. `.agents/skills/ml-course-student-navigator/SKILL.md` for helping students navigate materials and environment setup
+3. `.agents/skills/ml-course-textbook-contributor/SKILL.md` for textbook work
+4. `docs/contributing-to-textbook.md`
+5. `docs/okf-authoring-guide.md`
+6. `okf/index.md`
+7. `lectures/README.md`
+8. `lectures/index.yaml`
+9. `lectures/<lecture_slug>/README.md`
+10. `lectures/<lecture_slug>/lecture_notes.md`
+11. `lectures/<lecture_slug>/links.yaml`
+12. `lectures/<lecture_slug>/lecture_examples/README.md`
+13. `lectures/<lecture_slug>/practical_session/README.md`
 
 ## License
 

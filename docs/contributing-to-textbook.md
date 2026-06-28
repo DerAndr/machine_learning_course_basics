@@ -117,7 +117,7 @@ A lab should teach one mechanism. It must include:
 Agents improving the textbook should use the repo skill:
 
 ```text
-.codex/skills/ml-course-textbook-contributor/SKILL.md
+.agents/skills/ml-course-textbook-contributor/SKILL.md
 ```
 
 That skill summarizes the contribution workflow and points to a reference checklist.

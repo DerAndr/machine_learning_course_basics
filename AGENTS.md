@@ -69,7 +69,7 @@ To explore the full course:
 
 To improve the interactive textbook:
 
-1. `.codex/skills/ml-course-textbook-contributor/SKILL.md` — agent workflow
+1. `.agents/skills/ml-course-textbook-contributor/SKILL.md` — agent workflow
 2. `docs/contributing-to-textbook.md` — student and maintainer workflow
 3. `docs/okf-authoring-guide.md` — OKF authoring rules
 4. `okf/` — source knowledge bundle
@@ -143,8 +143,10 @@ Detailed setup: `docs/student-quickstart.md`
 ## Supporting Directories
 
 - `docs/` — student-facing setup guides and workflow documentation
+- `docs/deep-learning-colab-guide.md` — instructions for running heavy deep learning models locally or on Colab
 - `okf/` — concise textbook concepts, learning paths, lab descriptions, and contribution modules
-- `.codex/skills/ml-course-textbook-contributor/` — agent workflow for safe textbook contributions
+- `.agents/skills/ml-course-textbook-contributor/` — agent workflow for safe textbook contributions
+- `.agents/skills/ml-course-student-navigator/` — agent workflow for helping students navigate the course and set up their environment
 - `site/assets/` and `site/data/` — committed assets and public-safe data used by the textbook preview
 - `src/mlcourse/` — shared Python helpers (paths, data utilities)
 - `tools/` — repository maintenance scripts, notebook sync, environment checks, OKF validation, and textbook rendering

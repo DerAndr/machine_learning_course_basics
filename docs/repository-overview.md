@@ -15,7 +15,7 @@ This repository stores the public student version of the machine learning course
 - `lectures/` contains one directory per lecture.
 - `okf/` contains concise textbook concepts, learning paths, labs, and contribution modules.
 - `docs/` contains setup, repository, OKF, and textbook contribution guides.
-- `.codex/skills/ml-course-textbook-contributor/` contains the agent workflow for textbook improvements.
+- `.agents/skills/ml-course-textbook-contributor/` contains the agent workflow for textbook improvements.
 - `site/assets/` and `site/data/` contain committed browser-lab assets and public-safe data.
 - `site/_build/` contains generated textbook preview output and is not committed.
 - `src/mlcourse/` contains shared helper code.

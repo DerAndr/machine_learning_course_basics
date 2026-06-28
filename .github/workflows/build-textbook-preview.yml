@@ -4,10 +4,10 @@ on:
   push:
     branches:
       - main
-      - "codex/okf-*"
+      - "agents/okf-*"
     paths:
       - "okf/**"
-      - ".codex/skills/**"
+      - ".agents/skills/**"
       - "docs/contributing-to-textbook.md"
       - "docs/okf-authoring-guide.md"
       - "site/**"

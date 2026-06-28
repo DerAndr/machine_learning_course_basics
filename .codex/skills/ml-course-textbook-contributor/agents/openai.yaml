@@ -1,4 +1,0 @@
-interface:
-  display_name: "ML Course Textbook Contributor"
-  short_description: "Improve the ML course interactive textbook safely."
-  default_prompt: "Improve a concept, lab, or learning path in the ML course textbook using OKF, validation, and public-safe contribution rules."

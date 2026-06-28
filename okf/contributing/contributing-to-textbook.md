@@ -55,4 +55,4 @@ For mathematical topics, formulas are not optional decoration. They are often th
 
 Read the full [contribution guide](https://github.com/DerAndr/machine_learning_course_basics/blob/main/docs/contributing-to-textbook.md) before opening a larger textbook change.
 
-Agents should also read the repository skill at `.codex/skills/ml-course-textbook-contributor/SKILL.md`.
+Agents should also read the repository skill at `.agents/skills/ml-course-textbook-contributor/SKILL.md`.

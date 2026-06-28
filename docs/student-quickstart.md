@@ -181,7 +181,7 @@ uv sync --group llm
 uv run python tools/check_notebook_environment.py --group llm
 ```
 
-Large-model inference and LoRA cells may exceed local hardware limits and are best run in Colab.
+Large-model inference and LoRA cells may exceed local hardware limits and are best run in Colab. Please read the [Deep Learning and Colab Guide](deep-learning-colab-guide.md) for detailed setup instructions and hardware limits.
 
 ## 4. Daily workflow
 
@@ -205,6 +205,8 @@ Local rule:
 - first run `uv sync`
 - then install any needed optional group
 - then skip the Colab install cell if the package is already available locally
+
+For full details on using Google Colab vs local execution, see the [Deep Learning and Colab Guide](deep-learning-colab-guide.md).
 
 ## 6. Quick reference
 
@@ -236,3 +238,18 @@ uv run pytest
 uv run python tools/validate_okf.py okf/ --strict-warnings
 uv run python tools/build_textbook_preview.py
 ```
+
+## 7. AI Agent Assistance
+
+As a student, you can leverage your local AI agent (Claude, Gemini, etc.) to help you navigate this course repository. 
+
+To use it effectively, your agent can load the `ml-course-student-navigator` skill located at `.agents/skills/ml-course-student-navigator/SKILL.md`.
+
+**What the agent CAN do for you:**
+- Help you locate specific lectures, notes, or slides based on topics you want to learn.
+- Guide you through the interactive textbook (`okf/`) for conceptual questions.
+- Troubleshoot local environment setup and `uv` dependencies.
+- Explain the difference between `lecture_examples/` and `practical_session/` notebooks.
+
+**What the agent WILL NOT do:**
+- It will not solve the `practical_session` notebooks for you. It acts as a tutor and a guide, not a solver.
