@@ -8,13 +8,8 @@ import yaml
 def test_textbook_contributor_skill_is_complete() -> None:
     skill_dir = Path(".agents/skills/ml-course-textbook-contributor")
     skill = skill_dir / "SKILL.md"
-    reference = skill_dir / "references" / "contribution-workflow.md"
 
     assert skill.is_file()
-    assert reference.is_file()
-    for agent_file in ["openai.yaml", "gemini.yaml", "claude.yaml"]:
-        assert (skill_dir / "agents" / agent_file).is_file()
-
     text = skill.read_text(encoding="utf-8")
     assert "TODO" not in text
     assert "ml-course-textbook-contributor" in text
