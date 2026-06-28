@@ -25,8 +25,11 @@ a {
 }
 
 .site-header {
+  align-items: center;
   border-bottom: 1px solid var(--line);
   background: var(--paper);
+  display: flex;
+  justify-content: space-between;
   padding: 1rem clamp(1rem, 3vw, 2rem);
 }
 
@@ -34,6 +37,12 @@ a {
   color: var(--ink);
   font-weight: 700;
   text-decoration: none;
+}
+
+.site-header .manifest-link {
+  color: var(--accent);
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
 .layout {
@@ -94,11 +103,62 @@ main h2 {
 
 .interactive-lab,
 .lab-fallback,
+.objectives,
+.relationship-section,
 .source-materials {
   border: 1px solid var(--line);
   border-radius: 1rem;
   margin-top: 2rem;
   padding: 1rem;
+}
+
+.metadata-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+}
+
+.metadata-badges li {
+  background: var(--accent-soft);
+  border: 1px solid #bfd0ff;
+  border-radius: 999px;
+  color: #183a82;
+  font-size: 0.82rem;
+  padding: 0.2rem 0.65rem;
+}
+
+.relationship-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+}
+
+.relationship-card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 0.85rem;
+  color: var(--ink);
+  display: block;
+  padding: 0.85rem;
+  text-decoration: none;
+}
+
+.relationship-card:hover {
+  border-color: var(--accent);
+}
+
+.relationship-card span,
+.relationship-card small {
+  color: var(--muted);
+  display: block;
+}
+
+.relationship-card strong {
+  display: block;
+  margin: 0.15rem 0;
 }
 
 .interactive-lab {

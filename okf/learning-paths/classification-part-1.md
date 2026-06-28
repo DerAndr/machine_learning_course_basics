@@ -1,16 +1,17 @@
 ---
 type: Learning Path
 title: Classification Part 1
-description: A short route from classification basics to threshold decisions.
+description: A short route from classification basics to metric-aware threshold decisions.
 tags: [classification, supervised-learning]
 timestamp: 2026-06-28T00:00:00Z
 status: draft
 learning_objectives:
-  - Explain the difference between model scores and final classification decisions.
+  - Explain how metrics connect model scores, final decisions, and error costs.
 difficulty: introductory
 estimated_reading_minutes: 6
 related_concepts:
   - /supervised-learning/classification/classification.md
+  - /supervised-learning/classification/classification-metrics.md
   - /supervised-learning/classification/classification-threshold.md
 related_labs:
   - /labs/classification-threshold-explorer.md
@@ -23,8 +24,9 @@ source_materials:
 ## Route
 
 1. Start with [classification](../supervised-learning/classification/classification.md).
-2. Study [classification thresholds](../supervised-learning/classification/classification-threshold.md).
-3. Open the [classification threshold explorer](../labs/classification-threshold-explorer.md).
+2. Read [classification metrics](../supervised-learning/classification/classification-metrics.md).
+3. Study [classification thresholds](../supervised-learning/classification/classification-threshold.md).
+4. Open the [classification threshold explorer](../labs/classification-threshold-explorer.md).
 
 ## Completion check
 

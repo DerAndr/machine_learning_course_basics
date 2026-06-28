@@ -27,6 +27,7 @@ class Page:
     description: str
     body: str
     metadata: dict[str, object]
+    okf_path: str
 
 
 def _is_url(target: str) -> bool:
@@ -38,6 +39,10 @@ def _route_for(markdown_path: Path, bundle: Path, output: Path) -> Path:
     if relative.name == "index.md":
         return output / relative.parent / "index.html"
     return output / relative.with_suffix(".html")
+
+
+def _okf_path_for(markdown_path: Path, bundle: Path) -> str:
+    return "/" + markdown_path.relative_to(bundle).as_posix()
 
 
 def _title_from_body(body: str, fallback: str) -> str:
@@ -164,9 +169,119 @@ def _load_pages(bundle: Path, output: Path) -> list[Page]:
                 description=description,
                 body=rewritten_body,
                 metadata=metadata,
+                okf_path=_okf_path_for(source, bundle),
             )
         )
     return pages
+
+
+def _page_lookup(pages: list[Page]) -> dict[str, Page]:
+    return {page.okf_path: page for page in pages}
+
+
+def _string_list(value: object) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    return [item for item in value if isinstance(item, str)]
+
+
+def _metadata_badges_html(page: Page) -> str:
+    badges = []
+    page_type = page.metadata.get("type")
+    if isinstance(page_type, str):
+        badges.append(page_type)
+    status = page.metadata.get("status")
+    if isinstance(status, str):
+        badges.append(status)
+    badges.extend(_string_list(page.metadata.get("tags")))
+    if not badges:
+        return ""
+    return (
+        '<ul class="metadata-badges" aria-label="Page metadata">'
+        + "".join(f"<li>{html.escape(item)}</li>" for item in badges)
+        + "</ul>"
+    )
+
+
+def _learning_objectives_html(page: Page) -> str:
+    objectives = _string_list(page.metadata.get("learning_objectives"))
+    if not objectives:
+        return ""
+    return (
+        '<section class="objectives"><h2>Learning objective</h2><ul>'
+        + "".join(f"<li>{html.escape(item)}</li>" for item in objectives)
+        + "</ul></section>"
+    )
+
+
+def _relationship_cards_html(
+    page: Page,
+    pages: list[Page],
+    output: Path,
+) -> str:
+    lookup = _page_lookup(pages)
+    groups = (
+        ("Learning route", "related_concepts"),
+        ("Try next", "related_labs"),
+        ("Prerequisites", "prerequisites"),
+    )
+    sections = []
+    for title, field in groups:
+        cards = []
+        for target in _string_list(page.metadata.get(field)):
+            target_page = lookup.get(target)
+            if target_page is None:
+                continue
+            href = _relative_href(page.output, target_page.output)
+            cards.append(
+                '<a class="relationship-card" '
+                f'href="{html.escape(href, quote=True)}">'
+                f"<span>{html.escape(str(target_page.metadata.get('type') or 'Page'))}</span>"
+                f"<strong>{html.escape(target_page.title)}</strong>"
+                f"<small>{html.escape(target_page.description)}</small>"
+                "</a>"
+            )
+        if cards:
+            sections.append(
+                f'<section class="relationship-section"><h2>{title}</h2>'
+                f'<div class="relationship-grid">{"".join(cards)}</div></section>'
+            )
+    return "".join(sections)
+
+
+def _manifest_entry(page: Page, output: Path) -> dict[str, object]:
+    return {
+        "id": page.okf_path.removeprefix("/").removesuffix(".md"),
+        "okf_path": page.okf_path,
+        "title": page.title,
+        "description": page.description,
+        "type": page.metadata.get("type"),
+        "status": page.metadata.get("status"),
+        "tags": _string_list(page.metadata.get("tags")),
+        "learning_objectives": _string_list(page.metadata.get("learning_objectives")),
+        "prerequisites": _string_list(page.metadata.get("prerequisites")),
+        "related_concepts": _string_list(page.metadata.get("related_concepts")),
+        "related_labs": _string_list(page.metadata.get("related_labs")),
+        "source_materials": _string_list(page.metadata.get("source_materials")),
+        "textbook_path": page.output.relative_to(output, walk_up=True).as_posix(),
+    }
+
+
+def _write_manifest(pages: list[Page], output: Path) -> None:
+    concepts = [
+        _manifest_entry(page, output)
+        for page in pages
+        if page.source.name != "index.md" and page.metadata
+    ]
+    payload = {
+        "schema": "ml-course-okf-manifest-v1",
+        "description": "Agent-readable index for the interactive textbook preview.",
+        "concept_count": len(concepts),
+        "concepts": concepts,
+    }
+    (output / "okf-manifest.json").write_text(
+        json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
 
 
 def _source_materials_html(page: Page) -> str:
@@ -273,8 +388,12 @@ def _render_page(page: Page, pages: list[Page], output: Path, data_path: Path) -
     js_href = _relative_href(page.output, output / "assets" / "threshold-lab.js")
     home_href = _relative_href(page.output, output / "index.html")
     body = _markdown_to_html(page.body)
+    badges = _metadata_badges_html(page)
+    objectives = _learning_objectives_html(page)
+    relationships = _relationship_cards_html(page, pages, output)
     lab = _interactive_lab_html(page, output, data_path)
     sources = _source_materials_html(page)
+    manifest_href = _relative_href(page.output, output / "okf-manifest.json")
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -287,11 +406,15 @@ def _render_page(page: Page, pages: list[Page], output: Path, data_path: Path) -
 <body>
   <header class="site-header">
     <a href="{html.escape(home_href, quote=True)}">ML Course Interactive Textbook</a>
+    <a class="manifest-link" href="{html.escape(manifest_href, quote=True)}">Agent manifest</a>
   </header>
   <div class="layout">
     {_navigation_html(pages, page)}
     <main>
+      {badges}
       {body}
+      {objectives}
+      {relationships}
       {lab}
       {sources}
     </main>
@@ -327,6 +450,7 @@ def build_textbook_preview(
     shutil.copytree(site / "data", build_dir / "data")
 
     pages = _load_pages(bundle.resolve(), build_dir.resolve())
+    _write_manifest(pages, build_dir.resolve())
     data_path = (site / "data" / "classification-threshold-scores.json").resolve()
     for page in pages:
         page.output.parent.mkdir(parents=True, exist_ok=True)

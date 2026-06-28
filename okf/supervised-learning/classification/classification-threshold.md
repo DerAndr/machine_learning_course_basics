@@ -11,6 +11,9 @@ difficulty: introductory
 estimated_reading_minutes: 4
 prerequisites:
   - /supervised-learning/classification/classification.md
+  - /supervised-learning/classification/classification-metrics.md
+related_concepts:
+  - /supervised-learning/classification/classification-metrics.md
 related_labs:
   - /labs/classification-threshold-explorer.md
 source_materials:
@@ -25,7 +28,7 @@ Many binary classifiers produce a score before they produce a final label. A cla
 
 ## Why it matters
 
-The threshold controls the balance between different mistakes. Lowering the threshold usually finds more positive cases, but it can also create more false positives. Raising the threshold usually makes positive predictions more selective, but it can miss more true positive cases.
+The threshold controls the balance between different mistakes. Lowering the threshold usually finds more positive cases, but it can also create more false positives. Raising the threshold usually makes positive predictions more selective, but it can miss more true positive cases. Use [classification metrics](classification-metrics.md) to describe that trade-off precisely.
 
 ## Example
 

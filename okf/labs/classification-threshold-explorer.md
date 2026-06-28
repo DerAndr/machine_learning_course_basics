@@ -13,6 +13,7 @@ prerequisites:
   - /supervised-learning/classification/classification-threshold.md
 related_concepts:
   - /supervised-learning/classification/classification.md
+  - /supervised-learning/classification/classification-metrics.md
   - /supervised-learning/classification/classification-threshold.md
 source_materials:
   - /lectures/lecture_05_classification_part_1/lecture_notes.md
