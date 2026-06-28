@@ -51,8 +51,8 @@ def test_repository_scaffold_validates_without_findings() -> None:
     result = validate_bundle(Path("okf"), repository_root=Path.cwd())
     assert result.errors == ()
     assert result.warnings == ()
-    assert result.index_count == 3
-    assert result.concept_count == 0
+    assert result.index_count == 5
+    assert result.concept_count == 4
 
 
 def test_parse_markdown_preserves_unknown_fields() -> None:

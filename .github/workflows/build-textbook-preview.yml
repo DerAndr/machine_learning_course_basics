@@ -1,4 +1,4 @@
-name: Validate OKF
+name: Build Textbook Preview
 
 on:
   push:
@@ -7,6 +7,7 @@ on:
       - "codex/okf-*"
     paths:
       - "okf/**"
+      - "site/**"
       - "src/mlcourse/okf_validation.py"
       - "tools/validate_okf.py"
       - "tools/build_textbook_preview.py"
@@ -14,17 +15,7 @@ on:
       - "tests/test_textbook_preview.py"
       - "pyproject.toml"
       - "uv.lock"
-      - ".github/workflows/validate-okf.yml"
-  pull_request:
-    paths:
-      - "okf/**"
-      - "src/mlcourse/okf_validation.py"
-      - "tools/validate_okf.py"
-      - "tools/build_textbook_preview.py"
-      - "tests/test_okf_validation.py"
-      - "tests/test_textbook_preview.py"
-      - "pyproject.toml"
-      - "uv.lock"
+      - ".github/workflows/build-textbook-preview.yml"
       - ".github/workflows/validate-okf.yml"
   workflow_dispatch:
 
@@ -32,7 +23,7 @@ permissions:
   contents: read
 
 jobs:
-  validate:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -46,13 +37,33 @@ jobs:
       - name: Install project environment
         run: uv sync --locked --no-default-groups --group dev
 
-      - name: Check validator formatting and lint
+      - name: Check formatting and lint
         run: |
           uv run --no-sync ruff format --check src/mlcourse/okf_validation.py tools/validate_okf.py tools/build_textbook_preview.py tests/test_okf_validation.py tests/test_textbook_preview.py
           uv run --no-sync ruff check src/mlcourse/okf_validation.py tools/validate_okf.py tools/build_textbook_preview.py tests/test_okf_validation.py tests/test_textbook_preview.py
 
-      - name: Run validator tests
+      - name: Run preview tests
         run: uv run --no-sync pytest tests/test_okf_validation.py tests/test_textbook_preview.py
 
-      - name: Validate bundle
-        run: uv run --no-sync python tools/validate_okf.py okf/
+      - name: Build textbook preview
+        run: uv run --no-sync python tools/build_textbook_preview.py
+
+      - name: Upload textbook artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/_build
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

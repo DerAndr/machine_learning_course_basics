@@ -15,6 +15,7 @@ dist/
 htmlcov/
 legacy_import/tmp/
 private_materials/
+site/_build/
 *.egg-info/
 *.log
 *.nbconvert.ipynb

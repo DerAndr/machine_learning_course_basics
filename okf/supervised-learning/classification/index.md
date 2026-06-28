@@ -1,4 +1,4 @@
 # Classification
 
-Classification concepts will be added in the approved Phase 2 pilot.
-
+* [Classification](classification.md) - Predicting discrete labels from features.
+* [Classification thresholds](classification-threshold.md) - Turning model scores into decisions.

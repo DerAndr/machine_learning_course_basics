@@ -1,0 +1,14 @@
+{
+  "examples": [
+    { "id": "A", "label": 1, "score": 0.92 },
+    { "id": "B", "label": 1, "score": 0.81 },
+    { "id": "C", "label": 0, "score": 0.74 },
+    { "id": "D", "label": 1, "score": 0.68 },
+    { "id": "E", "label": 0, "score": 0.57 },
+    { "id": "F", "label": 1, "score": 0.49 },
+    { "id": "G", "label": 0, "score": 0.42 },
+    { "id": "H", "label": 0, "score": 0.31 },
+    { "id": "I", "label": 1, "score": 0.27 },
+    { "id": "J", "label": 0, "score": 0.12 }
+  ]
+}
