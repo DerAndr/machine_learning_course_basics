@@ -30,8 +30,20 @@ The textbook is a knowledge system, not only a website. Contributions should imp
 - Improve or add the smallest useful concept, lab, or learning path.
 - Include formulas and assumptions when the topic requires them.
 - Keep descriptions, indexes, skills, and learning objectives synchronized.
+- Keep README files, contribution guides, and the agent skill synchronized when navigation or workflow changes.
 - Validate the OKF bundle and rebuild the textbook preview.
 - Check the deployed page and manifest after merge.
+
+## Fast path
+
+For a small concept improvement:
+
+1. Find the target page in `okf/`.
+2. Read the source lecture material in `lectures/`.
+3. Improve the explanation, keeping the first H1 equal to frontmatter `title`.
+4. If `description` changes, update every index card with the exact same sentence.
+5. Run validation and rebuild the preview.
+6. Check the deployed page and `okf-manifest.json` after merge.
 
 ## Quality bar
 
@@ -42,3 +54,5 @@ For mathematical topics, formulas are not optional decoration. They are often th
 ## Go deeper
 
 Read the full [contribution guide](https://github.com/DerAndr/machine_learning_course_basics/blob/main/docs/contributing-to-textbook.md) before opening a larger textbook change.
+
+Agents should also read the repository skill at `.codex/skills/ml-course-textbook-contributor/SKILL.md`.
