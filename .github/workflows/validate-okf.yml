@@ -1,6 +1,18 @@
 name: Validate OKF
 
 on:
+  push:
+    branches:
+      - main
+      - "codex/okf-*"
+    paths:
+      - "okf/**"
+      - "src/mlcourse/okf_validation.py"
+      - "tools/validate_okf.py"
+      - "tests/test_okf_validation.py"
+      - "pyproject.toml"
+      - "uv.lock"
+      - ".github/workflows/validate-okf.yml"
   pull_request:
     paths:
       - "okf/**"
