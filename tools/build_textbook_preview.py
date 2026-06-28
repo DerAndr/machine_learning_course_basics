@@ -404,6 +404,13 @@ def _render_page(page: Page, pages: list[Page], output: Path, data_path: Path) -
   <title>{html.escape(page.title)} · ML Course Interactive Textbook</title>
   <meta name="description" content="{html.escape(page.description, quote=True)}">
   <link rel="stylesheet" href="{html.escape(css_href, quote=True)}">
+  <script>
+    window.MathJax = {{
+      tex: {{ inlineMath: [["$", "$"], ["\\\\(", "\\\\)"]] }},
+      svg: {{ fontCache: "global" }}
+    }};
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 </head>
 <body>
   <header class="site-header">

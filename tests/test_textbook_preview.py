@@ -39,6 +39,7 @@ def test_textbook_preview_builds_interactive_lab(tmp_path: Path) -> None:
     assert "Classification Metrics" in lab_html
     assert "Agent manifest" in lab_html
     assert "<h2>Skills</h2>" in lab_html
+    assert "mathjax" in lab_html.lower()
 
     manifest_text = manifest.read_text(encoding="utf-8")
     assert "ml-course-okf-manifest-v1" in manifest_text
@@ -46,3 +47,9 @@ def test_textbook_preview_builds_interactive_lab(tmp_path: Path) -> None:
     manifest_data = json.loads(manifest_text)
     for concept in manifest_data["concepts"]:
         assert concept["skills"] == concept["learning_objectives"]
+
+    metrics_html = (
+        output / "supervised-learning" / "classification" / "classification-metrics.html"
+    ).read_text(encoding="utf-8")
+    assert "\\mathrm{Precision}" in metrics_html
+    assert "F_\\beta" in metrics_html

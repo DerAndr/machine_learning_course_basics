@@ -90,6 +90,11 @@ main {
   padding: clamp(1.25rem, 4vw, 2.5rem);
 }
 
+main p,
+main li {
+  max-width: 68ch;
+}
+
 main h1 {
   line-height: 1.1;
   margin-top: 0;
@@ -203,6 +208,11 @@ td {
 th {
   color: var(--muted);
   font-size: 0.9rem;
+}
+
+.MathJax {
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 @media (max-width: 760px) {
