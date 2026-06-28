@@ -1,0 +1,369 @@
+# Machine Learning Course Mind Map
+
+- Machine Learning
+  - Learning Paradigms / Supervision Regimes
+    - Supervised Learning
+      - Training Signal
+        - Labeled examples: (X, y)
+        - Explicit target variable
+        - Objective / loss function
+      - Prediction Tasks
+        - Regression
+          - Continuous target
+          - Point prediction
+          - Quantile / uncertainty estimation
+          - Survival analysis
+        - Classification
+          - Binary classification
+          - Multiclass classification
+          - Multilabel classification
+          - Ordinal classification
+          - Cost-sensitive classification
+        - Ranking
+          - Pointwise learning-to-rank
+          - Pairwise learning-to-rank
+          - Listwise learning-to-rank
+          - Search ranking
+          - Recommendation ranking
+        - Forecasting
+          - Univariate forecasting
+          - Multivariate forecasting
+          - Probabilistic forecasting
+          - Hierarchical forecasting
+        - Structured Prediction
+          - Interdependent output variables
+          - Sequence labeling
+          - Named entity recognition
+          - Image segmentation
+          - Object detection
+          - Parsing
+          - Sequence-to-sequence prediction
+      - Model Families
+        - Linear / generalized linear models
+        - Decision trees
+        - Random forests
+        - Gradient boosting
+        - Support vector machines
+        - k-Nearest Neighbors
+        - Neural networks
+      - Typical Objectives
+        - MSE / MAE / Huber loss
+        - Cross-entropy
+        - Hinge loss
+        - Pairwise ranking loss
+        - Listwise ranking loss
+    - Semi-Supervised Learning
+      - Training Signal
+        - Small labeled dataset
+        - Large unlabeled dataset
+        - Assumption: unlabeled data reveals useful structure
+      - Typical Tasks
+        - Classification with limited labels
+        - Regression with limited labels
+        - Ranking with limited relevance labels
+        - Structured prediction with partial annotation
+      - Core Methods
+        - Self-training
+        - Pseudo-labeling
+        - Co-training
+        - Label propagation
+        - Label spreading
+        - Graph-based methods
+        - Consistency regularization
+        - Teacher-student training
+      - Key Assumptions
+        - Smoothness assumption
+        - Cluster assumption
+        - Manifold assumption
+      - Main Risks
+        - Confirmation bias
+        - Error amplification
+        - Class imbalance
+        - Distribution shift
+        - Poor pseudo-label calibration
+    - Weakly Supervised Learning
+      - Training Signal
+        - Incomplete labels
+        - Inexact labels
+        - Noisy / inaccurate labels
+        - Indirect labels
+      - Types of Weak Supervision
+        - Incomplete supervision
+        - Inexact supervision
+        - Inaccurate supervision
+      - Core Methods
+        - Distant supervision
+        - Heuristic labeling rules
+        - Labeling functions
+        - Data programming
+        - Positive-Unlabeled learning
+        - Multiple Instance Learning
+        - Noise-robust training
+      - Typical Examples
+        - Clicks as relevance labels
+        - Purchases as preference labels
+        - Search queries as intent signals
+        - Knowledge-base labels for text
+        - Image-level labels for localization
+      - Main Risks
+        - Label noise
+        - Selection bias
+        - Exposure bias
+        - Feedback loops
+        - Spurious correlations
+    - Self-Supervised Learning
+      - Training Signal
+        - Targets constructed from the data
+        - No manual labels required
+        - Typically learns useful representations
+      - Core Objectives
+        - Contrastive learning
+        - Masked prediction
+        - Autoregressive prediction
+        - Reconstruction / denoising
+        - Multimodal alignment
+        - Temporal / context prediction
+      - Typical Pretext Tasks
+        - Masked token prediction
+        - Next-token prediction
+        - Next-item prediction
+        - Masked image reconstruction
+        - Image augmentation matching
+        - Temporal order prediction
+        - Context prediction
+      - Representative Approaches
+        - Word2Vec / skip-gram
+        - Autoencoders
+        - SimCLR
+        - MoCo
+        - BYOL
+        - BERT-style masked modeling
+        - Autoregressive language modeling
+        - Masked autoencoders
+      - Downstream Usage
+        - Fine-tuning
+        - Linear probing
+        - Retrieval
+        - Clustering
+        - Zero-shot / few-shot transfer
+    - Unsupervised Learning
+      - Training Signal
+        - Inputs only: X
+        - No explicit target labels
+        - Discover structure in data
+      - Clustering
+        - Partitioning clustering
+          - k-Means
+          - k-Medoids
+        - Hierarchical clustering
+        - Density-based clustering
+          - DBSCAN
+          - HDBSCAN
+        - Probabilistic clustering
+          - Gaussian Mixture Models
+      - Dimensionality Reduction
+        - Linear methods
+          - PCA
+          - SVD
+          - NMF
+        - Manifold learning
+          - t-SNE
+          - UMAP
+          - Isomap
+        - Representation learning
+      - Density Estimation
+        - Kernel Density Estimation
+        - Gaussian Mixture Models
+        - Histogram-based estimation
+        - Probabilistic graphical models
+      - Association Rule Learning
+        - Frequent itemsets
+        - Apriori
+        - FP-Growth
+        - Support
+        - Confidence
+        - Lift
+      - Topic Modeling
+        - Latent Semantic Analysis
+        - Probabilistic LSA
+        - Latent Dirichlet Allocation
+        - Non-negative Matrix Factorization
+      - Latent Factor Models
+        - Matrix factorization
+        - Embeddings
+      - Anomaly Detection (cross-cutting)
+        - Isolation Forest
+        - Local Outlier Factor
+        - One-Class SVM
+        - Distance-based detection
+        - Density-based detection
+        - Reconstruction-based detection
+    - Reinforcement Learning
+      - Core Elements
+        - Agent
+        - Environment
+        - State
+        - Action
+        - Policy
+        - Reward
+        - Return
+        - Value function
+      - Main Settings
+        - Online RL
+        - Offline RL
+        - Model-based RL
+        - Model-free RL
+        - Single-agent RL
+        - Multi-agent RL
+      - Algorithm Families
+        - Value-based methods
+          - Q-Learning
+          - Deep Q-Network
+        - Policy-based methods
+          - REINFORCE
+          - Policy gradient methods
+        - Actor-Critic methods
+          - A2C / A3C
+          - PPO
+          - DDPG
+          - SAC
+      - Related Approaches
+        - Multi-armed bandits
+        - Contextual bandits
+        - Imitation learning
+        - Inverse reinforcement learning
+        - Preference optimization / RLHF
+      - Typical Applications
+        - Robotics
+        - Games
+        - Dynamic pricing
+        - Recommendation policies
+        - Resource allocation
+        - Control systems
+  - Tasks and Output Structures
+    - Prediction
+      - Regression
+      - Classification
+      - Ranking
+      - Forecasting
+      - Structured prediction
+    - Structure Discovery
+      - Clustering
+      - Dimensionality reduction
+      - Density estimation
+      - Topic modeling
+      - Association rules
+      - Representation / embedding learning
+    - Detection and Monitoring
+      - Anomaly detection
+      - Change-point detection
+      - Drift detection
+      - Fraud / abuse detection
+    - Generation
+      - Text generation
+      - Image generation
+      - Audio / video generation
+      - Data synthesis
+    - Decision and Control
+      - Multi-armed bandits
+      - Contextual bandits
+      - Reinforcement learning
+      - Combinatorial optimization
+  - Model Families
+    - Classical ML Models
+      - Linear models
+        - Linear regression
+        - Logistic regression
+        - Generalized linear models
+        - Generalized additive models
+      - Tree-based models
+        - Decision trees
+        - Random forests
+        - Gradient boosting
+        - XGBoost / LightGBM / CatBoost
+      - Nearest-neighbor methods
+        - k-Nearest Neighbors
+        - Local methods
+      - Kernel methods
+        - Support Vector Machines
+        - Kernel ridge regression
+        - Gaussian processes
+      - Probabilistic models
+        - Naive Bayes
+        - Bayesian regression
+        - Mixture models
+        - Hidden Markov Models
+      - Graphical models
+        - Bayesian networks
+        - Markov random fields
+        - Conditional Random Fields
+      - Ensemble methods
+        - Bagging
+        - Boosting
+        - Stacking
+    - Deep Learning
+      - Feed-forward networks / MLPs
+      - Convolutional neural networks
+      - Recurrent networks
+        - RNN
+        - LSTM / GRU
+      - Transformers
+      - Graph Neural Networks
+      - Autoencoders
+      - Generative models
+        - Autoregressive models
+        - Variational Autoencoders
+        - GANs
+        - Diffusion models
+    - Foundation Models
+      - Language models
+      - Vision-language models
+      - Multimodal models
+      - Embeddings models
+      - Domain-specific foundation models
+  - ML Workflow
+    - Problem Framing
+      - Business / research objective
+      - Decision to support
+      - Target definition
+      - Constraints and failure costs
+      - Baseline
+    - Data
+      - Data collection
+      - Data quality checks
+      - Labeling
+      - Feature engineering
+      - Dataset versioning
+      - Train / validation / test design
+    - Modeling
+      - Candidate approaches
+      - Training
+      - Hyperparameter optimization
+      - Calibration
+      - Interpretability / error analysis
+    - Evaluation
+      - Offline metrics
+      - Robustness testing
+      - Fairness / safety checks
+      - Online experiments
+      - Statistical significance
+    - Deployment and Monitoring
+      - Serving / inference
+      - A/B testing
+      - Latency and cost
+      - Data drift
+      - Concept drift
+      - Performance monitoring
+      - Retraining
+    - Governance
+      - Privacy and security
+      - Documentation
+      - Reproducibility
+      - Human oversight
+      - Auditability
+        - Large editable master map. Use the page tabs for focused editing of individual branches.<br><br>Learning paradigms are <b>not mutually exclusive</b>; they define how a training signal is obtained.
+        - Large Language Models (LLMs)
+        - Prompt Engineering
+        - Parameter-Efficient Fine-Tuning (PEFT / LoRA)
+        - Retrieval-Augmented Generation (RAG)
+        - Model Quantization

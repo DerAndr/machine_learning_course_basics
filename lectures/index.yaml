@@ -10,7 +10,8 @@
 #     directory          – lecture directory name
 #     readme / notes / metadata / slides_pdf – per-lecture core files
 #     lecture_examples_*  – directory, README, notebooks (.ipynb), scripts (.py)
-#     practical_session_* – (optional) directory, README, student notebook, student script
+#     practical_session_* – (optional) directory, README, student notebook, student script,
+#                           teacher notebook, teacher cheat sheet
 #     raw_sources         – (optional) pointer to incoming_materials/ provenance
 
 schema_version: 1
@@ -42,6 +43,8 @@ lectures:
     practical_session_readme: lecture_01_eda/practical_session/README.md
     practical_session_student_notebook: lecture_01_eda/practical_session/eda_practical_student_90min.ipynb
     practical_session_student_script: lecture_01_eda/practical_session/eda_practical_student_90min.py
+    practical_session_teacher_notebook: lecture_01_eda/practical_session/eda_practical_teacher_90min.ipynb
+    practical_session_teacher_cheat_sheet: lecture_01_eda/practical_session/teacher_cheat_sheet.md
     raw_sources: ../incoming_materials/lecture_01_eda
   - number: 2
     slug: lecture_02_data_preparation_part_1
@@ -65,6 +68,8 @@ lectures:
     practical_session_readme: lecture_02_data_preparation_part_1/practical_session/README.md
     practical_session_student_notebook: lecture_02_data_preparation_part_1/practical_session/data_preparation_part1_practical_student_90min.ipynb
     practical_session_student_script: lecture_02_data_preparation_part_1/practical_session/data_preparation_part1_practical_student_90min.py
+    practical_session_teacher_notebook: lecture_02_data_preparation_part_1/practical_session/data_preparation_part1_practical_teacher_90min.ipynb
+    practical_session_teacher_cheat_sheet: lecture_02_data_preparation_part_1/practical_session/teacher_cheat_sheet.md
     raw_sources: ../incoming_materials/lecture_02_data_preparation_part_1
   - number: 3
     slug: lecture_03_data_preparation_part_2
@@ -94,6 +99,8 @@ lectures:
     practical_session_readme: lecture_03_data_preparation_part_2/practical_session/README.md
     practical_session_student_notebook: lecture_03_data_preparation_part_2/practical_session/data_preparation_part2_practical_student_90min.ipynb
     practical_session_student_script: lecture_03_data_preparation_part_2/practical_session/data_preparation_part2_practical_student_90min.py
+    practical_session_teacher_notebook: lecture_03_data_preparation_part_2/practical_session/data_preparation_part2_practical_teacher_90min.ipynb
+    practical_session_teacher_cheat_sheet: lecture_03_data_preparation_part_2/practical_session/teacher_cheat_sheet.md
     raw_sources: ../incoming_materials/lecture_03_data_preparation_part_2
   - number: 4
     slug: lecture_04_regression
@@ -113,6 +120,8 @@ lectures:
     practical_session_readme: lecture_04_regression/practical_session/README.md
     practical_session_student_notebook: lecture_04_regression/practical_session/regression_practical_student_90min.ipynb
     practical_session_student_script: lecture_04_regression/practical_session/regression_practical_student_90min.py
+    practical_session_teacher_notebook: lecture_04_regression/practical_session/regression_practical_teacher_90min.ipynb
+    practical_session_teacher_cheat_sheet: lecture_04_regression/practical_session/teacher_cheat_sheet.md
     raw_sources: ../incoming_materials/lecture_04_regression
   - number: 5
     slug: lecture_05_classification_part_1
@@ -136,6 +145,8 @@ lectures:
     practical_session_readme: lecture_05_classification_part_1/practical_session/README.md
     practical_session_student_notebook: lecture_05_classification_part_1/practical_session/classification_part1_practical_student_90min.ipynb
     practical_session_student_script: lecture_05_classification_part_1/practical_session/classification_part1_practical_student_90min.py
+    practical_session_teacher_notebook: lecture_05_classification_part_1/practical_session/classification_part1_practical_teacher_90min.ipynb
+    practical_session_teacher_cheat_sheet: lecture_05_classification_part_1/practical_session/teacher_cheat_sheet.md
     raw_sources: ../incoming_materials/lecture_05_classification_part_1
   - number: 6
     slug: lecture_06_classification_part_2
@@ -161,6 +172,8 @@ lectures:
     practical_session_readme: lecture_06_classification_part_2/practical_session/README.md
     practical_session_student_notebook: lecture_06_classification_part_2/practical_session/classification_part2_practical_student_90min.ipynb
     practical_session_student_script: lecture_06_classification_part_2/practical_session/classification_part2_practical_student_90min.py
+    practical_session_teacher_notebook: lecture_06_classification_part_2/practical_session/classification_part2_practical_teacher_90min.ipynb
+    practical_session_teacher_cheat_sheet: lecture_06_classification_part_2/practical_session/teacher_cheat_sheet.md
     raw_sources: ../incoming_materials/lecture_06_classification_part_2
   - number: 7
     slug: lecture_07_ensembles
@@ -180,6 +193,8 @@ lectures:
     practical_session_readme: lecture_07_ensembles/practical_session/README.md
     practical_session_student_notebook: lecture_07_ensembles/practical_session/ensembles_practical_student_90min.ipynb
     practical_session_student_script: lecture_07_ensembles/practical_session/ensembles_practical_student_90min.py
+    practical_session_teacher_notebook: lecture_07_ensembles/practical_session/ensembles_practical_teacher_90min.ipynb
+    practical_session_teacher_cheat_sheet: lecture_07_ensembles/practical_session/teacher_cheat_sheet.md
     raw_sources: ../incoming_materials/lecture_07_ensembles
   - number: 8
     slug: lecture_08_time_series
@@ -199,6 +214,8 @@ lectures:
     practical_session_readme: lecture_08_time_series/practical_session/README.md
     practical_session_student_notebook: lecture_08_time_series/practical_session/time_series_practical_student_90min.ipynb
     practical_session_student_script: lecture_08_time_series/practical_session/time_series_practical_student_90min.py
+    practical_session_teacher_notebook: lecture_08_time_series/practical_session/time_series_practical_teacher_90min.ipynb
+    practical_session_teacher_cheat_sheet: lecture_08_time_series/practical_session/teacher_cheat_sheet.md
     raw_sources: ../incoming_materials/lecture_08_time_series
   - number: 9
     slug: lecture_09_clustering
@@ -218,6 +235,8 @@ lectures:
     practical_session_readme: lecture_09_clustering/practical_session/README.md
     practical_session_student_notebook: lecture_09_clustering/practical_session/clustering_practical_student_90min.ipynb
     practical_session_student_script: lecture_09_clustering/practical_session/clustering_practical_student_90min.py
+    practical_session_teacher_notebook: lecture_09_clustering/practical_session/clustering_practical_teacher_90min.ipynb
+    practical_session_teacher_cheat_sheet: lecture_09_clustering/practical_session/teacher_cheat_sheet.md
     raw_sources: ../incoming_materials/lecture_09_clustering
   - number: 10
     slug: lecture_10_cross_validation_hpo
@@ -239,6 +258,8 @@ lectures:
     practical_session_readme: lecture_10_cross_validation_hpo/practical_session/README.md
     practical_session_student_notebook: lecture_10_cross_validation_hpo/practical_session/crossval_hpo_practical_student_90min.ipynb
     practical_session_student_script: lecture_10_cross_validation_hpo/practical_session/crossval_hpo_practical_student_90min.py
+    practical_session_teacher_notebook: lecture_10_cross_validation_hpo/practical_session/crossval_hpo_practical_teacher_90min.ipynb
+    practical_session_teacher_cheat_sheet: lecture_10_cross_validation_hpo/practical_session/teacher_cheat_sheet.md
     raw_sources: ../incoming_materials/lecture_10_cross_validation_hpo
   - number: 11
     slug: lecture_11_explainability_interpretability
@@ -260,6 +281,8 @@ lectures:
     practical_session_readme: lecture_11_explainability_interpretability/practical_session/README.md
     practical_session_student_notebook: lecture_11_explainability_interpretability/practical_session/xai_practical_student_90min.ipynb
     practical_session_student_script: lecture_11_explainability_interpretability/practical_session/xai_practical_student_90min.py
+    practical_session_teacher_notebook: lecture_11_explainability_interpretability/practical_session/xai_practical_teacher_90min.ipynb
+    practical_session_teacher_cheat_sheet: lecture_11_explainability_interpretability/practical_session/teacher_cheat_sheet.md
     raw_sources: ../incoming_materials/lecture_11_explainability_interpretability
   - number: 12
     slug: lecture_12_intro_neural_networks
@@ -279,6 +302,8 @@ lectures:
     practical_session_readme: lecture_12_intro_neural_networks/practical_session/README.md
     practical_session_student_notebook: lecture_12_intro_neural_networks/practical_session/nn_practical_student_90min.ipynb
     practical_session_student_script: lecture_12_intro_neural_networks/practical_session/nn_practical_student_90min.py
+    practical_session_teacher_notebook: lecture_12_intro_neural_networks/practical_session/nn_practical_teacher_90min.ipynb
+    practical_session_teacher_cheat_sheet: lecture_12_intro_neural_networks/practical_session/teacher_cheat_sheet.md
     raw_sources: ../incoming_materials/lecture_12_intro_neural_networks
   - number: 13
     slug: lecture_13_responsible_ai
@@ -298,6 +323,8 @@ lectures:
     practical_session_readme: lecture_13_responsible_ai/practical_session/README.md
     practical_session_student_notebook: lecture_13_responsible_ai/practical_session/responsible_ai_practical_student_90min.ipynb
     practical_session_student_script: lecture_13_responsible_ai/practical_session/responsible_ai_practical_student_90min.py
+    practical_session_teacher_notebook: lecture_13_responsible_ai/practical_session/responsible_ai_practical_teacher_90min.ipynb
+    practical_session_teacher_cheat_sheet: lecture_13_responsible_ai/practical_session/teacher_cheat_sheet.md
     raw_sources: ../incoming_materials/lecture_13_responsible_ai
   - number: 14
     slug: lecture_14_ml_in_production
@@ -317,6 +344,8 @@ lectures:
     practical_session_readme: lecture_14_ml_in_production/practical_session/README.md
     practical_session_student_notebook: lecture_14_ml_in_production/practical_session/ml_in_production_practical_student_90min.ipynb
     practical_session_student_script: lecture_14_ml_in_production/practical_session/ml_in_production_practical_student_90min.py
+    practical_session_teacher_notebook: lecture_14_ml_in_production/practical_session/ml_in_production_practical_teacher_90min.ipynb
+    practical_session_teacher_cheat_sheet: lecture_14_ml_in_production/practical_session/teacher_cheat_sheet.md
     raw_sources: ../incoming_materials/lecture_14_ml_in_production
   - number: 15
     slug: lecture_15_computer_vision
@@ -330,6 +359,8 @@ lectures:
     practical_session_readme: lecture_15_computer_vision/practical_session/README.md
     practical_session_student_notebook: lecture_15_computer_vision/practical_session/computer_vision_practical_student_90min.ipynb
     practical_session_student_script: lecture_15_computer_vision/practical_session/computer_vision_practical_student_90min.py
+    practical_session_teacher_notebook: lecture_15_computer_vision/practical_session/computer_vision_practical_teacher_90min.ipynb
+    practical_session_teacher_cheat_sheet: lecture_15_computer_vision/practical_session/teacher_cheat_sheet.md
   - number: 16
     slug: lecture_16_nlp_overview
     title: Natural Language Processing
@@ -342,6 +373,8 @@ lectures:
     practical_session_readme: lecture_16_nlp_overview/practical_session/README.md
     practical_session_student_notebook: lecture_16_nlp_overview/practical_session/nlp_overview_practical_student_90min.ipynb
     practical_session_student_script: lecture_16_nlp_overview/practical_session/nlp_overview_practical_student_90min.py
+    practical_session_teacher_notebook: lecture_16_nlp_overview/practical_session/nlp_overview_practical_teacher_90min.ipynb
+    practical_session_teacher_cheat_sheet: lecture_16_nlp_overview/practical_session/teacher_cheat_sheet.md
   - number: 17
     slug: lecture_17_recsys
     title: Recommender Systems
@@ -358,17 +391,28 @@ lectures:
     practical_session_readme: lecture_17_recsys/practical_session/README.md
     practical_session_student_notebook: lecture_17_recsys/practical_session/recsys_practical_student_90min.ipynb
     practical_session_student_script: lecture_17_recsys/practical_session/recsys_practical_student_90min.py
+    practical_session_teacher_notebook: lecture_17_recsys/practical_session/recsys_practical_teacher_90min.ipynb
+    practical_session_teacher_script: lecture_17_recsys/practical_session/recsys_practical_teacher_90min.py
+    practical_session_teacher_part_2_notebook: lecture_17_recsys/practical_session/recsys_part_2_production_pipeline_teacher_90min.ipynb
+    practical_session_teacher_part_2_script: lecture_17_recsys/practical_session/recsys_part_2_production_pipeline_teacher_90min.py
+    practical_session_teacher_cheat_sheet: lecture_17_recsys/practical_session/teacher_cheat_sheet.md
   - number: 18
     slug: lecture_18_llm_overview
     title: LLM Overview
-    status: practical_full_dual_notebook_draft
+    status: practical_teacher_dual_notebook_draft
     directory: lecture_18_llm_overview
     readme: lecture_18_llm_overview/README.md
     notes: lecture_18_llm_overview/lecture_notes.md
     metadata: lecture_18_llm_overview/links.yaml
     practical_session_directory: lecture_18_llm_overview/practical_session
     practical_session_readme: lecture_18_llm_overview/practical_session/README.md
-    practical_session_text_notebook: lecture_18_llm_overview/practical_session/LLMs_hands_on.ipynb
-    practical_session_text_script: lecture_18_llm_overview/practical_session/LLMs_hands_on.py
-    practical_session_multimodal_notebook: lecture_18_llm_overview/practical_session/Multimodal_LLMs_Hands_on.ipynb
-    practical_session_multimodal_script: lecture_18_llm_overview/practical_session/Multimodal_LLMs_Hands_on.py
+    practical_session_teacher_notebook: lecture_18_llm_overview/practical_session/LLMs_hands_on.ipynb
+    practical_session_teacher_script: lecture_18_llm_overview/practical_session/LLMs_hands_on.py
+    practical_session_teacher_part_2_notebook: lecture_18_llm_overview/practical_session/Multimodal_LLMs_Hands_on.ipynb
+    practical_session_teacher_part_2_script: lecture_18_llm_overview/practical_session/Multimodal_LLMs_Hands_on.py
+    practical_session_teacher_cheat_sheet: lecture_18_llm_overview/practical_session/teacher_cheat_sheet.md
+  - number: 19
+    slug: lecture_19_course_overview
+    title: Course Overview
+    directory: lecture_19_course_overview
+    readme: lecture_19_course_overview/README.md

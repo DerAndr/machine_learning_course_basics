@@ -22,7 +22,7 @@ Fully packaged lecture directories contain:
 The public release of each practical session contains only the student-facing notebook and README; instructor materials stay unpublished.
 Lectures 15-18 are currently practical-first drafts, so they do not yet include slide decks or separate lecture example notebooks.
 Lecture 17 also includes draft planning notes under `plan/` for the two recommender-systems parts.
-Lecture 18 currently publishes two full practical notebooks rather than a separate student TODO notebook.
+Lecture 18 is currently a dual teacher-notebook draft without a separate student TODO notebook.
 
 ## Relationship to the Interactive Textbook
 
@@ -50,3 +50,4 @@ When a lecture explanation changes in a way that affects a textbook concept, rev
 16. [Lecture 16: Natural Language Processing](lecture_16_nlp_overview/README.md)
 17. [Lecture 17: Recommender Systems](lecture_17_recsys/README.md)
 18. [Lecture 18: LLM Overview](lecture_18_llm_overview/README.md)
+19. [Lecture 19: Course Overview](lecture_19_course_overview/README.md)
