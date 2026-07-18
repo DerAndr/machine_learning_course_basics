@@ -1,0 +1,4 @@
+interface:
+  display_name: "Interactive Lecture Learning Assistant"
+  short_description: "Build an offline interactive review site for one ML lecture."
+  default_prompt: "Use $ml-course-interactive-learning-assistant to create a grounded, accessible, self-contained review site for a selected lecture."
