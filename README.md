@@ -50,6 +50,17 @@ The textbook is built from the Open Knowledge Format bundle in `okf/`. The same 
 - generated textbook pages under `site/_build/` during preview builds.
 
 The current pilot focuses on Classification Part 1: classification, metrics, threshold choice, one learning path, and one browser-only threshold lab.
+
+### Interactive lecture reviews
+
+Standalone lecture reviews complement the OKF textbook with focused,
+offline-capable explanations, graphs, accessibility controls, and knowledge
+checks.
+
+- [Live EDA interactive review](https://derandr.github.io/machine_learning_course_basics/demos/lecture_01_eda/)
+- [Offline EDA review](lecture_experiences/lecture_01_eda/index.html)
+- [Learning-assistant guide](docs/interactive-lecture-learning-assistant.md)
+
 ## Assignments & Exams
 
 - **[Mini-Project: NYC Airbnb Price Prediction](mini_projects/airbnb_nyc/README.md)**

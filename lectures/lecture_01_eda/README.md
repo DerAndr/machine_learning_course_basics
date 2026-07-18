@@ -29,6 +29,11 @@ The practical covers:
 - correlation heatmaps, scatter plots, cross-tabs, and pair plots
 - one optional automated-EDA example at the end
 
+## Interactive Review
+
+- [Open the live EDA review](https://derandr.github.io/machine_learning_course_basics/demos/lecture_01_eda/)
+- Offline file: [`lecture_experiences/lecture_01_eda/index.html`](../../lecture_experiences/lecture_01_eda/index.html)
+
 ---
 
 [All Lectures](../README.md) | [Next →](../lecture_02_data_preparation_part_1/README.md)

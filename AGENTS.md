@@ -57,6 +57,16 @@ The source of truth is `okf/`. Keep durable pedagogy, concept metadata, prerequi
 - `site/data/` — committed public-safe data for browser labs
 - `site/_build/` — generated output, not committed
 
+Standalone interactive lecture reviews are sourced separately from OKF:
+
+- `lecture_experiences/content/` — grounded JSON payloads
+- `lecture_experiences/<lecture_slug>/index.html` — portable generated reviews
+- `site/_build/demos/<lecture_slug>/index.html` — Pages copies created at build time
+
+The committed standalone HTML is the source for both offline use and Pages.
+The builder copies it byte-for-byte; do not maintain a second demo under
+`site/`.
+
 For agent-facing discovery, the generated `okf-manifest.json` must preserve the same descriptions and learning objectives as the OKF source. Do not maintain a separate hand-written skills list; agent-facing `skills` are generated from `learning_objectives`.
 
 ## How to Navigate
@@ -77,6 +87,19 @@ To improve the interactive textbook:
 6. `tests/test_textbook_preview.py` and `tests/test_okf_validation.py` — regression checks
 
 When improving textbook content, keep the student page, OKF metadata, index card description, rendered page, and manifest in sync.
+
+To create or revise an interactive lecture review:
+
+1. `.agents/skills/ml-course-interactive-learning-assistant/SKILL.md` — generation workflow
+2. `lecture_experiences/content/<lecture_slug>.json` — grounded content payload
+3. `lecture_experiences/<lecture_slug>/index.html` — generated offline review
+4. `docs/interactive-lecture-learning-assistant.md` — learner and maintainer guide
+5. `.agents/skills/ml-course-interactive-learning-assistant/scripts/generate_lecture_site.py` — deterministic generator
+6. `.agents/skills/ml-course-interactive-learning-assistant/scripts/validate_lecture_site.py` — offline/accessibility validator
+
+Lecture 01 provides the reference structure under
+`lecture_experiences/content/lecture_01_eda.json` and
+`lecture_experiences/lecture_01_eda/`.
 
 To explore a specific lecture:
 
@@ -147,6 +170,9 @@ Detailed setup: `docs/student-quickstart.md`
 - `okf/` — concise textbook concepts, learning paths, lab descriptions, and contribution modules
 - `.agents/skills/ml-course-textbook-contributor/` — agent workflow for safe textbook contributions
 - `.agents/skills/ml-course-student-navigator/` — agent workflow for helping students navigate the course and set up their environment
+- `.agents/skills/ml-course-interactive-learning-assistant/` — agent workflow, template, generator, and validator for standalone lecture reviews
+- `lecture_experiences/content/` — public-source-grounded lecture review payloads
+- `lecture_experiences/lecture_01_eda/` — reference offline EDA review; other lectures follow the same structure
 - `site/assets/` and `site/data/` — committed assets and public-safe data used by the textbook preview
 - `src/mlcourse/` — shared Python helpers (paths, data utilities)
 - `tools/` — repository maintenance scripts, notebook sync, environment checks, OKF validation, and textbook rendering
@@ -161,6 +187,12 @@ uv run ruff check src/mlcourse/okf_validation.py tools/validate_okf.py tools/bui
 uv run pytest
 uv run python tools/validate_okf.py okf/ --strict-warnings
 uv run python tools/build_textbook_preview.py
+```
+
+For a standalone lecture review, also run:
+
+```bash
+uv run python .agents/skills/ml-course-interactive-learning-assistant/scripts/validate_lecture_site.py lecture_experiences/lecture_01_eda/index.html
 ```
 
 After merging to `main`, verify GitHub Actions and the deployed GitHub Pages URL.
