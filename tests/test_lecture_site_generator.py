@@ -7,6 +7,14 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = ROOT / ".agents" / "skills" / "interactive-learning-experience-builder" / "scripts"
+TEMPLATE = (
+    ROOT
+    / ".agents"
+    / "skills"
+    / "interactive-learning-experience-builder"
+    / "assets"
+    / "learning-experience-template.html"
+)
 
 
 def _load_script(name: str) -> ModuleType:
@@ -503,6 +511,20 @@ def test_interactive_template_covers_reviewed_runtime_paths(hook: str) -> None:
     )
 
     assert hook in template_path.read_text(encoding="utf-8")
+
+
+def test_quiz_retry_state_contract() -> None:
+    template = TEMPLATE.read_text(encoding="utf-8")
+
+    for hook in (
+        "firstAttemptCorrect",
+        "attempts",
+        "clearQuizFeedback",
+        "disableQuestionInputs",
+        "if (!correct)",
+        "totalAttempts",
+    ):
+        assert hook in template
 
 
 def _valid_html() -> str:

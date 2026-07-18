@@ -517,7 +517,7 @@
       visualizationIndex: 0,
       quizIndex: 0,
       responses: [],
-      answered: false,
+      questionStates: [],
     };
 
     const byId = (id) => document.getElementById(id);
@@ -824,9 +824,35 @@
       return CONTENT.quizzes[state.difficulty];
     }
 
+    function createQuestionStates() {
+      return currentQuestions().map(() => ({
+        attempts: 0,
+        firstAttemptCorrect: null,
+        complete: false,
+      }));
+    }
+
+    function currentQuestionState() {
+      return state.questionStates[state.quizIndex];
+    }
+
+    function clearQuizFeedback() {
+      const feedback = byId("quiz-feedback");
+      feedback.textContent = "";
+      feedback.hidden = true;
+      delete feedback.dataset.correct;
+    }
+
+    function disableQuestionInputs() {
+      byId("quiz-card").querySelectorAll("input, textarea").forEach((input) => {
+        input.disabled = true;
+      });
+    }
+
     function renderQuiz(focusQuestion = false) {
       const questions = currentQuestions();
       const question = questions[state.quizIndex];
+      const questionState = currentQuestionState();
       const inputType = question.type === "multiple-choice" ? "checkbox" : "radio";
       const options = question.options.map((option) =>
         `<label class="quiz-option">
@@ -845,10 +871,15 @@
         · question ${state.quizIndex + 1} of 10</p>
         <h3>${escapeHtml(question.prompt)}</h3>
         ${responseControl}`;
-      byId("quiz-feedback").hidden = true;
-      byId("submit-answer").hidden = false;
-      byId("next-question").hidden = true;
-      state.answered = false;
+      clearQuizFeedback();
+      byId("submit-answer").hidden = questionState.complete;
+      byId("next-question").hidden = !questionState.complete;
+      if (questionState.complete) disableQuestionInputs();
+      byId("quiz-card").querySelectorAll("input, textarea").forEach((input) => {
+        input.addEventListener(input.tagName === "TEXTAREA" ? "input" : "change", () => {
+          if (!currentQuestionState().complete) clearQuizFeedback();
+        });
+      });
       updateProgress();
       if (focusQuestion) byId("quiz-card").focus();
     }
@@ -864,7 +895,8 @@
     }
 
     function submitAnswer() {
-      if (state.answered) return;
+      const questionState = currentQuestionState();
+      if (questionState.complete) return;
       const interpretation = byId("interpretation-answer");
       const selected = interpretation
         ? [interpretation.value.trim()].filter(Boolean)
@@ -878,6 +910,20 @@
       }
       const question = currentQuestions()[state.quizIndex];
       const correct = answersMatch(selected, question.answer);
+      questionState.attempts += 1;
+      if (questionState.firstAttemptCorrect === null) {
+        questionState.firstAttemptCorrect = correct;
+      }
+      byId("quiz-feedback").innerHTML = `<strong>${correct ? "Correct." : "Not yet."}</strong>
+        ${escapeHtml(question.explanation)}`;
+      byId("quiz-feedback").dataset.correct = String(correct);
+      byId("quiz-feedback").hidden = false;
+      if (!correct) {
+        byId("submit-answer").hidden = false;
+        byId("next-question").hidden = true;
+        return;
+      }
+      questionState.complete = true;
       state.responses.push({
         id: question.id,
         prompt: question.prompt,
@@ -885,12 +931,10 @@
         answer: question.answer,
         explanation: question.explanation,
         correct,
+        attempts: questionState.attempts,
+        firstAttemptCorrect: questionState.firstAttemptCorrect,
       });
-      state.answered = true;
-      byId("quiz-feedback").innerHTML = `<strong>${correct ? "Correct." : "Not yet."}</strong>
-        ${escapeHtml(question.explanation)}`;
-      byId("quiz-feedback").dataset.correct = String(correct);
-      byId("quiz-feedback").hidden = false;
+      disableQuestionInputs();
       byId("submit-answer").hidden = true;
       byId("next-question").hidden = false;
       byId("next-question").focus();
@@ -899,13 +943,16 @@
     }
 
     function showQuizResults() {
-      const correct = state.responses.filter((response) => response.correct).length;
+      const firstTryCorrect = state.responses.filter((response) => response.firstAttemptCorrect).length;
+      const totalAttempts = state.responses.reduce((total, response) => total + response.attempts, 0);
       byId("quiz-card").hidden = true;
       byId("quiz-feedback").hidden = true;
       byId("next-question").hidden = true;
       byId("submit-answer").hidden = true;
       byId("retry-quiz").hidden = false;
-      byId("quiz-results").innerHTML = `<h3>Your result: ${correct}/10</h3>
+      byId("quiz-results").innerHTML = `<h3>Your result: ${state.responses.length}/10</h3>
+        <p>First try: ${firstTryCorrect}/10</p>
+        <p>Total attempts: ${totalAttempts}</p>
         <ol>${state.responses.map((response) => `<li>
           <p><strong>${escapeHtml(response.prompt)}</strong></p>
           <p>Your answer: ${escapeHtml(response.selected.join(", "))}</p>
@@ -920,7 +967,7 @@
     }
 
     function nextQuestion() {
-      if (!state.answered) return;
+      if (!currentQuestionState().complete) return;
       if (state.quizIndex >= 9) {
         showQuizResults();
         return;
@@ -932,15 +979,19 @@
     function retryQuiz() {
       state.quizIndex = 0;
       state.responses = [];
-      state.answered = false;
+      state.questionStates = createQuestionStates();
       byId("quiz-card").hidden = false;
       byId("quiz-results").hidden = true;
       byId("retry-quiz").hidden = true;
+      clearQuizFeedback();
+      byId("submit-answer").hidden = false;
+      byId("next-question").hidden = true;
       renderQuiz(true);
     }
 
     document.querySelector('[data-setting="difficulty"]').addEventListener("change", (event) => {
-      if (state.responses.length && !confirm("Changing depth resets your current quiz. Continue?")) {
+      if (state.questionStates.some((questionState) => questionState.attempts) &&
+          !confirm("Changing depth resets your current quiz. Continue?")) {
         event.target.value = state.difficulty;
         return;
       }
@@ -1000,6 +1051,7 @@
       CONTENT.meta.subtitle || "Learn, explore, then check your knowledge.";
     byId("source-list").textContent = `Sources: ${CONTENT.meta.sources.join(" · ")}`;
     applySettings();
+    state.questionStates = createQuestionStates();
     renderQuiz();
   </script>
 </body>
