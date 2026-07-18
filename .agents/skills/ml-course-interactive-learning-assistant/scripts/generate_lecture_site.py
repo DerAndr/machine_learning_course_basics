@@ -1,5 +1,6 @@
 import argparse
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -24,6 +25,13 @@ QUESTION_FIELDS = {
 }
 QUESTION_TYPES = {"single-choice", "multiple-choice", "interpretation"}
 VISUALIZATION_TYPES = {"histogram", "boxplot", "scatter", "missingness"}
+PRIVATE_SOURCE_PARTS = {
+    "answer_key",
+    "answer_keys",
+    "private",
+    "quiz",
+    "quizzes",
+}
 
 
 def _is_non_empty_string(value: object) -> bool:
@@ -32,6 +40,23 @@ def _is_non_empty_string(value: object) -> bool:
 
 def _is_missing(value: object) -> bool:
     return value is None or value == "" or value == []
+
+
+def _is_public_source_path(value: object) -> bool:
+    if not _is_non_empty_string(value):
+        return False
+    source = value.strip()
+    if "\\" in source or "://" in source or "?" in source or "#" in source:
+        return False
+    if source.startswith("/") or re.match(r"^[A-Za-z]:", source):
+        return False
+    parts = source.split("/")
+    if parts[0] not in {"lectures", "okf"}:
+        return False
+    if any(part in {"", ".", ".."} for part in parts):
+        return False
+    normalized_parts = {part.lower().replace("-", "_") for part in parts}
+    return normalized_parts.isdisjoint(PRIVATE_SOURCE_PARTS)
 
 
 def validate_payload(payload: dict[str, object]) -> list[str]:
@@ -56,9 +81,11 @@ def validate_payload(payload: dict[str, object]) -> list[str]:
         if (
             not isinstance(sources, list)
             or not sources
-            or not all(_is_non_empty_string(source) for source in sources)
+            or not all(_is_public_source_path(source) for source in sources)
         ):
-            errors.append("meta.sources must contain public course source paths")
+            errors.append(
+                "meta.sources must contain public repository-relative paths under lectures/ or okf/"
+            )
 
     defaults = payload.get("defaults")
     if not isinstance(defaults, dict):

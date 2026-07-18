@@ -157,6 +157,32 @@ def test_validate_payload_requires_embedded_break_prompts(
     assert any("break_prompts" in error for error in errors)
 
 
+@pytest.mark.parametrize(
+    "source",
+    [
+        "https://example.test/lecture-notes",
+        "/lectures/lecture_01_eda/lecture_notes.md",
+        "C:/lectures/lecture_01_eda/lecture_notes.md",
+        "../lectures/lecture_01_eda/lecture_notes.md",
+        "lectures/lecture_01_eda/../private_notes.md",
+        "lectures/lecture_01_eda/answer_keys/solutions.md",
+        "lectures/lecture_01_eda/quizzes/questions.json",
+        "lectures/lecture_01_eda/private/draft.md",
+    ],
+)
+def test_validate_payload_rejects_non_public_source_paths(
+    payload: dict[str, object],
+    source: str,
+) -> None:
+    meta = payload["meta"]
+    assert isinstance(meta, dict)
+    meta["sources"] = [source]
+
+    errors = validate_payload(payload)
+
+    assert any("meta.sources" in error for error in errors)
+
+
 def test_generate_site_rejects_invalid_payload_before_writing(
     tmp_path: Path,
     payload: dict[str, object],
@@ -252,6 +278,11 @@ def _valid_html() -> str:
         '<link rel="stylesheet" href="https://example.test/app.css">',
         '<img src="https://example.test/chart.png" alt="Chart">',
         '<link rel="preload" as="font" href="https://example.test/font.woff2">',
+        '<script src="./app.js"></script>',
+        '<link rel="stylesheet" href="./app.css">',
+        '<img src="./chart.png" alt="Chart">',
+        '<source src="./chart.svg">',
+        '<link rel="preload" as="font" href="./font.woff2">',
     ],
 )
 def test_validate_html_rejects_external_runtime_resources(
@@ -287,6 +318,62 @@ def test_validate_html_rejects_missing_required_contract(
     errors = validate_html(path)
 
     assert any(expected in error.lower() for error in errors)
+
+
+@pytest.mark.parametrize("tag", ["div", "span"])
+def test_validate_html_rejects_inert_settings_hooks(
+    tmp_path: Path,
+    tag: str,
+) -> None:
+    path = tmp_path / "index.html"
+    html = _valid_html().replace(
+        '<select data-setting="difficulty"></select>',
+        f'<{tag} data-setting="difficulty">Foundations</{tag}>',
+    )
+    path.write_text(html, encoding="utf-8")
+
+    errors = validate_html(path)
+
+    assert any("difficulty" in error for error in errors)
+
+
+def test_validate_html_accepts_keyboard_operable_settings_role(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "index.html"
+    html = _valid_html().replace(
+        '<select data-setting="difficulty"></select>',
+        (
+            '<div data-setting="difficulty" role="combobox" tabindex="0" '
+            'onkeydown="chooseDifficulty(event)">Foundations</div>'
+        ),
+    )
+    path.write_text(html, encoding="utf-8")
+
+    assert validate_html(path) == []
+
+
+@pytest.mark.parametrize(
+    "fallback",
+    [
+        '<section class="graph-fallback"></section>',
+        '<section class="graph-fallback"> \n\t </section>',
+    ],
+)
+def test_validate_html_rejects_empty_graph_fallback(
+    tmp_path: Path,
+    fallback: str,
+) -> None:
+    path = tmp_path / "index.html"
+    html = _valid_html().replace(
+        ('<section class="graph-fallback">The same lesson is available as text.</section>'),
+        fallback,
+    )
+    path.write_text(html, encoding="utf-8")
+
+    errors = validate_html(path)
+
+    assert any("fallback" in error for error in errors)
 
 
 def test_validate_html_reports_every_missing_setting(tmp_path: Path) -> None:
