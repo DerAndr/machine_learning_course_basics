@@ -49,16 +49,11 @@ def test_eda_payload_and_generated_site_meet_learning_contract() -> None:
         "missingness",
     }
     assert all(len(payload["quizzes"][level]) == 10 for level in LEVELS)
-    questions = [
-        question for level in LEVELS for question in payload["quizzes"][level]
-    ]
+    questions = [question for level in LEVELS for question in payload["quizzes"][level]]
     assert len({question["id"] for question in questions}) == 30
     assert all(question["explanation"].strip() for question in questions)
     assert all(question["concept"] in EXPECTED_CONCEPTS for question in questions)
-    assert all(
-        "lectures/lecture_01_eda/" in source
-        for source in payload["meta"]["sources"]
-    )
+    assert all("lectures/lecture_01_eda/" in source for source in payload["meta"]["sources"])
 
     html = SITE_PATH.read_text(encoding="utf-8")
     assert "__CONTENT_JSON__" not in html
