@@ -59,6 +59,7 @@ def test_adapter_preserves_learning_experience_parity() -> None:
         "`foundations`, `applied`, and `challenge` quiz banks",
         "exactly 10 questions each",
         "static no-JavaScript explanations and quiz review",
+        "deterministic single-file output",
         "accessible chart fallbacks",
         "keyboard navigation",
         "reduced motion",
@@ -67,5 +68,9 @@ def test_adapter_preserves_learning_experience_parity() -> None:
         "whole-quiz Retry",
         "generate_learning_experience.py",
         "validate_learning_experience.py",
+        "private solutions",
+        "teacher notebooks",
+        "answer keys",
+        "grading data",
     ):
         assert required in normalized_text
