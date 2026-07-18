@@ -1,0 +1,1006 @@
+<!doctype html>
+<html lang="en" data-focus-friendly="false" data-color-blind="false">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Interactive lecture review</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --background: #f6f7f9;
+      --surface: #ffffff;
+      --surface-soft: #edf2f7;
+      --ink: #17212b;
+      --muted: #52606d;
+      --accent: #315c9b;
+      --accent-strong: #173f76;
+      --secondary: #c55a11;
+      --success: #247a4d;
+      --danger: #a33a3a;
+      --border: #cad3dc;
+      --focus: #111111;
+      --shadow: 0 10px 28px rgb(23 33 43 / 8%);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    :root[data-color-blind="true"] {
+      --accent: #0072b2;
+      --accent-strong: #00547f;
+      --secondary: #d55e00;
+      --success: #009e73;
+      --danger: #cc79a7;
+      --focus: #000000;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      background: var(--background);
+      color: var(--ink);
+      line-height: 1.55;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button,
+    select {
+      min-height: 2.75rem;
+    }
+
+    button {
+      border: 1px solid var(--accent);
+      border-radius: 0.6rem;
+      background: var(--accent);
+      color: #ffffff;
+      cursor: pointer;
+      padding: 0.55rem 0.9rem;
+    }
+
+    button:hover {
+      background: var(--accent-strong);
+    }
+
+    button.secondary {
+      background: var(--surface);
+      color: var(--accent-strong);
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+
+    :focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 3px;
+    }
+
+    .skip-link {
+      position: absolute;
+      left: 0.75rem;
+      top: -5rem;
+      z-index: 10;
+      background: var(--surface);
+      color: var(--ink);
+      padding: 0.65rem;
+    }
+
+    .skip-link:focus {
+      top: 0.75rem;
+    }
+
+    .page-header,
+    main,
+    .page-footer {
+      margin-inline: auto;
+      max-width: 74rem;
+      padding-inline: clamp(1rem, 4vw, 2.5rem);
+    }
+
+    .page-header {
+      padding-block: 2.4rem 1.3rem;
+    }
+
+    .eyebrow {
+      color: var(--accent-strong);
+      font-size: 0.82rem;
+      font-weight: 750;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3 {
+      line-height: 1.18;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      margin: 0.35rem 0 0.6rem;
+    }
+
+    .lede {
+      color: var(--muted);
+      font-size: 1.08rem;
+      max-width: 68ch;
+    }
+
+    .settings,
+    .panel,
+    .concept-card,
+    .visualization-card,
+    .quiz-card,
+    .static-reference {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.9rem;
+      box-shadow: var(--shadow);
+    }
+
+    .settings,
+    .panel,
+    .static-reference {
+      margin-block: 1rem;
+      padding: clamp(1rem, 3vw, 1.5rem);
+    }
+
+    .settings-grid {
+      display: grid;
+      gap: 0.9rem;
+      grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    }
+
+    .setting {
+      align-items: center;
+      display: flex;
+      gap: 0.65rem;
+      min-height: 2.75rem;
+    }
+
+    .setting select {
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      color: var(--ink);
+      flex: 1;
+      padding: 0.45rem;
+    }
+
+    .setting input[type="checkbox"] {
+      height: 1.35rem;
+      width: 1.35rem;
+    }
+
+    textarea {
+      border: 1px solid var(--border);
+      border-radius: 0.55rem;
+      min-height: 7rem;
+      padding: 0.7rem;
+      width: 100%;
+    }
+
+    .progress-track {
+      background: var(--surface-soft);
+      border-radius: 999px;
+      height: 0.65rem;
+      overflow: hidden;
+    }
+
+    .progress-value {
+      background: var(--accent);
+      height: 100%;
+      transition: width 180ms ease;
+      width: 0;
+    }
+
+    .card-grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+    }
+
+    .concept-card,
+    .visualization-card,
+    .quiz-card {
+      padding: 1.1rem;
+    }
+
+    .concept-card[hidden],
+    .visualization-card[hidden] {
+      display: none;
+    }
+
+    .mistakes {
+      border-left: 0.3rem solid var(--secondary);
+      padding-left: 1rem;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .chart-shell {
+      background: var(--surface-soft);
+      border-radius: 0.65rem;
+      margin-block: 0.8rem;
+      overflow-x: auto;
+      padding: 0.65rem;
+    }
+
+    .chart-shell svg {
+      display: block;
+      height: auto;
+      max-width: 100%;
+    }
+
+    .chart-label {
+      fill: var(--ink);
+      font-size: 12px;
+    }
+
+    .mark-primary {
+      fill: var(--accent);
+      stroke: var(--accent-strong);
+      stroke-width: 2;
+    }
+
+    .mark-secondary {
+      fill: url("#diagonal-hatch");
+      stroke: var(--secondary);
+      stroke-width: 3;
+    }
+
+    .graph-fallback {
+      border-left: 0.3rem solid var(--accent);
+      color: var(--muted);
+      margin-top: 0.8rem;
+      padding-left: 0.9rem;
+    }
+
+    .break-prompt {
+      background: #fff7df;
+      border: 1px solid #e3b84e;
+      border-radius: 0.7rem;
+      color: #402d00;
+      margin-block: 1rem;
+      padding: 0.8rem 1rem;
+    }
+
+    .break-prompt[hidden] {
+      display: none;
+    }
+
+    .quiz-options {
+      border: 0;
+      display: grid;
+      gap: 0.6rem;
+      margin: 0;
+      padding: 0;
+    }
+
+    .quiz-option {
+      align-items: flex-start;
+      border: 1px solid var(--border);
+      border-radius: 0.55rem;
+      display: flex;
+      gap: 0.65rem;
+      padding: 0.7rem;
+    }
+
+    .feedback {
+      border-left: 0.35rem solid var(--accent);
+      margin-top: 1rem;
+      padding-left: 0.9rem;
+    }
+
+    .feedback[data-correct="true"] {
+      border-color: var(--success);
+    }
+
+    .feedback[data-correct="false"] {
+      border-color: var(--danger);
+    }
+
+    .static-reference summary {
+      cursor: pointer;
+      font-weight: 750;
+    }
+
+    .static-reference-body {
+      margin-top: 1rem;
+    }
+
+    .static-reference-body article {
+      border-top: 1px solid var(--border);
+      padding-block: 0.75rem;
+    }
+
+    .source-list {
+      color: var(--muted);
+      overflow-wrap: anywhere;
+    }
+
+    :root[data-focus-friendly="true"] .optional-detail,
+    :root[data-focus-friendly="true"] .visualization-card:not([data-active="true"]) {
+      display: none;
+    }
+
+    :root[data-focus-friendly="true"] .card-grid {
+      display: block;
+    }
+
+    @media (max-width: 42rem) {
+      .button-row button {
+        flex: 1 1 9rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to learning content</a>
+  <header class="page-header">
+    <p class="eyebrow">Interactive lecture review</p>
+    <h1 id="site-title">Lecture review</h1>
+    <p class="lede" id="site-subtitle">Learn, explore, then check your knowledge.</p>
+  </header>
+
+  <main id="main-content">
+    <section class="settings" aria-labelledby="settings-title">
+      <h2 id="settings-title">Choose your learning setup</h2>
+      <div class="settings-grid">
+        <label class="setting">
+          <span>Question depth</span>
+          <select data-setting="difficulty">
+            <option value="foundations">Foundations</option>
+            <option value="applied">Applied</option>
+            <option value="challenge">Challenge</option>
+          </select>
+        </label>
+        <label class="setting">
+          <input data-setting="focus" type="checkbox">
+          <span>Focus-friendly (ADHD-friendly) view</span>
+        </label>
+        <label class="setting">
+          <input data-setting="color-blind" type="checkbox">
+          <span>Color-blind-safe palette</span>
+        </label>
+        <label class="setting">
+          <input data-setting="break-prompts" type="checkbox">
+          <span>Funny topic break prompts</span>
+        </label>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="progress-title">
+      <h2 id="progress-title">Progress</h2>
+      <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100"
+           aria-valuenow="0" aria-label="Lecture review progress">
+        <div class="progress-value"></div>
+      </div>
+      <p id="progress-text">Start with the first concept.</p>
+    </section>
+
+    <section class="panel" aria-labelledby="learn-title">
+      <h2 id="learn-title">Learn the core ideas</h2>
+      <div id="concept-list" class="card-grid"></div>
+      <div class="button-row">
+        <button class="secondary" id="previous-concept" type="button">Previous concept</button>
+        <button id="next-concept" type="button">Next concept</button>
+      </div>
+    </section>
+
+    <aside id="break-prompt" class="break-prompt" aria-live="polite" hidden></aside>
+
+    <section class="panel" aria-labelledby="explore-title">
+      <h2 id="explore-title">Explore the graphs</h2>
+      <p class="graph-fallback">Every graph includes a nearby text fallback with the same lesson.</p>
+      <svg width="0" height="0" aria-hidden="true" focusable="false">
+        <defs>
+          <pattern id="diagonal-hatch" width="8" height="8" patternUnits="userSpaceOnUse">
+            <path d="M-2,2 L2,-2 M0,8 L8,0 M6,10 L10,6" stroke="currentColor"
+                  stroke-width="2"></path>
+          </pattern>
+        </defs>
+      </svg>
+      <div id="visualization-list" class="card-grid" data-shape="circle"></div>
+      <div class="button-row">
+        <button class="secondary" id="previous-visualization" type="button">
+          Previous graph
+        </button>
+        <button id="next-visualization" type="button">Next graph</button>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="quiz-title">
+      <h2 id="quiz-title">10-question knowledge check</h2>
+      <div id="quiz-card" class="quiz-card"></div>
+      <div id="quiz-feedback" class="feedback" aria-live="polite" hidden></div>
+      <div id="quiz-results" aria-live="polite" tabindex="-1" hidden></div>
+      <div class="button-row">
+        <button id="submit-answer" type="button">Check answer</button>
+        <button id="next-question" type="button" hidden>Next question</button>
+        <button id="retry-quiz" class="secondary" type="button" hidden>Retry quiz</button>
+      </div>
+    </section>
+
+    <section id="static-content" class="static-reference">
+      <details>
+        <summary>Open complete static explanations and answer review</summary>
+        <div class="static-reference-body"><h2>Complete static lecture reference</h2><p>This reference remains available when scripts or browser storage are unavailable.</p><section><h3>Concepts</h3><article><h4>Explore before you model</h4><p>Exploratory Data Analysis examines structure, quality, distributions, anomalies, and relationships before formal modeling. In CRISP-DM it belongs to Data Understanding, where it reduces uncertainty about what the variables mean and whether the data supports later conclusions.</p><p><strong>How to interpret it:</strong> Begin with questions about rows, columns, types, missing values, and the target. Treat each plot or statistic as evidence for a specific question, not as decoration.</p><h5>Common mistakes</h5><ul><li>Fitting a model before checking whether columns, units, and missing values are sensible.</li><li>Treating EDA as a one-time checklist instead of returning to it after data changes.</li></ul><p><strong>Sources:</strong> lectures/lecture_01_eda/lecture_notes.md; lectures/lecture_01_eda/practical_session/README.md</p></article><article><h4>Structure and data types choose the question</h4><p>Rows, columns, data types, unique values, and missingness define the dataset you actually have. Numerical, categorical, ordinal, and time-series variables require different summaries and plots.</p><p><strong>How to interpret it:</strong> Use numerical summaries for measured quantities, counts and proportions for categories, and preserve the ordering of ordinal categories. Inspect structure before plotting so a numeric-looking code is not mistaken for a measured quantity.</p><h5>Common mistakes</h5><ul><li>Taking the mean of an unordered category code.</li><li>Treating an ordered category as though its levels had no order.</li></ul><p><strong>Sources:</strong> lectures/lecture_01_eda/lecture_notes.md; lectures/lecture_01_eda/practical_session/README.md</p></article><article><h4>Read center, spread, and shape together</h4><p>Mean, median, and mode describe different notions of center; variance and standard deviation describe spread; skewness describes asymmetry. The mean uses every value and is sensitive to extremes, while the median is more robust.</p><p><strong>How to interpret it:</strong> For a right-skewed variable, report the median alongside its spread and distribution shape. A single average cannot show whether values are concentrated, variable, or asymmetric.</p><h5>Common mistakes</h5><ul><li>Reporting a mean without checking the distribution or spread.</li><li>Assuming all libraries use the same bias correction or kurtosis convention.</li></ul><p><strong>Sources:</strong> lectures/lecture_01_eda/lecture_notes.md</p></article><article><h4>Histogram shape depends on bins</h4><p>A histogram groups numerical values into bins to reveal frequency and shape. Too few bins can hide clusters or multiple peaks, while too many can make random variation look like meaningful structure.</p><p><strong>How to interpret it:</strong> Change the bin count and look for conclusions that remain stable. Use a histogram as one view of shape, supported by summaries or another view such as an ECDF.</p><h5>Common mistakes</h5><ul><li>Treating one arbitrary bin setting as the unique shape of the data.</li><li>Comparing histogram bar heights when the bin widths differ.</li></ul><p><strong>Sources:</strong> lectures/lecture_01_eda/lecture_notes.md; lectures/lecture_01_eda/lecture_examples/README.md</p></article><article><h4>IQR fences flag observations for inspection</h4><p>The interquartile range is Q3 minus Q1 and contains the middle half of ordered observations. Many box plots flag values below Q1 - 1.5 × IQR or above Q3 + 1.5 × IQR.</p><p><strong>How to interpret it:</strong> A flagged point is unusual relative to this distribution, not automatically an error. Check its source, units, group, and domain meaning before deciding how to handle it.</p><h5>Common mistakes</h5><ul><li>Deleting every point beyond a box-plot whisker.</li><li>Reading the box as the full data range instead of the middle 50 percent.</li></ul><p><strong>Sources:</strong> lectures/lecture_01_eda/lecture_notes.md; lectures/lecture_01_eda/practical_session/README.md</p></article><article><h4>Association is evidence, not causation</h4><p>A scatter plot shows how two numerical variables vary together and can reveal direction, clusters, non-linearity, and outliers. Pearson correlation summarizes linear association but does not establish a causal mechanism.</p><p><strong>How to interpret it:</strong> Describe what the points show, then consider grouping variables, non-linear patterns, and domain explanations. A trend between flipper length and body mass does not prove that changing one causes the other.</p><h5>Common mistakes</h5><ul><li>Using correlation as proof of causation.</li><li>Concluding that no relationship exists because Pearson correlation is near zero.</li></ul><p><strong>Sources:</strong> lectures/lecture_01_eda/lecture_notes.md; lectures/lecture_01_eda/practical_session/README.md</p></article><article><h4>Compare missing counts in context</h4><p>A missing-value count gives the number of unavailable observations, while a missing proportion divides that count by the relevant total. Proportions make columns or groups of different sizes comparable.</p><p><strong>How to interpret it:</strong> Report both count and denominator. Then investigate whether missingness is concentrated in particular variables or groups, because missing data can change summaries and interpretation.</p><h5>Common mistakes</h5><ul><li>Comparing raw missing counts across datasets of very different sizes.</li><li>Treating missingness only as a cleaning inconvenience without checking its pattern.</li></ul><p><strong>Sources:</strong> lectures/lecture_01_eda/lecture_notes.md; lectures/lecture_01_eda/practical_session/README.md</p></article><article><h4>Automation starts the investigation</h4><p>Automated EDA tools can quickly summarize types, missingness, quantiles, distributions, and correlations. They save time and make initial reporting consistent, but they lack domain context and may miss subtle problems.</p><p><strong>How to interpret it:</strong> Use an automated report to generate questions and prioritize checks. Confirm important findings with targeted manual inspection and explain why each finding matters.</p><h5>Common mistakes</h5><ul><li>Submitting an automated report as though it were a reasoned analysis.</li><li>Assuming an inferred type or highlighted correlation must be correct.</li></ul><p><strong>Sources:</strong> lectures/lecture_01_eda/lecture_notes.md; lectures/lecture_01_eda/lecture_examples/README.md</p></article></section><section><h3>Visualization reference</h3><article><h4>One illustrative distribution, several bin choices</h4><p>These fixed illustrative measurements support a bin-width experiment. Coarse bins emphasize the broad concentration, while finer bins reveal local variation without changing the underlying observations.</p><p class="graph-fallback"><strong>Graph fallback:</strong> Illustrative mass-like values, sorted: 2700, 2850, 3000, 3050, 3150, 3250, 3300, 3400, 3450, 3550, 3650, 3700, 3800, 3900, 4000, 4100, 4200, 4350, 4500, 4700, 4950, 5200, 5550, 5850. The same values can look smoother or noisier as bin count changes.</p></article><article><h4>An IQR flag is not a deletion command</h4><p>Change the fence multiplier and notice which observations are flagged. The rule describes unusual position in this sample; it does not diagnose a measurement error.</p><p class="graph-fallback"><strong>Graph fallback:</strong> Sorted measurements: 28, 29, 30, 30, 31, 31, 32, 32, 33, 34, 35, 36, 37, 52. The value 52 is far above the middle half and may be flagged, but it still needs source and domain inspection.</p></article><article><h4>Illustrative flipper length and body mass association</h4><p>These fixed illustrative points model the positive association discussed in the lecture: larger flipper measurements often coincide with larger body mass. The dashed line summarizes direction, not a causal claim.</p><p class="graph-fallback"><strong>Graph fallback:</strong> Pairs of flipper length in millimetres and body mass in grams: (178, 3150), (181, 3300), (185, 3450), (188, 3600), (191, 3500), (195, 3900), (199, 4050), (203, 4300), (210, 4700), (216, 5100). Values generally rise together, with variation around the trend.</p></article><article><h4>Illustrative missingness: counts need denominators</h4><p>Compare raw missing counts with percentages in this fixed teaching example. A smaller count can represent the larger missing-data problem when its denominator is much smaller.</p><p class="graph-fallback"><strong>Graph fallback:</strong> Illustrative missingness table: column A 2/344 (about 0.6%); column B 11/344 (about 3.2%); small subgroup 6/40 (15%); large subgroup 12/300 (4%). Although 6 is a smaller count than 12, it is the larger proportion.</p></article></section><section><h3>Quiz banks and answer review</h3><section><h4>Foundations</h4><ol><li><p><strong>When should the first EDA pass happen?</strong></p><ul><li>Before formal modeling</li><li>Only after the final model</li><li>Only when model accuracy is low</li></ul><p><strong>Answer:</strong> Before formal modeling</p><p><strong>Explanation:</strong> EDA belongs to Data Understanding and should reveal structure and quality issues before modeling choices are made.</p></li><li><p><strong>Which summary is most appropriate for an unordered species column?</strong></p><ul><li>Counts and proportions</li><li>Mean and variance</li><li>Pearson correlation</li></ul><p><strong>Answer:</strong> Counts and proportions</p><p><strong>Explanation:</strong> Species is categorical, so frequencies, proportions, mode, unique count, and missing count are meaningful summaries.</p></li><li><p><strong>Which measure of center is usually more robust to an extreme value?</strong></p><ul><li>Median</li><li>Mean</li><li>Variance</li></ul><p><strong>Answer:</strong> Median</p><p><strong>Explanation:</strong> The median depends on ordered position rather than the magnitude of every value, so a single extreme usually affects it less.</p></li><li><p><strong>What does positive skewness describe?</strong></p><ul><li>A long right tail</li><li>A long left tail</li><li>No spread</li></ul><p><strong>Answer:</strong> A long right tail</p><p><strong>Explanation:</strong> Positive skew means the distribution extends farther toward large values; the mean is often pulled above the median.</p></li><li><p><strong>What does a histogram bar count?</strong></p><ul><li>Observations in a numerical interval</li><li>Causal effects</li><li>Missing column names</li></ul><p><strong>Answer:</strong> Observations in a numerical interval</p><p><strong>Explanation:</strong> A histogram groups numerical observations into bins and displays their frequencies.</p></li><li><p><strong>How is the interquartile range calculated?</strong></p><ul><li>Q3 minus Q1</li><li>Maximum minus minimum</li><li>Mean minus median</li></ul><p><strong>Answer:</strong> Q3 minus Q1</p><p><strong>Explanation:</strong> IQR = Q3 - Q1 and describes the spread of the middle 50 percent of observations.</p></li><li><p><strong>What does a point beyond a standard box-plot whisker mean?</strong></p><ul><li>It deserves inspection</li><li>It is certainly a data error</li><li>It proves the distribution is normal</li></ul><p><strong>Answer:</strong> It deserves inspection</p><p><strong>Explanation:</strong> The 1.5 × IQR rule flags an unusual position; source and domain checks are needed before calling it erroneous.</p></li><li><p><strong>A strong scatter-plot trend proves that changing x causes y.</strong></p><ul><li>False</li><li>True</li><li>Only when the line slopes upward</li></ul><p><strong>Answer:</strong> False</p><p><strong>Explanation:</strong> Association can result from grouping, confounding, selection, or other mechanisms; a scatter plot alone does not establish causation.</p></li><li><p><strong>Why report a missing proportion as well as a count?</strong></p><ul><li>It accounts for the denominator</li><li>It makes every count smaller</li><li>It identifies the cause of missingness</li></ul><p><strong>Answer:</strong> It accounts for the denominator</p><p><strong>Explanation:</strong> Dividing by the relevant total makes missingness comparable across columns or groups of different sizes.</p></li><li><p><strong>What is the best role for an automated EDA report?</strong></p><ul><li>A starting point for targeted checks</li><li>A replacement for interpretation</li><li>Proof that inferred types are correct</li></ul><p><strong>Answer:</strong> A starting point for targeted checks</p><p><strong>Explanation:</strong> Automation is fast and consistent, but important findings still require context and manual confirmation.</p></li></ol></section><section><h4>Applied</h4><ol><li><p><strong>A new table arrives with 344 rows. What should you inspect before drawing pair plots?</strong></p><ul><li>Columns, types, unique values, and missingness</li><li>Only model accuracy</li><li>Only the target mean</li></ul><p><strong>Answer:</strong> Columns, types, unique values, and missingness</p><p><strong>Explanation:</strong> Structural inspection establishes what each field represents and which analyses are valid before more elaborate plots.</p></li><li><p><strong>Household incomes are strongly right-skewed by a few very large values. Which center should be emphasized?</strong></p><ul><li>Median</li><li>Mean only</li><li>Maximum</li></ul><p><strong>Answer:</strong> Median</p><p><strong>Explanation:</strong> The median is less pulled by the large right-tail observations and better represents the ordered middle.</p></li><li><p><strong>A cluster disappears when a histogram changes from 20 bins to 4. What is the sound next step?</strong></p><ul><li>Check several bin settings and another distribution view</li><li>Declare the cluster nonexistent</li><li>Keep only the most dramatic plot</li></ul><p><strong>Answer:</strong> Check several bin settings and another distribution view</p><p><strong>Explanation:</strong> Histogram appearance depends on bins, so a stable conclusion should survive reasonable settings and supporting views.</p></li><li><p><strong>If Q1 = 10 and Q3 = 14, which value lies above the usual upper 1.5 × IQR fence?</strong></p><ul><li>25</li><li>18</li><li>14</li></ul><p><strong>Answer:</strong> 25</p><p><strong>Explanation:</strong> IQR is 4 and the upper fence is 14 + 1.5 × 4 = 20, so 25 is beyond it.</p></li><li><p><strong>Penguin flipper length and body mass rise together in a scatter plot. Which claim is supported?</strong></p><ul><li>They have a positive association in these data</li><li>Longer flippers necessarily cause higher mass</li><li>Species cannot affect the pattern</li></ul><p><strong>Answer:</strong> They have a positive association in these data</p><p><strong>Explanation:</strong> The plot supports a descriptive association; causal direction and possible group structure require additional evidence.</p></li><li><p><strong>Group A has 20 missing values among 100 rows; group B has 30 among 300. Which has the larger missing proportion?</strong></p><ul><li>Group A</li><li>Group B</li><li>They are equal</li></ul><p><strong>Answer:</strong> Group A</p><p><strong>Explanation:</strong> Group A is 20% missing while group B is 10%, even though B has the larger raw count.</p></li><li><p><strong>A column stores island names. Which pair gives the most useful first summary?</strong></p><ul><li>Category counts and percentages</li><li>Variance and standard deviation</li><li>Skewness and kurtosis</li></ul><p><strong>Answer:</strong> Category counts and percentages</p><p><strong>Explanation:</strong> Island is categorical, so frequency and relative frequency reveal group sizes and imbalance.</p></li><li><p><strong>Survey satisfaction uses Low, Medium, High. What must an analysis preserve?</strong></p><ul><li>The ordering of the levels</li><li>An arbitrary numeric distance between labels</li><li>Only alphabetical order</li></ul><p><strong>Answer:</strong> The ordering of the levels</p><p><strong>Explanation:</strong> This is ordinal data: order is meaningful, but equal numerical spacing between adjacent levels is not guaranteed.</p></li><li><p><strong>An automated report labels a numeric-looking ID column as continuous. What should you do?</strong></p><ul><li>Inspect its meaning and unique values manually</li><li>Accept the type without question</li><li>Compute its mean and stop</li></ul><p><strong>Answer:</strong> Inspect its meaning and unique values manually</p><p><strong>Explanation:</strong> Automated type inference lacks domain meaning; identifiers should not be analyzed as measured quantities merely because they use digits.</p></li><li><p><strong>Why is standard deviation often easier to interpret than variance?</strong></p><ul><li>It is in the original measurement units</li><li>It ignores all extreme values</li><li>It always lies between 0 and 1</li></ul><p><strong>Answer:</strong> It is in the original measurement units</p><p><strong>Explanation:</strong> Standard deviation is the square root of variance, returning spread to the variable's original units.</p></li></ol></section><section><h4>Challenge</h4><ol><li><p><strong>A pooled scatter plot shows a trend, but each species forms a separate cluster. What is the strongest interpretation?</strong></p><ul><li>Inspect within-species and pooled patterns separately</li><li>Ignore species because the pooled line is enough</li><li>The pooled trend proves one mechanism</li></ul><p><strong>Answer:</strong> Inspect within-species and pooled patterns separately</p><p><strong>Explanation:</strong> Group structure can create or alter an aggregate association, so both conditional and pooled views are needed.</p></li><li><p><strong>Pearson correlation is near zero, but the scatter plot forms a clear U-shape. What follows?</strong></p><ul><li>There is a non-linear relationship that Pearson correlation misses</li><li>There is no relationship</li><li>The scatter plot must be wrong</li></ul><p><strong>Answer:</strong> There is a non-linear relationship that Pearson correlation misses</p><p><strong>Explanation:</strong> Pearson correlation summarizes linear association; opposite slopes on either side of a U can cancel numerically.</p></li><li><p><strong>A biologically plausible penguin measurement lies beyond the 1.5 × IQR fence. What is the defensible action?</strong></p><ul><li>Retain it while checking source, units, and influence</li><li>Delete it automatically</li><li>Replace it with the mean immediately</li></ul><p><strong>Answer:</strong> Retain it while checking source, units, and influence</p><p><strong>Explanation:</strong> The fence flags rarity, not invalidity; provenance and sensitivity checks should guide any treatment.</p></li><li><p><strong>Two reports use the same observations but one histogram looks bimodal and the other smooth. What should be audited first?</strong></p><ul><li>Bin edges and widths</li><li>The causal mechanism</li><li>The missing-data cause</li></ul><p><strong>Answer:</strong> Bin edges and widths</p><p><strong>Explanation:</strong> Histogram structure can change materially with bin definitions even though the underlying observations are identical.</p></li><li><p><strong>Two columns each have 10 missing cells; one has 50 rows and one has 1000. Which statement is accurate?</strong></p><ul><li>Their counts match but their missing proportions differ</li><li>Their missing-data impact is identical</li><li>The larger table has the larger proportion</li></ul><p><strong>Answer:</strong> Their counts match but their missing proportions differ</p><p><strong>Explanation:</strong> The proportions are 20% and 1%, showing why the denominator is essential to interpretation.</p></li><li><p><strong>Which ordering is a common signature of a positively skewed distribution?</strong></p><ul><li>Mode &lt; Median &lt; Mean</li><li>Mean &lt; Median &lt; Mode</li><li>Mean = Median = Mode always</li></ul><p><strong>Answer:</strong> Mode &lt; Median &lt; Mean</p><p><strong>Explanation:</strong> Large right-tail values pull the mean farthest right, while the mode remains near the most frequent region.</p></li><li><p><strong>One library reports normal-distribution kurtosis near 3 and another near 0. What should you check?</strong></p><ul><li>Whether Fisher's definition subtracts 3</li><li>Whether the median was sorted</li><li>Whether categories were alphabetized</li></ul><p><strong>Answer:</strong> Whether Fisher's definition subtracts 3</p><p><strong>Explanation:</strong> Fisher kurtosis uses normal = 0 by subtracting 3, while another convention reports normal = 3.</p></li><li><p><strong>An automated report highlights a strong correlation between an ID and the target. Why is skepticism warranted?</strong></p><ul><li>The ID may encode ordering, leakage, or collection artifacts</li><li>Automated correlations are always causal</li><li>IDs are always continuous measurements</li></ul><p><strong>Answer:</strong> The ID may encode ordering, leakage, or collection artifacts</p><p><strong>Explanation:</strong> A numeric association can be real in the table yet meaningless or harmful for the intended modeling problem.</p></li><li><p><strong>What is the best use of a correlation heatmap during early EDA?</strong></p><ul><li>Screen pairs for follow-up plots and domain checks</li><li>Prove causal relationships among all features</li><li>Replace every univariate summary</li></ul><p><strong>Answer:</strong> Screen pairs for follow-up plots and domain checks</p><p><strong>Explanation:</strong> A heatmap efficiently surfaces linear associations but cannot establish causality or show all distributional structure.</p></li><li><p><strong>Why revisit EDA after preprocessing creates transformed features?</strong></p><ul><li>Transformations can change distributions, missingness, and relationships</li><li>EDA is required only for raw data</li><li>Model scores make data checks unnecessary</li></ul><p><strong>Answer:</strong> Transformations can change distributions, missingness, and relationships</p><p><strong>Explanation:</strong> EDA is iterative: whenever the representation changes, earlier assumptions and patterns should be checked again.</p></li></ol></section></section><section><h3>Course sources</h3><ul><li>lectures/lecture_01_eda/README.md</li><li>lectures/lecture_01_eda/lecture_notes.md</li><li>lectures/lecture_01_eda/lecture_examples/README.md</li><li>lectures/lecture_01_eda/practical_session/README.md</li></ul></section></div>
+      </details>
+    </section>
+
+    <noscript>
+      <section class="panel" aria-label="JavaScript unavailable">
+        <p>Interactive controls are unavailable, but complete explanations, graph fallbacks,
+          questions, answers, and feedback remain in the static reference above.</p>
+      </section>
+    </noscript>
+  </main>
+
+  <footer class="page-footer">
+    <p class="source-list" id="source-list"></p>
+  </footer>
+
+  <script>const CONTENT = {"meta":{"lecture_slug":"lecture_01_eda","title":"Exploratory Data Analysis: Interactive Review","sources":["lectures/lecture_01_eda/README.md","lectures/lecture_01_eda/lecture_notes.md","lectures/lecture_01_eda/lecture_examples/README.md","lectures/lecture_01_eda/practical_session/README.md"]},"defaults":{"difficulty":"foundations","focus_mode":true,"color_blind":true,"break_prompts":true},"concepts":[{"id":"eda-before-modeling","title":"Explore before you model","explanation":"Exploratory Data Analysis examines structure, quality, distributions, anomalies, and relationships before formal modeling. In CRISP-DM it belongs to Data Understanding, where it reduces uncertainty about what the variables mean and whether the data supports later conclusions.","interpretation":"Begin with questions about rows, columns, types, missing values, and the target. Treat each plot or statistic as evidence for a specific question, not as decoration.","common_mistakes":["Fitting a model before checking whether columns, units, and missing values are sensible.","Treating EDA as a one-time checklist instead of returning to it after data changes."],"sources":["lectures/lecture_01_eda/lecture_notes.md","lectures/lecture_01_eda/practical_session/README.md"]},{"id":"data-types-and-structure","title":"Structure and data types choose the question","explanation":"Rows, columns, data types, unique values, and missingness define the dataset you actually have. Numerical, categorical, ordinal, and time-series variables require different summaries and plots.","interpretation":"Use numerical summaries for measured quantities, counts and proportions for categories, and preserve the ordering of ordinal categories. Inspect structure before plotting so a numeric-looking code is not mistaken for a measured quantity.","common_mistakes":["Taking the mean of an unordered category code.","Treating an ordered category as though its levels had no order."],"sources":["lectures/lecture_01_eda/lecture_notes.md","lectures/lecture_01_eda/practical_session/README.md"]},{"id":"center-spread-skew","title":"Read center, spread, and shape together","explanation":"Mean, median, and mode describe different notions of center; variance and standard deviation describe spread; skewness describes asymmetry. The mean uses every value and is sensitive to extremes, while the median is more robust.","interpretation":"For a right-skewed variable, report the median alongside its spread and distribution shape. A single average cannot show whether values are concentrated, variable, or asymmetric.","common_mistakes":["Reporting a mean without checking the distribution or spread.","Assuming all libraries use the same bias correction or kurtosis convention."],"sources":["lectures/lecture_01_eda/lecture_notes.md"]},{"id":"histogram-bins","title":"Histogram shape depends on bins","explanation":"A histogram groups numerical values into bins to reveal frequency and shape. Too few bins can hide clusters or multiple peaks, while too many can make random variation look like meaningful structure.","interpretation":"Change the bin count and look for conclusions that remain stable. Use a histogram as one view of shape, supported by summaries or another view such as an ECDF.","common_mistakes":["Treating one arbitrary bin setting as the unique shape of the data.","Comparing histogram bar heights when the bin widths differ."],"sources":["lectures/lecture_01_eda/lecture_notes.md","lectures/lecture_01_eda/lecture_examples/README.md"]},{"id":"iqr-boxplot-outliers","title":"IQR fences flag observations for inspection","explanation":"The interquartile range is Q3 minus Q1 and contains the middle half of ordered observations. Many box plots flag values below Q1 - 1.5 × IQR or above Q3 + 1.5 × IQR.","interpretation":"A flagged point is unusual relative to this distribution, not automatically an error. Check its source, units, group, and domain meaning before deciding how to handle it.","common_mistakes":["Deleting every point beyond a box-plot whisker.","Reading the box as the full data range instead of the middle 50 percent."],"sources":["lectures/lecture_01_eda/lecture_notes.md","lectures/lecture_01_eda/practical_session/README.md"]},{"id":"scatter-association","title":"Association is evidence, not causation","explanation":"A scatter plot shows how two numerical variables vary together and can reveal direction, clusters, non-linearity, and outliers. Pearson correlation summarizes linear association but does not establish a causal mechanism.","interpretation":"Describe what the points show, then consider grouping variables, non-linear patterns, and domain explanations. A trend between flipper length and body mass does not prove that changing one causes the other.","common_mistakes":["Using correlation as proof of causation.","Concluding that no relationship exists because Pearson correlation is near zero."],"sources":["lectures/lecture_01_eda/lecture_notes.md","lectures/lecture_01_eda/practical_session/README.md"]},{"id":"missing-counts-proportions","title":"Compare missing counts in context","explanation":"A missing-value count gives the number of unavailable observations, while a missing proportion divides that count by the relevant total. Proportions make columns or groups of different sizes comparable.","interpretation":"Report both count and denominator. Then investigate whether missingness is concentrated in particular variables or groups, because missing data can change summaries and interpretation.","common_mistakes":["Comparing raw missing counts across datasets of very different sizes.","Treating missingness only as a cleaning inconvenience without checking its pattern."],"sources":["lectures/lecture_01_eda/lecture_notes.md","lectures/lecture_01_eda/practical_session/README.md"]},{"id":"automation-with-reasoning","title":"Automation starts the investigation","explanation":"Automated EDA tools can quickly summarize types, missingness, quantiles, distributions, and correlations. They save time and make initial reporting consistent, but they lack domain context and may miss subtle problems.","interpretation":"Use an automated report to generate questions and prioritize checks. Confirm important findings with targeted manual inspection and explain why each finding matters.","common_mistakes":["Submitting an automated report as though it were a reasoned analysis.","Assuming an inferred type or highlighted correlation must be correct."],"sources":["lectures/lecture_01_eda/lecture_notes.md","lectures/lecture_01_eda/lecture_examples/README.md"]}],"visualizations":[{"id":"penguin-mass-bins","type":"histogram","title":"One illustrative distribution, several bin choices","explanation":"These fixed illustrative measurements support a bin-width experiment. Coarse bins emphasize the broad concentration, while finer bins reveal local variation without changing the underlying observations.","data":[2700,2850,3000,3050,3150,3250,3300,3400,3450,3550,3650,3700,3800,3900,4000,4100,4200,4350,4500,4700,4950,5200,5550,5850],"controls":{"bins":[4,6,8,12]},"fallback":"Illustrative mass-like values, sorted: 2700, 2850, 3000, 3050, 3150, 3250, 3300, 3400, 3450, 3550, 3650, 3700, 3800, 3900, 4000, 4100, 4200, 4350, 4500, 4700, 4950, 5200, 5550, 5850. The same values can look smoother or noisier as bin count changes."},{"id":"mass-iqr-fence","type":"boxplot","title":"An IQR flag is not a deletion command","explanation":"Change the fence multiplier and notice which observations are flagged. The rule describes unusual position in this sample; it does not diagnose a measurement error.","data":[28,29,30,30,31,31,32,32,33,34,35,36,37,52],"controls":{"fence_multipliers":[1,1.5,2]},"fallback":"Sorted measurements: 28, 29, 30, 30, 31, 31, 32, 32, 33, 34, 35, 36, 37, 52. The value 52 is far above the middle half and may be flagged, but it still needs source and domain inspection."},{"id":"flipper-mass-association","type":"scatter","title":"Illustrative flipper length and body mass association","explanation":"These fixed illustrative points model the positive association discussed in the lecture: larger flipper measurements often coincide with larger body mass. The dashed line summarizes direction, not a causal claim.","data":[{"x":178,"y":3150},{"x":181,"y":3300},{"x":185,"y":3450},{"x":188,"y":3600},{"x":191,"y":3500},{"x":195,"y":3900},{"x":199,"y":4050},{"x":203,"y":4300},{"x":210,"y":4700},{"x":216,"y":5100}],"controls":{"trend_line":true},"fallback":"Pairs of flipper length in millimetres and body mass in grams: (178, 3150), (181, 3300), (185, 3450), (188, 3600), (191, 3500), (195, 3900), (199, 4050), (203, 4300), (210, 4700), (216, 5100). Values generally rise together, with variation around the trend."},{"id":"penguin-missingness","type":"missingness","title":"Illustrative missingness: counts need denominators","explanation":"Compare raw missing counts with percentages in this fixed teaching example. A smaller count can represent the larger missing-data problem when its denominator is much smaller.","data":[{"label":"column A","missing":2,"total":344},{"label":"column B","missing":11,"total":344},{"label":"small subgroup","missing":6,"total":40},{"label":"large subgroup","missing":12,"total":300}],"controls":{"sort":["source","descending"]},"fallback":"Illustrative missingness table: column A 2/344 (about 0.6%); column B 11/344 (about 3.2%); small subgroup 6/40 (15%); large subgroup 12/300 (4%). Although 6 is a smaller count than 12, it is the larger proportion."}],"quizzes":{"foundations":[{"id":"eda-f-01","type":"single-choice","prompt":"When should the first EDA pass happen?","options":["Before formal modeling","Only after the final model","Only when model accuracy is low"],"answer":"Before formal modeling","explanation":"EDA belongs to Data Understanding and should reveal structure and quality issues before modeling choices are made.","concept":"eda-before-modeling"},{"id":"eda-f-02","type":"single-choice","prompt":"Which summary is most appropriate for an unordered species column?","options":["Counts and proportions","Mean and variance","Pearson correlation"],"answer":"Counts and proportions","explanation":"Species is categorical, so frequencies, proportions, mode, unique count, and missing count are meaningful summaries.","concept":"data-types-and-structure"},{"id":"eda-f-03","type":"single-choice","prompt":"Which measure of center is usually more robust to an extreme value?","options":["Median","Mean","Variance"],"answer":"Median","explanation":"The median depends on ordered position rather than the magnitude of every value, so a single extreme usually affects it less.","concept":"center-spread-skew"},{"id":"eda-f-04","type":"single-choice","prompt":"What does positive skewness describe?","options":["A long right tail","A long left tail","No spread"],"answer":"A long right tail","explanation":"Positive skew means the distribution extends farther toward large values; the mean is often pulled above the median.","concept":"center-spread-skew"},{"id":"eda-f-05","type":"single-choice","prompt":"What does a histogram bar count?","options":["Observations in a numerical interval","Causal effects","Missing column names"],"answer":"Observations in a numerical interval","explanation":"A histogram groups numerical observations into bins and displays their frequencies.","concept":"histogram-bins"},{"id":"eda-f-06","type":"single-choice","prompt":"How is the interquartile range calculated?","options":["Q3 minus Q1","Maximum minus minimum","Mean minus median"],"answer":"Q3 minus Q1","explanation":"IQR = Q3 - Q1 and describes the spread of the middle 50 percent of observations.","concept":"iqr-boxplot-outliers"},{"id":"eda-f-07","type":"single-choice","prompt":"What does a point beyond a standard box-plot whisker mean?","options":["It deserves inspection","It is certainly a data error","It proves the distribution is normal"],"answer":"It deserves inspection","explanation":"The 1.5 × IQR rule flags an unusual position; source and domain checks are needed before calling it erroneous.","concept":"iqr-boxplot-outliers"},{"id":"eda-f-08","type":"single-choice","prompt":"A strong scatter-plot trend proves that changing x causes y.","options":["False","True","Only when the line slopes upward"],"answer":"False","explanation":"Association can result from grouping, confounding, selection, or other mechanisms; a scatter plot alone does not establish causation.","concept":"scatter-association"},{"id":"eda-f-09","type":"single-choice","prompt":"Why report a missing proportion as well as a count?","options":["It accounts for the denominator","It makes every count smaller","It identifies the cause of missingness"],"answer":"It accounts for the denominator","explanation":"Dividing by the relevant total makes missingness comparable across columns or groups of different sizes.","concept":"missing-counts-proportions"},{"id":"eda-f-10","type":"single-choice","prompt":"What is the best role for an automated EDA report?","options":["A starting point for targeted checks","A replacement for interpretation","Proof that inferred types are correct"],"answer":"A starting point for targeted checks","explanation":"Automation is fast and consistent, but important findings still require context and manual confirmation.","concept":"automation-with-reasoning"}],"applied":[{"id":"eda-a-01","type":"single-choice","prompt":"A new table arrives with 344 rows. What should you inspect before drawing pair plots?","options":["Columns, types, unique values, and missingness","Only model accuracy","Only the target mean"],"answer":"Columns, types, unique values, and missingness","explanation":"Structural inspection establishes what each field represents and which analyses are valid before more elaborate plots.","concept":"data-types-and-structure"},{"id":"eda-a-02","type":"single-choice","prompt":"Household incomes are strongly right-skewed by a few very large values. Which center should be emphasized?","options":["Median","Mean only","Maximum"],"answer":"Median","explanation":"The median is less pulled by the large right-tail observations and better represents the ordered middle.","concept":"center-spread-skew"},{"id":"eda-a-03","type":"single-choice","prompt":"A cluster disappears when a histogram changes from 20 bins to 4. What is the sound next step?","options":["Check several bin settings and another distribution view","Declare the cluster nonexistent","Keep only the most dramatic plot"],"answer":"Check several bin settings and another distribution view","explanation":"Histogram appearance depends on bins, so a stable conclusion should survive reasonable settings and supporting views.","concept":"histogram-bins"},{"id":"eda-a-04","type":"single-choice","prompt":"If Q1 = 10 and Q3 = 14, which value lies above the usual upper 1.5 × IQR fence?","options":["25","18","14"],"answer":"25","explanation":"IQR is 4 and the upper fence is 14 + 1.5 × 4 = 20, so 25 is beyond it.","concept":"iqr-boxplot-outliers"},{"id":"eda-a-05","type":"single-choice","prompt":"Penguin flipper length and body mass rise together in a scatter plot. Which claim is supported?","options":["They have a positive association in these data","Longer flippers necessarily cause higher mass","Species cannot affect the pattern"],"answer":"They have a positive association in these data","explanation":"The plot supports a descriptive association; causal direction and possible group structure require additional evidence.","concept":"scatter-association"},{"id":"eda-a-06","type":"single-choice","prompt":"Group A has 20 missing values among 100 rows; group B has 30 among 300. Which has the larger missing proportion?","options":["Group A","Group B","They are equal"],"answer":"Group A","explanation":"Group A is 20% missing while group B is 10%, even though B has the larger raw count.","concept":"missing-counts-proportions"},{"id":"eda-a-07","type":"single-choice","prompt":"A column stores island names. Which pair gives the most useful first summary?","options":["Category counts and percentages","Variance and standard deviation","Skewness and kurtosis"],"answer":"Category counts and percentages","explanation":"Island is categorical, so frequency and relative frequency reveal group sizes and imbalance.","concept":"data-types-and-structure"},{"id":"eda-a-08","type":"single-choice","prompt":"Survey satisfaction uses Low, Medium, High. What must an analysis preserve?","options":["The ordering of the levels","An arbitrary numeric distance between labels","Only alphabetical order"],"answer":"The ordering of the levels","explanation":"This is ordinal data: order is meaningful, but equal numerical spacing between adjacent levels is not guaranteed.","concept":"data-types-and-structure"},{"id":"eda-a-09","type":"single-choice","prompt":"An automated report labels a numeric-looking ID column as continuous. What should you do?","options":["Inspect its meaning and unique values manually","Accept the type without question","Compute its mean and stop"],"answer":"Inspect its meaning and unique values manually","explanation":"Automated type inference lacks domain meaning; identifiers should not be analyzed as measured quantities merely because they use digits.","concept":"automation-with-reasoning"},{"id":"eda-a-10","type":"single-choice","prompt":"Why is standard deviation often easier to interpret than variance?","options":["It is in the original measurement units","It ignores all extreme values","It always lies between 0 and 1"],"answer":"It is in the original measurement units","explanation":"Standard deviation is the square root of variance, returning spread to the variable's original units.","concept":"center-spread-skew"}],"challenge":[{"id":"eda-c-01","type":"single-choice","prompt":"A pooled scatter plot shows a trend, but each species forms a separate cluster. What is the strongest interpretation?","options":["Inspect within-species and pooled patterns separately","Ignore species because the pooled line is enough","The pooled trend proves one mechanism"],"answer":"Inspect within-species and pooled patterns separately","explanation":"Group structure can create or alter an aggregate association, so both conditional and pooled views are needed.","concept":"scatter-association"},{"id":"eda-c-02","type":"single-choice","prompt":"Pearson correlation is near zero, but the scatter plot forms a clear U-shape. What follows?","options":["There is a non-linear relationship that Pearson correlation misses","There is no relationship","The scatter plot must be wrong"],"answer":"There is a non-linear relationship that Pearson correlation misses","explanation":"Pearson correlation summarizes linear association; opposite slopes on either side of a U can cancel numerically.","concept":"scatter-association"},{"id":"eda-c-03","type":"single-choice","prompt":"A biologically plausible penguin measurement lies beyond the 1.5 × IQR fence. What is the defensible action?","options":["Retain it while checking source, units, and influence","Delete it automatically","Replace it with the mean immediately"],"answer":"Retain it while checking source, units, and influence","explanation":"The fence flags rarity, not invalidity; provenance and sensitivity checks should guide any treatment.","concept":"iqr-boxplot-outliers"},{"id":"eda-c-04","type":"single-choice","prompt":"Two reports use the same observations but one histogram looks bimodal and the other smooth. What should be audited first?","options":["Bin edges and widths","The causal mechanism","The missing-data cause"],"answer":"Bin edges and widths","explanation":"Histogram structure can change materially with bin definitions even though the underlying observations are identical.","concept":"histogram-bins"},{"id":"eda-c-05","type":"single-choice","prompt":"Two columns each have 10 missing cells; one has 50 rows and one has 1000. Which statement is accurate?","options":["Their counts match but their missing proportions differ","Their missing-data impact is identical","The larger table has the larger proportion"],"answer":"Their counts match but their missing proportions differ","explanation":"The proportions are 20% and 1%, showing why the denominator is essential to interpretation.","concept":"missing-counts-proportions"},{"id":"eda-c-06","type":"single-choice","prompt":"Which ordering is a common signature of a positively skewed distribution?","options":["Mode \u003c Median \u003c Mean","Mean \u003c Median \u003c Mode","Mean = Median = Mode always"],"answer":"Mode \u003c Median \u003c Mean","explanation":"Large right-tail values pull the mean farthest right, while the mode remains near the most frequent region.","concept":"center-spread-skew"},{"id":"eda-c-07","type":"single-choice","prompt":"One library reports normal-distribution kurtosis near 3 and another near 0. What should you check?","options":["Whether Fisher's definition subtracts 3","Whether the median was sorted","Whether categories were alphabetized"],"answer":"Whether Fisher's definition subtracts 3","explanation":"Fisher kurtosis uses normal = 0 by subtracting 3, while another convention reports normal = 3.","concept":"center-spread-skew"},{"id":"eda-c-08","type":"single-choice","prompt":"An automated report highlights a strong correlation between an ID and the target. Why is skepticism warranted?","options":["The ID may encode ordering, leakage, or collection artifacts","Automated correlations are always causal","IDs are always continuous measurements"],"answer":"The ID may encode ordering, leakage, or collection artifacts","explanation":"A numeric association can be real in the table yet meaningless or harmful for the intended modeling problem.","concept":"automation-with-reasoning"},{"id":"eda-c-09","type":"single-choice","prompt":"What is the best use of a correlation heatmap during early EDA?","options":["Screen pairs for follow-up plots and domain checks","Prove causal relationships among all features","Replace every univariate summary"],"answer":"Screen pairs for follow-up plots and domain checks","explanation":"A heatmap efficiently surfaces linear associations but cannot establish causality or show all distributional structure.","concept":"scatter-association"},{"id":"eda-c-10","type":"single-choice","prompt":"Why revisit EDA after preprocessing creates transformed features?","options":["Transformations can change distributions, missingness, and relationships","EDA is required only for raw data","Model scores make data checks unnecessary"],"answer":"Transformations can change distributions, missingness, and relationships","explanation":"EDA is iterative: whenever the representation changes, earlier assumptions and patterns should be checked again.","concept":"eda-before-modeling"}]},"break_prompts":["Stretch those whiskers before the next box plot.","Give your eyes a tiny interquartile break: middle 50 percent relaxed.","Stand up and form a positive association with the water bottle.","No timer, no pressure: let the histogram bins settle before continuing."]};</script>
+  <script>
+    "use strict";
+
+    const safeStorage = {
+      get(key) {
+        try {
+          return window.localStorage.getItem(key);
+        } catch (_error) {
+          return null;
+        }
+      },
+      set(key, value) {
+        try {
+          window.localStorage.setItem(key, value);
+        } catch (_error) {
+          return false;
+        }
+        return true;
+      },
+    };
+
+    const storageKey = `lecture-review:${CONTENT.meta.lecture_slug}`;
+    const savedSettings = (() => {
+      const raw = safeStorage.get(storageKey);
+      if (!raw) return {};
+      try {
+        const parsed = JSON.parse(raw);
+        return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+      } catch (_error) {
+        return {};
+      }
+    })();
+
+    const validDifficulties = new Set(["foundations", "applied", "challenge"]);
+    const savedBoolean = (value, fallback) =>
+      typeof value === "boolean" ? value : fallback;
+
+    const state = {
+      difficulty: validDifficulties.has(savedSettings.difficulty)
+        ? savedSettings.difficulty
+        : CONTENT.defaults.difficulty,
+      focus: savedBoolean(savedSettings.focus, CONTENT.defaults.focus_mode),
+      colorBlind: savedBoolean(savedSettings.colorBlind, CONTENT.defaults.color_blind),
+      breakPrompts: savedBoolean(savedSettings.breakPrompts, CONTENT.defaults.break_prompts),
+      conceptIndex: 0,
+      visualizationIndex: 0,
+      quizIndex: 0,
+      responses: [],
+      answered: false,
+    };
+
+    const byId = (id) => document.getElementById(id);
+    const escapeHtml = (value) => String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+
+    function saveSettings() {
+      safeStorage.set(storageKey, JSON.stringify({
+        difficulty: state.difficulty,
+        focus: state.focus,
+        colorBlind: state.colorBlind,
+        breakPrompts: state.breakPrompts,
+      }));
+    }
+
+    function updateProgress() {
+      const conceptPart = CONTENT.concepts.length
+        ? (state.conceptIndex + 1) / CONTENT.concepts.length
+        : 1;
+      const quizPart = state.responses.length / 10;
+      const percentage = Math.round(((conceptPart + quizPart) / 2) * 100);
+      const progress = document.querySelector('[role="progressbar"]');
+      progress.setAttribute("aria-valuenow", String(percentage));
+      document.querySelector(".progress-value").style.width = `${percentage}%`;
+      byId("progress-text").textContent =
+        `Concept ${state.conceptIndex + 1} of ${CONTENT.concepts.length}; ` +
+        `quiz ${state.responses.length} of 10 answered.`;
+    }
+
+    function showBreakPrompt(index) {
+      const prompt = byId("break-prompt");
+      if (!state.breakPrompts || CONTENT.break_prompts.length === 0) {
+        prompt.hidden = true;
+        return;
+      }
+      prompt.textContent = CONTENT.break_prompts[index % CONTENT.break_prompts.length];
+      prompt.hidden = false;
+    }
+
+    function applySettings() {
+      document.documentElement.dataset.focusFriendly = String(state.focus);
+      document.documentElement.dataset.colorBlind = String(state.colorBlind);
+      document.querySelector('[data-setting="difficulty"]').value = state.difficulty;
+      document.querySelector('[data-setting="focus"]').checked = state.focus;
+      document.querySelector('[data-setting="color-blind"]').checked = state.colorBlind;
+      document.querySelector('[data-setting="break-prompts"]').checked = state.breakPrompts;
+      if (!state.breakPrompts) byId("break-prompt").hidden = true;
+      saveSettings();
+      renderConcepts();
+      renderVisualizations();
+    }
+
+    function renderConcepts() {
+      const container = byId("concept-list");
+      container.innerHTML = CONTENT.concepts.map((concept, index) => {
+        const hidden = state.focus && index !== state.conceptIndex ? " hidden" : "";
+        const mistakes = concept.common_mistakes
+          .map((mistake) => `<li>${escapeHtml(mistake)}</li>`).join("");
+        return `<article class="concept-card"${hidden}>
+          <p class="eyebrow">Concept ${index + 1}</p>
+          <h3>${escapeHtml(concept.title)}</h3>
+          <p>${escapeHtml(concept.explanation)}</p>
+          <p><strong>How to read it:</strong> ${escapeHtml(concept.interpretation)}</p>
+          <div class="mistakes optional-detail">
+            <strong>Common mistake</strong><ul>${mistakes}</ul>
+          </div>
+        </article>`;
+      }).join("");
+      byId("previous-concept").disabled = state.conceptIndex === 0;
+      byId("next-concept").disabled = state.conceptIndex >= CONTENT.concepts.length - 1;
+      updateProgress();
+    }
+
+    function numericData(visualization) {
+      return Array.isArray(visualization.data)
+        ? visualization.data.map(Number).filter(Number.isFinite)
+        : [];
+    }
+
+    function renderHistogram(visualization, target, summary, bins) {
+      const values = numericData(visualization);
+      const min = Math.min(...values);
+      const max = Math.max(...values);
+      const width = max === min ? 1 : (max - min) / bins;
+      const counts = Array.from({ length: bins }, () => 0);
+      values.forEach((value) => {
+        const index = Math.min(bins - 1, Math.floor((value - min) / width));
+        counts[index] += 1;
+      });
+      const peak = Math.max(1, ...counts);
+      target.innerHTML = `<svg viewBox="0 0 520 240" role="img"
+        aria-label="${escapeHtml(visualization.title)} histogram">
+        ${counts.map((count, index) => {
+          const height = (count / peak) * 160;
+          const x = 45 + index * (420 / bins);
+          return `<g><rect class="mark-primary" data-shape="bar" x="${x}" y="${190 - height}"
+            width="${Math.max(8, 380 / bins)}" height="${height}"></rect>
+          <text class="chart-label" x="${x}" y="214">${count}</text></g>`;
+        }).join("")}
+      </svg>`;
+      summary.textContent =
+        `${bins} bins. Counts from left to right: ${counts.join(", ")}.`;
+    }
+
+    function quantile(values, fraction) {
+      if (!values.length) return 0;
+      const sorted = [...values].sort((a, b) => a - b);
+      const position = (sorted.length - 1) * fraction;
+      const lower = Math.floor(position);
+      const upper = Math.ceil(position);
+      const weight = position - lower;
+      return sorted[lower] * (1 - weight) + sorted[upper] * weight;
+    }
+
+    function renderBoxplot(visualization, target, summary, multiplier) {
+      const values = numericData(visualization);
+      const min = Math.min(...values);
+      const max = Math.max(...values);
+      const q1 = quantile(values, 0.25);
+      const median = quantile(values, 0.5);
+      const q3 = quantile(values, 0.75);
+      const iqr = q3 - q1;
+      const lowerFence = q1 - multiplier * iqr;
+      const upperFence = q3 + multiplier * iqr;
+      const inliers = values.filter((value) => value >= lowerFence && value <= upperFence);
+      const whiskerMin = Math.min(...inliers);
+      const whiskerMax = Math.max(...inliers);
+      const outliers = values.filter((value) => value < lowerFence || value > upperFence);
+      const scale = (value) => 50 + ((value - min) / Math.max(1, max - min)) * 420;
+      target.innerHTML = `<svg viewBox="0 0 520 180" role="img"
+        aria-label="${escapeHtml(visualization.title)} box plot">
+        <line x1="${scale(whiskerMin)}" y1="90" x2="${scale(whiskerMax)}" y2="90"
+          stroke="currentColor" stroke-width="3"></line>
+        <rect class="mark-secondary" data-shape="box" x="${scale(q1)}" y="55"
+          width="${Math.max(2, scale(q3) - scale(q1))}" height="70"></rect>
+        <line x1="${scale(median)}" y1="50" x2="${scale(median)}" y2="130"
+          stroke="currentColor" stroke-width="5"></line>
+        ${outliers.map((value) => `<circle class="mark-primary" data-shape="outlier"
+          cx="${scale(value)}" cy="90" r="6"><title>Outlier ${value}</title></circle>`).join("")}
+        <text class="chart-label" x="50" y="155">min ${min}</text>
+        <text class="chart-label" x="205" y="155">median ${median.toFixed(1)}</text>
+        <text class="chart-label" x="420" y="155">max ${max}</text>
+      </svg>`;
+      summary.textContent =
+        `Median ${median.toFixed(1)}; IQR ${iqr.toFixed(1)}; ` +
+        `${outliers.length} values beyond ${multiplier} × IQR.`;
+    }
+
+    function renderScatter(visualization, target, summary, showTrend) {
+      const points = Array.isArray(visualization.data) ? visualization.data : [];
+      const xs = points.map((point) => Number(point.x)).filter(Number.isFinite);
+      const ys = points.map((point) => Number(point.y)).filter(Number.isFinite);
+      const minX = Math.min(...xs);
+      const maxX = Math.max(...xs);
+      const minY = Math.min(...ys);
+      const maxY = Math.max(...ys);
+      const xScale = (value) => 45 + ((value - minX) / Math.max(1, maxX - minX)) * 430;
+      const yScale = (value) => 195 - ((value - minY) / Math.max(1, maxY - minY)) * 155;
+      const meanX = xs.reduce((sum, value) => sum + value, 0) / xs.length;
+      const meanY = ys.reduce((sum, value) => sum + value, 0) / ys.length;
+      const numerator = points.reduce(
+        (sum, point) => sum + (Number(point.x) - meanX) * (Number(point.y) - meanY),
+        0,
+      );
+      const denominator = xs.reduce((sum, value) => sum + (value - meanX) ** 2, 0);
+      const slope = denominator === 0 ? 0 : numerator / denominator;
+      const intercept = meanY - slope * meanX;
+      const trend = showTrend
+        ? `<line x1="${xScale(minX)}" y1="${yScale(intercept + slope * minX)}"
+          x2="${xScale(maxX)}" y2="${yScale(intercept + slope * maxX)}"
+          stroke="currentColor" stroke-width="3" stroke-dasharray="8 6"></line>`
+        : "";
+      target.innerHTML = `<svg viewBox="0 0 520 240" role="img"
+        aria-label="${escapeHtml(visualization.title)} scatter plot">
+        ${trend}
+        ${points.map((point, index) => {
+          const shape = index % 2 === 0 ? "circle" : "square";
+          if (shape === "circle") {
+            return `<circle class="mark-primary" data-shape="circle"
+              cx="${xScale(Number(point.x))}" cy="${yScale(Number(point.y))}" r="7">
+              <title>x ${escapeHtml(point.x)}, y ${escapeHtml(point.y)}</title></circle>`;
+          }
+          return `<rect class="mark-secondary" data-shape="square"
+            x="${xScale(Number(point.x)) - 7}" y="${yScale(Number(point.y)) - 7}"
+            width="14" height="14"><title>x ${escapeHtml(point.x)},
+            y ${escapeHtml(point.y)}</title></rect>`;
+        }).join("")}
+        <text class="chart-label" x="220" y="228">x value</text>
+        <text class="chart-label" x="8" y="30">y value</text>
+      </svg>`;
+      const direction = slope > 0 ? "positive" : slope < 0 ? "negative" : "flat";
+      summary.textContent =
+        `${points.length} points; ${direction} linear trend. ` +
+        `${showTrend ? "Dashed trend line shown." : "Trend line hidden."}`;
+    }
+
+    function renderMissingness(visualization, target, summary, sortMode) {
+      const sourceRows = Array.isArray(visualization.data) ? visualization.data : [];
+      const rows = sortMode === "descending"
+        ? [...sourceRows].sort(
+          (left, right) =>
+            Number(right.missing) / Number(right.total) -
+            Number(left.missing) / Number(left.total),
+        )
+        : sourceRows;
+      target.innerHTML = `<svg viewBox="0 0 520 260" role="img"
+        aria-label="${escapeHtml(visualization.title)} missing-data chart">
+        ${rows.map((row, index) => {
+          const ratio = Number(row.total) ? Number(row.missing) / Number(row.total) : 0;
+          const width = Math.max(0, ratio * 330);
+          return `<g><text class="chart-label" x="12" y="${42 + index * 48}">
+            ${escapeHtml(row.label)}</text>
+            <rect class="mark-secondary" data-shape="bar" x="145" y="${24 + index * 48}"
+              width="${width}" height="24"></rect>
+            <text class="chart-label" x="${155 + width}" y="${42 + index * 48}">
+              ${Math.round(ratio * 100)}% (${escapeHtml(row.missing)}/${escapeHtml(row.total)})
+            </text></g>`;
+        }).join("")}
+      </svg>`;
+      summary.textContent = rows.map((row) =>
+        `${row.label}: ${Math.round((Number(row.missing) / Number(row.total)) * 100)}% missing`
+      ).join("; ");
+    }
+
+    function visualizationControl(visualization) {
+      if (visualization.type === "histogram") {
+        const choices = visualization.controls?.bins || [4, 6, 8];
+        return `<label>Number of bins
+          <select data-viz-control="${escapeHtml(visualization.id)}">
+            ${choices.map((value) => `<option value="${Number(value)}">${Number(value)}</option>`)
+              .join("")}
+          </select></label>`;
+      }
+      if (visualization.type === "boxplot") {
+        return `<label>Outlier fence
+          <select data-viz-control="${escapeHtml(visualization.id)}">
+            <option value="1">1 × IQR</option>
+            <option value="1.5" selected>1.5 × IQR</option>
+            <option value="2">2 × IQR</option>
+          </select></label>`;
+      }
+      if (visualization.type === "scatter") {
+        return `<label class="setting"><input type="checkbox"
+          data-viz-control="${escapeHtml(visualization.id)}">
+          <span>Show dashed trend line</span></label>`;
+      }
+      return `<label>Order
+        <select data-viz-control="${escapeHtml(visualization.id)}">
+          <option value="source">Source order</option>
+          <option value="descending">Most missing first</option>
+        </select></label>`;
+    }
+
+    function renderOneVisualization(visualization) {
+      const target = byId(`chart-${visualization.id}`);
+      const summary = byId(`summary-${visualization.id}`);
+      const control = document.querySelector(
+        `[data-viz-control="${CSS.escape(visualization.id)}"]`,
+      );
+      if (visualization.type === "histogram") {
+        renderHistogram(visualization, target, summary, Math.max(1, Number(control.value)));
+      } else if (visualization.type === "boxplot") {
+        renderBoxplot(visualization, target, summary, Number(control.value));
+      } else if (visualization.type === "scatter") {
+        renderScatter(visualization, target, summary, control.checked);
+      } else {
+        renderMissingness(visualization, target, summary, control.value);
+      }
+    }
+
+    function renderVisualizations() {
+      const container = byId("visualization-list");
+      container.innerHTML = CONTENT.visualizations.map((visualization, index) =>
+        `<article class="visualization-card" data-visualization="${escapeHtml(visualization.id)}"
+          data-active="${index === state.visualizationIndex}"
+          ${state.focus && index !== state.visualizationIndex ? "hidden" : ""}>
+          <h3>${escapeHtml(visualization.title)}</h3>
+          <p>${escapeHtml(visualization.explanation)}</p>
+          ${visualizationControl(visualization)}
+          <div class="chart-shell" id="chart-${escapeHtml(visualization.id)}"></div>
+          <p class="chart-summary" id="summary-${escapeHtml(visualization.id)}"
+            aria-live="polite"></p>
+          <p class="graph-fallback"><strong>Text fallback:</strong>
+            ${escapeHtml(visualization.fallback)}</p>
+        </article>`
+      ).join("");
+      CONTENT.visualizations.forEach((visualization) => {
+        const control = document.querySelector(
+          `[data-viz-control="${CSS.escape(visualization.id)}"]`,
+        );
+        control.addEventListener("change", () => renderOneVisualization(visualization));
+        renderOneVisualization(visualization);
+      });
+      byId("previous-visualization").disabled = state.visualizationIndex === 0;
+      byId("next-visualization").disabled =
+        state.visualizationIndex >= CONTENT.visualizations.length - 1;
+    }
+
+    function currentQuestions() {
+      return CONTENT.quizzes[state.difficulty];
+    }
+
+    function renderQuiz(focusQuestion = false) {
+      const questions = currentQuestions();
+      const question = questions[state.quizIndex];
+      const inputType = question.type === "multiple-choice" ? "checkbox" : "radio";
+      const options = question.options.map((option) =>
+        `<label class="quiz-option">
+          <input type="${inputType}" name="quiz-answer" value="${escapeHtml(option)}">
+          <span>${escapeHtml(option)}</span>
+        </label>`
+      ).join("");
+      const responseControl = question.type === "interpretation" && !question.options.length
+        ? `<label for="interpretation-answer">Your interpretation</label>
+          <textarea id="interpretation-answer"></textarea>`
+        : `<fieldset class="quiz-options"><legend class="optional-detail">
+          Choose ${question.type === "multiple-choice" ? "all correct answers" : "one answer"}
+        </legend>${options}</fieldset>`;
+      byId("quiz-card").setAttribute("tabindex", "-1");
+      byId("quiz-card").innerHTML = `<p class="eyebrow">${escapeHtml(state.difficulty)}
+        · question ${state.quizIndex + 1} of 10</p>
+        <h3>${escapeHtml(question.prompt)}</h3>
+        ${responseControl}`;
+      byId("quiz-feedback").hidden = true;
+      byId("submit-answer").hidden = false;
+      byId("next-question").hidden = true;
+      state.answered = false;
+      updateProgress();
+      if (focusQuestion) byId("quiz-card").focus();
+    }
+
+    function normalizedAnswer(value) {
+      const values = Array.isArray(value) ? value : [value];
+      return values.map((item) => String(item).trim().toLocaleLowerCase()).sort();
+    }
+
+    function answersMatch(selected, answer) {
+      return JSON.stringify(normalizedAnswer(selected)) ===
+        JSON.stringify(normalizedAnswer(answer));
+    }
+
+    function submitAnswer() {
+      if (state.answered) return;
+      const interpretation = byId("interpretation-answer");
+      const selected = interpretation
+        ? [interpretation.value.trim()].filter(Boolean)
+        : [...document.querySelectorAll('[name="quiz-answer"]:checked')]
+          .map((input) => input.value);
+      if (!selected.length) {
+        byId("quiz-feedback").textContent = "Choose an answer before checking.";
+        byId("quiz-feedback").dataset.correct = "false";
+        byId("quiz-feedback").hidden = false;
+        return;
+      }
+      const question = currentQuestions()[state.quizIndex];
+      const correct = answersMatch(selected, question.answer);
+      state.responses.push({
+        id: question.id,
+        prompt: question.prompt,
+        selected,
+        answer: question.answer,
+        explanation: question.explanation,
+        correct,
+      });
+      state.answered = true;
+      byId("quiz-feedback").innerHTML = `<strong>${correct ? "Correct." : "Not yet."}</strong>
+        ${escapeHtml(question.explanation)}`;
+      byId("quiz-feedback").dataset.correct = String(correct);
+      byId("quiz-feedback").hidden = false;
+      byId("submit-answer").hidden = true;
+      byId("next-question").hidden = false;
+      byId("next-question").focus();
+      if (state.quizIndex === 4) showBreakPrompt(1);
+      updateProgress();
+    }
+
+    function showQuizResults() {
+      const correct = state.responses.filter((response) => response.correct).length;
+      byId("quiz-card").hidden = true;
+      byId("quiz-feedback").hidden = true;
+      byId("next-question").hidden = true;
+      byId("submit-answer").hidden = true;
+      byId("retry-quiz").hidden = false;
+      byId("quiz-results").innerHTML = `<h3>Your result: ${correct}/10</h3>
+        <ol>${state.responses.map((response) => `<li>
+          <p><strong>${escapeHtml(response.prompt)}</strong></p>
+          <p>Your answer: ${escapeHtml(response.selected.join(", "))}</p>
+          <p>Correct answer: ${escapeHtml(
+            Array.isArray(response.answer) ? response.answer.join(", ") : response.answer
+          )}</p>
+          <p>${escapeHtml(response.explanation)}</p>
+        </li>`).join("")}</ol>`;
+      byId("quiz-results").hidden = false;
+      byId("quiz-results").focus?.();
+      updateProgress();
+    }
+
+    function nextQuestion() {
+      if (!state.answered) return;
+      if (state.quizIndex >= 9) {
+        showQuizResults();
+        return;
+      }
+      state.quizIndex += 1;
+      renderQuiz(true);
+    }
+
+    function retryQuiz() {
+      state.quizIndex = 0;
+      state.responses = [];
+      state.answered = false;
+      byId("quiz-card").hidden = false;
+      byId("quiz-results").hidden = true;
+      byId("retry-quiz").hidden = true;
+      renderQuiz(true);
+    }
+
+    document.querySelector('[data-setting="difficulty"]').addEventListener("change", (event) => {
+      if (state.responses.length && !confirm("Changing depth resets your current quiz. Continue?")) {
+        event.target.value = state.difficulty;
+        return;
+      }
+      state.difficulty = event.target.value;
+      retryQuiz();
+      saveSettings();
+    });
+    document.querySelector('[data-setting="focus"]').addEventListener("change", (event) => {
+      state.focus = event.target.checked;
+      applySettings();
+    });
+    document.querySelector('[data-setting="color-blind"]').addEventListener("change", (event) => {
+      state.colorBlind = event.target.checked;
+      applySettings();
+    });
+    document.querySelector('[data-setting="break-prompts"]').addEventListener("change", (event) => {
+      state.breakPrompts = event.target.checked;
+      applySettings();
+      if (state.breakPrompts) showBreakPrompt(0);
+    });
+
+    byId("previous-concept").addEventListener("click", () => {
+      state.conceptIndex = Math.max(0, state.conceptIndex - 1);
+      renderConcepts();
+    });
+    byId("next-concept").addEventListener("click", () => {
+      state.conceptIndex = Math.min(CONTENT.concepts.length - 1, state.conceptIndex + 1);
+      if (state.conceptIndex === 1) showBreakPrompt(0);
+      renderConcepts();
+      if (state.focus) {
+        const active = document.querySelector(".concept-card:not([hidden])");
+        if (document.activeElement !== active) active?.scrollIntoView({ block: "nearest" });
+      }
+    });
+    byId("previous-visualization").addEventListener("click", () => {
+      state.visualizationIndex = Math.max(0, state.visualizationIndex - 1);
+      renderVisualizations();
+    });
+    byId("next-visualization").addEventListener("click", () => {
+      state.visualizationIndex = Math.min(
+        CONTENT.visualizations.length - 1,
+        state.visualizationIndex + 1,
+      );
+      renderVisualizations();
+      if (state.focus) {
+        document.querySelector('.visualization-card[data-active="true"]')?.scrollIntoView({
+          block: "nearest",
+        });
+      }
+    });
+    byId("submit-answer").addEventListener("click", submitAnswer);
+    byId("next-question").addEventListener("click", nextQuestion);
+    byId("retry-quiz").addEventListener("click", retryQuiz);
+
+    byId("site-title").textContent = CONTENT.meta.title;
+    byId("site-subtitle").textContent =
+      CONTENT.meta.subtitle || "Learn, explore, then check your knowledge.";
+    byId("source-list").textContent = `Course sources: ${CONTENT.meta.sources.join(" · ")}`;
+    applySettings();
+    renderQuiz();
+  </script>
+</body>
+</html>
