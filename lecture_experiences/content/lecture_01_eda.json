@@ -145,11 +145,11 @@
       "type": "boxplot",
       "title": "An IQR flag is not a deletion command",
       "explanation": "Change the fence multiplier and notice which observations are flagged. The rule describes unusual position in this sample; it does not diagnose a measurement error.",
-      "data": [28, 29, 30, 30, 31, 31, 32, 32, 33, 34, 35, 36, 37, 52],
+      "data": [28, 29, 30, 30, 31, 31, 32, 32, 33, 34, 35, 36, 37, 42, 52],
       "controls": {
         "fence_multipliers": [1, 1.5, 2]
       },
-      "fallback": "Sorted measurements: 28, 29, 30, 30, 31, 31, 32, 32, 33, 34, 35, 36, 37, 52. The value 52 is far above the middle half and may be flagged, but it still needs source and domain inspection."
+      "fallback": "Sorted measurements: 28, 29, 30, 30, 31, 31, 32, 32, 33, 34, 35, 36, 37, 42, 52. A 1 × IQR fence flags 42 and 52, while wider fences flag only 52. Either flag still needs source and domain inspection."
     },
     {
       "id": "flipper-mass-association",
