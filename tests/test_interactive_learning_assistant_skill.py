@@ -106,6 +106,15 @@ def _load_policy_wrapper():
     return module
 
 
+def _materialize_repository_source(repository_root: Path, source: str) -> Path | None:
+    if ":" in source:
+        return None
+    path = repository_root.joinpath(*source.split("/"))
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("Synthetic policy fixture.", encoding="utf-8")
+    return path
+
+
 @pytest.mark.parametrize(
     "source",
     [
@@ -116,9 +125,13 @@ def _load_policy_wrapper():
         *REAL_TEACHER_SOURCES,
     ],
 )
-def test_course_policy_behaviorally_rejects_restricted_sources(source: str) -> None:
-    if source in REAL_TEACHER_SOURCES:
-        assert Path(source).is_file()
+def test_course_policy_behaviorally_rejects_restricted_sources(
+    tmp_path: Path,
+    source: str,
+) -> None:
+    fixture = _materialize_repository_source(tmp_path, source)
+    assert fixture is not None
+    assert fixture.is_file()
     validator = _load_policy_wrapper()
     payload = {"meta": {"sources": [source]}, "concepts": []}
 
@@ -128,10 +141,14 @@ def test_course_policy_behaviorally_rejects_restricted_sources(source: str) -> N
     assert any("restricted" in error for error in errors)
 
 
-def test_course_policy_rejects_a_different_lecture_source() -> None:
+def test_course_policy_rejects_a_different_lecture_source(tmp_path: Path) -> None:
     validator = _load_policy_wrapper()
+    source = "lectures/lecture_02_data_preparation_part_1/lecture_notes.md"
+    fixture = _materialize_repository_source(tmp_path, source)
+    assert fixture is not None
+    assert fixture.is_file()
     payload = {
-        "meta": {"sources": ["lectures/lecture_02_data_preparation_part_1/lecture_notes.md"]},
+        "meta": {"sources": [source]},
         "concepts": [],
     }
 
@@ -154,12 +171,13 @@ def test_course_policy_rejects_a_different_lecture_source() -> None:
         "OKF/course-overview/course-overview.md",
     ],
 )
-def test_course_policy_rejects_every_source_outside_canonical_roots(source: str) -> None:
-    if source in {
-        "docs/interactive-lecture-learning-assistant.md",
-        "quizzes/README.md",
-    }:
-        assert Path(source).is_file()
+def test_course_policy_rejects_every_source_outside_canonical_roots(
+    tmp_path: Path,
+    source: str,
+) -> None:
+    fixture = _materialize_repository_source(tmp_path, source)
+    if fixture is not None:
+        assert fixture.is_file()
     validator = _load_policy_wrapper()
     payload = {"meta": {"sources": [source]}, "concepts": []}
 
@@ -206,8 +224,13 @@ def test_course_policy_wrapper_cli_rejects_before_writing_output(
     tmp_path: Path,
     source: str,
 ) -> None:
-    content = tmp_path / "content.json"
-    output = tmp_path / "index.html"
+    repository_root = tmp_path / "repository"
+    repository_root.mkdir()
+    fixture = _materialize_repository_source(repository_root, source)
+    if fixture is not None:
+        assert fixture.is_file()
+    content = repository_root / "content.json"
+    output = repository_root / "index.html"
     content.write_text(
         json.dumps(
             {
@@ -223,16 +246,17 @@ def test_course_policy_wrapper_cli_rejects_before_writing_output(
     completed = subprocess.run(
         [
             sys.executable,
-            str(POLICY_WRAPPER),
+            str(POLICY_WRAPPER.resolve()),
             "--lecture-slug",
             "lecture_01_eda",
             "--content",
             str(content),
             "--template",
-            str(CORE_TEMPLATE),
+            str(CORE_TEMPLATE.resolve()),
             "--output",
             str(output),
         ],
+        cwd=repository_root,
         check=False,
         capture_output=True,
         text=True,
