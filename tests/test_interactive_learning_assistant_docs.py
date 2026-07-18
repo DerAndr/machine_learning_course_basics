@@ -4,6 +4,7 @@ LIVE_URL = "https://derandr.github.io/machine_learning_course_basics/demos/lectu
 OFFLINE_PATH = "lecture_experiences/lecture_01_eda/index.html"
 SKILL_PATH = ".agents/skills/ml-course-interactive-learning-assistant/SKILL.md"
 CORE_SKILL_PATH = ".agents/skills/interactive-learning-experience-builder/SKILL.md"
+ARCHITECTURE_PATH = "docs/learning-companions-architecture.md"
 
 
 def test_learning_assistant_documentation_is_discoverable() -> None:
@@ -25,6 +26,44 @@ def test_learning_assistant_documentation_is_discoverable() -> None:
     assert "whole-quiz Retry" in guide_text
     assert "lecture_experiences/content/" in agents
     assert "validate_learning_experience.py" in agents
+
+
+def test_learning_companions_architecture_contract() -> None:
+    path = Path(ARCHITECTURE_PATH)
+    assert path.is_file()
+
+    text = path.read_text(encoding="utf-8")
+    for heading in (
+        "# Learning Companions Architecture",
+        "## What a learning companion is",
+        "## Architectural layers",
+        "## Responsibility boundaries",
+        "## Portability model",
+        "## ML-course mapping",
+        "## How to use the architecture",
+        "## Assurance and safety",
+        "## Maintenance rules",
+    ):
+        assert heading in text
+
+    for term in (
+        "interactive-learning-experience-builder",
+        "repository adapter",
+        "experience specification",
+        "grounded JSON payload",
+        "deterministic",
+        "self-contained",
+        "file://",
+        "validation",
+        "student repository",
+        "teacher repository",
+    ):
+        assert term in text
+
+    assert "```mermaid" in text
+    assert "flowchart LR" in text
+    assert "| Portable core skill |" in text
+    assert "one skill per lecture" in text
 
 
 def test_pages_deployment_is_limited_to_student_repository() -> None:
