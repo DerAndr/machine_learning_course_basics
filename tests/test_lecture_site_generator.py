@@ -589,6 +589,23 @@ def test_validate_html_requires_sticky_progress_contract(
     assert any(expected in error.lower() for error in errors)
 
 
+def test_validate_html_rejects_sticky_progress_declaration_inside_css_comment(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "index.html"
+    path.write_text(
+        _valid_html().replace(
+            ".progress-panel { position: sticky; }",
+            "/* .progress-panel { position: sticky; } */",
+        ),
+        encoding="utf-8",
+    )
+
+    errors = validate_html(path)
+
+    assert "missing sticky progress style" in errors
+
+
 @pytest.mark.parametrize(
     "resource",
     [

@@ -61,6 +61,7 @@ STICKY_PROGRESS_STYLE = re.compile(
     r"\.progress-panel\s*\{[^}]*\bposition\s*:\s*sticky\b",
     re.IGNORECASE | re.DOTALL,
 )
+CSS_COMMENT = re.compile(r"/\*.*?\*/", re.DOTALL)
 
 
 class _ContractParser(HTMLParser):
@@ -199,6 +200,7 @@ def validate_html(path: Path) -> list[str]:
         errors.append(f"external runtime resource is not portable: {resource}")
 
     style_text = "\n".join(parser.style_text)
+    style_without_comments = CSS_COMMENT.sub("", style_text)
     if re.search(
         r"(?:@import|url\()\s*['\"]?(?:https?:)?//",
         style_text,
@@ -232,7 +234,7 @@ def validate_html(path: Path) -> list[str]:
         errors.append("missing viewport metadata")
     if not parser.has_progress_panel:
         errors.append("missing progress panel")
-    if not STICKY_PROGRESS_STYLE.search(style_text):
+    if not STICKY_PROGRESS_STYLE.search(style_without_comments):
         errors.append("missing sticky progress style")
     return errors
 
