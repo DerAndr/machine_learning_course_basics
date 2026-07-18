@@ -50,3 +50,23 @@ The single observed contract gap is the absence of an explicit deterministic,
 single-file output requirement. A future skill response must bind generation
 to exactly one portable HTML file that opens through `file://` with no runtime
 dependencies.
+
+## Forward test after skill creation
+
+The same scenario was run again with the completed skill and only the
+skill-routed files available to the evaluator.
+
+| Required behavior | Result | Evidence and assessment |
+|---|---|---|
+| Source grounding | Pass | The workflow prioritizes public Lecture 01 notes, README/metadata, examples, and student practicals while excluding solutions and grading material. |
+| Exact quiz-bank counts | Pass | The output contract requires Foundations, Applied, and Challenge banks with exactly ten questions in each bank. |
+| One-file offline behavior | Pass | The workflow requires one deterministic `index.html` containing HTML, CSS, JavaScript, SVG, content, data, fallbacks, and quizzes, with no server or network dependency. |
+| Chart fallbacks | Pass | It requires accessible labels, non-color cues, live summaries, and static fallbacks. |
+| Settings persistence fallback | Pass | All settings remain changeable in-page, and storage failure must not break the experience. |
+| OKF preservation | Pass | OKF is explicitly read-only and must not be modified. |
+| Validation evidence | Pass | The evaluator identified both generator and validator commands plus a `file://` interaction and console-cleanliness smoke test. |
+
+The skill closes the baseline's single-file contract gap. The evaluator noted
+that initial settings and output path may be unspecified in a fresh prompt;
+the skill handles these as generation defaults while keeping every setting
+changeable in the generated page.
