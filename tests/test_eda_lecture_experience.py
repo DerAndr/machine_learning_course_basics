@@ -111,5 +111,9 @@ def test_eda_payload_and_generated_site_meet_learning_contract(
         tmp_path / "index.html",
         repository_root=ROOT,
     )
-    assert generated_path.read_bytes() == SITE_PATH.read_bytes()
+    generated_bytes = generated_path.read_bytes()
+    committed_bytes = SITE_PATH.read_bytes()
+    assert b"\r\n" not in generated_bytes
+    assert b"\r\n" not in committed_bytes
+    assert generated_bytes == committed_bytes
     assert _okf_hashes() == okf_before

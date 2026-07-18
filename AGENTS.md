@@ -178,7 +178,8 @@ Detailed setup: `docs/student-quickstart.md`
 - `okf/` — concise textbook concepts, learning paths, lab descriptions, and contribution modules
 - `.agents/skills/ml-course-textbook-contributor/` — agent workflow for safe textbook contributions
 - `.agents/skills/ml-course-student-navigator/` — agent workflow for helping students navigate the course and set up their environment
-- `.agents/skills/ml-course-interactive-learning-assistant/` — agent workflow, template, generator, and validator for standalone lecture reviews
+- `.agents/skills/interactive-learning-experience-builder/` — portable template, generator, and validator for standalone learning experiences
+- `.agents/skills/ml-course-interactive-learning-assistant/` — ML-course adapter for source, safety, output, and publishing rules
 - `lecture_experiences/content/` — public-source-grounded lecture review payloads
 - `lecture_experiences/lecture_01_eda/` — reference offline EDA review; other lectures follow the same structure
 - `site/assets/` and `site/data/` — committed assets and public-safe data used by the textbook preview

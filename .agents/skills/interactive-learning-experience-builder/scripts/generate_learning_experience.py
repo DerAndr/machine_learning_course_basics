@@ -453,7 +453,7 @@ def write_site(
     template = template_path.read_text(encoding="utf-8")
     html = generate_site(payload, template)
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(html, encoding="utf-8")
+    output_path.write_text(html, encoding="utf-8", newline="\n")
     return output_path
 
 

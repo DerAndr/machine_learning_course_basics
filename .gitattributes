@@ -1,0 +1,3 @@
+.agents/skills/interactive-learning-experience-builder/assets/learning-experience-template.html text eol=lf
+lecture_experiences/content/*.json text eol=lf
+lecture_experiences/**/index.html text eol=lf
