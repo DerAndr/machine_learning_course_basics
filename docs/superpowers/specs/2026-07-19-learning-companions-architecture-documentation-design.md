@@ -195,4 +195,3 @@ integrations.
 - No teacher-only paths or private source details are introduced into the
   student repository.
 - No new repository adapter is created.
-

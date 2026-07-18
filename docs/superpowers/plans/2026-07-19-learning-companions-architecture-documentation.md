@@ -382,7 +382,7 @@ Expected: all files formatted and lint clean.
 
 - [ ] **Step 2: Create a teacher integration branch**
 
-In `C:\projects\personal\ml-course-public-sync`:
+In `<teacher-worktree>` (the root of the teacher repository worktree):
 
 ```powershell
 git fetch origin main
@@ -427,8 +427,8 @@ shared learning-companion sections.
 
 - [ ] **Step 5: Run fresh teacher verification**
 
-Use the same Ruff, pytest, strict OKF, and preview-build commands as Step 1 in
-`C:\projects\personal\ml-course-public-sync`.
+From `<teacher-worktree>`, use the same Ruff, pytest, strict OKF, and
+preview-build commands as Step 1.
 
 Expected: every command exits 0.
 
