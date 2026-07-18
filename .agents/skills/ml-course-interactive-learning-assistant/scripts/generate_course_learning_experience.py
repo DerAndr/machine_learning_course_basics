@@ -56,20 +56,52 @@ def _restricted_source_token(source: str) -> str | None:
     return None
 
 
+def _is_canonical_repository_path(source: str) -> bool:
+    if (
+        source != source.strip()
+        or "\\" in source
+        or any(mark in source for mark in (":", "?", "#"))
+    ):
+        return False
+    if source.startswith("/"):
+        return False
+    parts = source.split("/")
+    return not any(part in {"", ".", ".."} for part in parts)
+
+
+def _source_allowlist_error(source: str, lecture_slug: str) -> str | None:
+    selected_lecture_prefix = f"lectures/{lecture_slug}/"
+    if source.startswith(selected_lecture_prefix) or source.startswith("okf/"):
+        if _is_canonical_repository_path(source):
+            return None
+        return f"source is not a canonical repository-relative path: {source}"
+    if source.startswith("lectures/"):
+        return f"source belongs to a different lecture than {lecture_slug}: {source}"
+    if source.casefold().startswith(("lectures/", "okf/")):
+        return f"source root must use canonical lowercase spelling: {source}"
+    return (
+        "source is outside the ML-course allowlist; use only "
+        f"{selected_lecture_prefix}... or okf/...: {source}"
+    )
+
+
 def validate_course_source_policy(
     payload: dict[str, object],
     lecture_slug: str,
 ) -> list[str]:
-    """Reject non-public and cross-lecture sources from an ML-course payload."""
+    """Allow only the selected lecture and read-only OKF sources."""
+    if not re.fullmatch(r"[a-z0-9_]+", lecture_slug):
+        return [f"selected lecture identifier is not canonical lowercase: {lecture_slug}"]
+
     errors: list[str] = []
-    selected_lecture_prefix = f"lectures/{lecture_slug}/"
     for source in sorted(set(_payload_sources(payload))):
+        allowlist_error = _source_allowlist_error(source, lecture_slug)
+        if allowlist_error:
+            errors.append(allowlist_error)
+            continue
         restricted_token = _restricted_source_token(source)
         if restricted_token:
             errors.append(f"restricted course source ({restricted_token}) is not allowed: {source}")
-            continue
-        if source.startswith("lectures/") and not source.startswith(selected_lecture_prefix):
-            errors.append(f"source belongs to a different lecture than {lecture_slug}: {source}")
     return errors
 
 

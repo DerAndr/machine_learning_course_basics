@@ -38,6 +38,10 @@ keys, grading data, unpublished drafts, or untracked quiz workbooks. Name every
 public course source used in the payload. The course generation wrapper enforces
 those restricted path categories and rejects `lectures/` sources outside the
 selected lecture while permitting `okf/` as read-only supporting context.
+Its source allowlist accepts only canonical lowercase
+`lectures/<lecture_slug>/...` and `okf/...` repository paths. Other relative
+roots, URLs, knowledge-base identifiers, and case-variant roots are rejected
+even though the portable core can support them in unrelated repositories.
 
 ## Recurring generation workflow
 

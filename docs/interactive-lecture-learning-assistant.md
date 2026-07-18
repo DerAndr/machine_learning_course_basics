@@ -92,4 +92,8 @@ Do not use private solutions, answer keys, grading data, teacher quiz banks,
 teacher notes, or untracked workbooks. Every cited source must exist, and
 lecture paths must belong to the selected lecture. The ML-course generation
 wrapper enforces these path rules before delegating to the portable generator;
-`okf/` paths remain allowed only as read-only supporting sources.
+`okf/` paths remain allowed only as read-only supporting sources. Course
+payloads may cite only canonical lowercase
+`lectures/<selected_lecture_slug>/...` and `okf/...` repository paths; the
+wrapper rejects every other relative root, URL, knowledge-base identifier, and
+case-variant root.

@@ -14,6 +14,10 @@ CORE_TEMPLATE = (
     / "assets"
     / "learning-experience-template.html"
 )
+REAL_TEACHER_SOURCES = (
+    "lectures/lecture_01_eda/practical_session/teacher_cheat_sheet.md",
+    "lectures/lecture_01_eda/practical_session/eda_practical_teacher_90min.ipynb",
+)
 
 
 def test_interactive_learning_assistant_skill_contract() -> None:
@@ -109,9 +113,12 @@ def _load_policy_wrapper():
         "lectures/lecture_01_eda/solutions/walkthrough.md",
         "lectures/lecture_01_eda/quizzes/questions.json",
         "lectures/lecture_01_eda/grading/rubric.md",
+        *REAL_TEACHER_SOURCES,
     ],
 )
 def test_course_policy_behaviorally_rejects_restricted_sources(source: str) -> None:
+    if source in REAL_TEACHER_SOURCES:
+        assert Path(source).is_file()
     validator = _load_policy_wrapper()
     payload = {"meta": {"sources": [source]}, "concepts": []}
 
@@ -136,6 +143,32 @@ def test_course_policy_rejects_a_different_lecture_source() -> None:
     ]
 
 
+@pytest.mark.parametrize(
+    "source",
+    [
+        "docs/interactive-lecture-learning-assistant.md",
+        "quizzes/README.md",
+        "https://example.edu/reference",
+        "kb:history/roman-architecture",
+        "Lectures/lecture_01_eda/lecture_notes.md",
+        "OKF/course-overview/course-overview.md",
+    ],
+)
+def test_course_policy_rejects_every_source_outside_canonical_roots(source: str) -> None:
+    if source in {
+        "docs/interactive-lecture-learning-assistant.md",
+        "quizzes/README.md",
+    }:
+        assert Path(source).is_file()
+    validator = _load_policy_wrapper()
+    payload = {"meta": {"sources": [source]}, "concepts": []}
+
+    errors = validator.validate_course_source_policy(payload, "lecture_01_eda")
+
+    assert errors
+    assert any(source in error for error in errors)
+
+
 def test_course_policy_allows_selected_lecture_and_read_only_okf_sources() -> None:
     validator = _load_policy_wrapper()
     payload = {
@@ -158,14 +191,28 @@ def test_course_policy_allows_selected_lecture_and_read_only_okf_sources() -> No
     assert validator.validate_course_source_policy(payload, "lecture_01_eda") == []
 
 
-def test_course_policy_wrapper_cli_rejects_before_writing_output(tmp_path: Path) -> None:
+@pytest.mark.parametrize(
+    "source",
+    [
+        *REAL_TEACHER_SOURCES,
+        "quizzes/README.md",
+        "https://example.edu/reference",
+        "kb:history/roman-architecture",
+        "Lectures/lecture_01_eda/lecture_notes.md",
+        "OKF/course-overview/course-overview.md",
+    ],
+)
+def test_course_policy_wrapper_cli_rejects_before_writing_output(
+    tmp_path: Path,
+    source: str,
+) -> None:
     content = tmp_path / "content.json"
     output = tmp_path / "index.html"
     content.write_text(
         json.dumps(
             {
                 "meta": {
-                    "sources": ["lectures/lecture_01_eda/private/answer-key.md"],
+                    "sources": [source],
                 },
                 "concepts": [],
             }
@@ -192,7 +239,7 @@ def test_course_policy_wrapper_cli_rejects_before_writing_output(tmp_path: Path)
     )
 
     assert completed.returncode == 1
-    assert "restricted course source" in completed.stdout
+    assert source in completed.stdout
     assert not output.exists()
 
 
