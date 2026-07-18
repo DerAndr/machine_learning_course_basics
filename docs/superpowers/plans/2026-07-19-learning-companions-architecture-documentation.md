@@ -447,19 +447,17 @@ HEAD. Review:
 Resolve every Critical or Important finding, rerun covering tests, and request
 re-review before integration.
 
-- [ ] **Step 7: Integrate the approved branches**
+- [ ] **Step 7: Record local integration readiness**
 
-After review and fresh verification:
+Record the student and teacher integration branch names, HEAD SHAs, verification
+commands, and outputs in the task report. Confirm both worktrees are clean.
+Do not push either branch from this task.
 
-```powershell
-git push upstream HEAD:main
-git -C 'C:\projects\personal\ml-course-public-sync' push origin HEAD:main
-```
+Expected: both local integrations are ready for the required broad
+whole-change review.
 
-Expected: both non-force pushes succeed.
-
-- [ ] **Step 8: Verify remote checks**
-
-Confirm the latest `Build Textbook Preview` and `Validate OKF` runs succeed for
-both new main SHAs. Confirm the published student textbook and EDA companion
-remain HTTP 200.
+After Task 3 passes its task review, the controller runs the broad final review.
+Only after that review approves the whole change does the controller push the
+student integration to `upstream/main` and the teacher integration to
+`origin/main`, wait for `Build Textbook Preview` and `Validate OKF`, and confirm
+the published student textbook and EDA companion remain HTTP 200.
