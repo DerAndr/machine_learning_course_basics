@@ -11,9 +11,9 @@ TEMPLATE_PATH = (
     ROOT
     / ".agents"
     / "skills"
-    / "ml-course-interactive-learning-assistant"
+    / "interactive-learning-experience-builder"
     / "assets"
-    / "lecture-site-template.html"
+    / "learning-experience-template.html"
 )
 LEVELS = ("foundations", "applied", "challenge")
 EXPECTED_CONCEPTS = {
@@ -33,7 +33,7 @@ def _load_script(name: str) -> ModuleType:
         ROOT
         / ".agents"
         / "skills"
-        / "ml-course-interactive-learning-assistant"
+        / "interactive-learning-experience-builder"
         / "scripts"
         / f"{name}.py"
     )
@@ -74,7 +74,7 @@ def test_eda_payload_and_generated_site_meet_learning_contract(
 ) -> None:
     payload = json.loads(CONTENT_PATH.read_text(encoding="utf-8"))
 
-    assert payload["meta"]["lecture_slug"] == "lecture_01_eda"
+    assert payload["meta"]["experience_id"] == "lecture-01-eda"
     assert {concept["id"] for concept in payload["concepts"]} == EXPECTED_CONCEPTS
     assert {item["type"] for item in payload["visualizations"]} == {
         "histogram",
@@ -102,13 +102,14 @@ def test_eda_payload_and_generated_site_meet_learning_contract(
     assert "__CONTENT_JSON__" not in html
     assert "__STATIC_CONTENT__" not in html
     assert payload["meta"]["title"] in html
-    assert _load_script("validate_lecture_site").validate_html(SITE_PATH) == []
+    assert _load_script("validate_learning_experience").validate_html(SITE_PATH) == []
 
     okf_before = _okf_hashes()
-    generated_path = _load_script("generate_lecture_site").generate_site(
+    generated_path = _load_script("generate_learning_experience").write_site(
         CONTENT_PATH,
         TEMPLATE_PATH,
         tmp_path / "index.html",
+        repository_root=ROOT,
     )
     assert generated_path.read_bytes() == SITE_PATH.read_bytes()
     assert _okf_hashes() == okf_before

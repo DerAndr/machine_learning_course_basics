@@ -61,6 +61,12 @@ checks.
 - [Offline EDA review](lecture_experiences/lecture_01_eda/index.html)
 - [Learning-assistant guide](docs/interactive-lecture-learning-assistant.md)
 
+The portable core at
+`.agents/skills/interactive-learning-experience-builder/` owns the content
+contract and offline generator. The ML-course skill is a thin adapter for
+course sources and publishing rules; see the guide for the context profile,
+optional adapter creation, and canonical/global skill synchronization.
+
 ## Assignments & Exams
 
 - **[Mini-Project: NYC Airbnb Price Prediction](mini_projects/airbnb_nyc/README.md)**

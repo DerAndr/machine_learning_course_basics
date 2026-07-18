@@ -70,3 +70,22 @@ The skill closes the baseline's single-file contract gap. The evaluator noted
 that initial settings and output path may be unspecified in a fresh prompt;
 the skill handles these as generation defaults while keeping every setting
 changeable in the generated page.
+
+## Portability and mobile-state regression audit
+
+The original course-only skill failed two later regression checks. Its
+generation and validation commands were hard-coded to the ML-course adapter
+paths, so copying the workflow into an unrelated knowledge repository could
+not generate or validate a page without the course directory layout. Its quiz
+state also allowed a wrong answer to leave the current-question state in an
+inconsistent mobile flow, and whole-quiz retry did not fully reset the visible
+quiz state.
+
+| Regression | Old result | Current evidence |
+|---|---|---|
+| Unrelated-repository portability | **Fail** — hard-coded lecture/adapter paths assumed course tooling and metadata. | Pass — `tests/test_learning_experience_portability.py` copies the canonical core to a temporary history repository with only `knowledge/history.md`, no `AGENTS.md`, `uv`, or publishing configuration, then generates and validates `site/index.html`. |
+| Wrong-answer and retry state | **Fail** — a retry could advance or retain stale controls instead of preserving the current-question contract. | Pass — the shared runtime keeps wrong answers on the question and whole-quiz Retry resets question index, attempts, completion, feedback, results, progress, inputs, and controls while preserving learner settings. |
+
+The portable core is now the canonical repository copy. Any global installation
+must be synchronized from it and compared file-for-file so a local copy cannot
+silently diverge.

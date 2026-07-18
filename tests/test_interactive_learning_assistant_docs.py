@@ -3,6 +3,7 @@ from pathlib import Path
 LIVE_URL = "https://derandr.github.io/machine_learning_course_basics/demos/lecture_01_eda/"
 OFFLINE_PATH = "lecture_experiences/lecture_01_eda/index.html"
 SKILL_PATH = ".agents/skills/ml-course-interactive-learning-assistant/SKILL.md"
+CORE_SKILL_PATH = ".agents/skills/interactive-learning-experience-builder/SKILL.md"
 
 
 def test_learning_assistant_documentation_is_discoverable() -> None:
@@ -19,8 +20,11 @@ def test_learning_assistant_documentation_is_discoverable() -> None:
     assert OFFLINE_PATH in guide_text
     assert OFFLINE_PATH in lecture
     assert SKILL_PATH in guide_text
+    assert CORE_SKILL_PATH in guide_text
+    assert "context profile" in guide_text
+    assert "whole-quiz Retry" in guide_text
     assert "lecture_experiences/content/" in agents
-    assert "validate_lecture_site.py" in agents
+    assert "validate_learning_experience.py" in agents
 
 
 def test_pages_deployment_is_limited_to_student_repository() -> None:

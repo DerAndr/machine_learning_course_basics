@@ -90,12 +90,20 @@ When improving textbook content, keep the student page, OKF metadata, index card
 
 To create or revise an interactive lecture review:
 
-1. `.agents/skills/ml-course-interactive-learning-assistant/SKILL.md` — generation workflow
-2. `lecture_experiences/content/<lecture_slug>.json` — grounded content payload
-3. `lecture_experiences/<lecture_slug>/index.html` — generated offline review
-4. `docs/interactive-lecture-learning-assistant.md` — learner and maintainer guide
-5. `.agents/skills/ml-course-interactive-learning-assistant/scripts/generate_lecture_site.py` — deterministic generator
-6. `.agents/skills/ml-course-interactive-learning-assistant/scripts/validate_lecture_site.py` — offline/accessibility validator
+1. `.agents/skills/interactive-learning-experience-builder/SKILL.md` — portable content contract, deterministic generator, and offline validator
+2. `.agents/skills/ml-course-interactive-learning-assistant/SKILL.md` — ML-course source, safety, output, and publishing adapter
+3. `lecture_experiences/content/<lecture_slug>.json` — grounded content payload
+4. `lecture_experiences/<lecture_slug>/index.html` — generated offline review
+5. `docs/interactive-lecture-learning-assistant.md` — learner and maintainer guide
+6. `.agents/skills/interactive-learning-experience-builder/scripts/generate_learning_experience.py` — deterministic generator
+7. `.agents/skills/interactive-learning-experience-builder/scripts/validate_learning_experience.py` — offline/accessibility validator
+
+Create a context profile before authoring: learner and goal, named sources,
+excluded/private material, requested accessibility defaults, output path, and
+available validation or publishing commands. Use the portable core directly
+for one-off work; add an adapter only for recurring local constraints. The
+repository core is canonical; synchronize any global installation from it and
+compare the skill, template, scripts, and references to detect drift.
 
 Lecture 01 provides the reference structure under
 `lecture_experiences/content/lecture_01_eda.json` and
@@ -192,7 +200,7 @@ uv run python tools/build_textbook_preview.py
 For a standalone lecture review, also run:
 
 ```bash
-uv run python .agents/skills/ml-course-interactive-learning-assistant/scripts/validate_lecture_site.py lecture_experiences/lecture_01_eda/index.html
+uv run python .agents/skills/interactive-learning-experience-builder/scripts/validate_learning_experience.py lecture_experiences/lecture_01_eda/index.html
 ```
 
 After merging to `main`, verify GitHub Actions and the deployed GitHub Pages URL.
