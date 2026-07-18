@@ -42,6 +42,10 @@ Give every question these fields:
 | `explanation` | Concise feedback that explains why the answer is correct. |
 | `concept` | ID of the concept assessed. |
 
+For `single-choice`, make `answer` exactly one value from `options`. For
+`multiple-choice`, make it a non-empty list containing only values from
+`options`. For `interpretation`, use a non-empty expected response string.
+
 Do not derive questions from private solutions, answer keys, grading data, or
 untracked quiz workbooks.
 
@@ -63,7 +67,7 @@ Use these exact data shapes:
 
 | Type | `data` | Interactive control |
 |---|---|---|
-| `histogram` | Non-empty array of finite numbers. | `controls.bins`: positive integer choices; defaults to `4, 6, 8`. |
+| `histogram` | Non-empty array of finite numbers. | `controls.bins`: positive integer choices from 1 to 50; defaults to `4, 6, 8`. |
 | `boxplot` | Non-empty array of finite numbers. | Whisker multiplier choices are supplied by the template. |
 | `scatter` | Non-empty array of objects with finite `x` and `y`. | Learner toggles a labeled trend line. |
 | `missingness` | Non-empty array of `{label, missing, total}` where `total > 0` and `0 <= missing <= total`. | Learner switches between source and descending order. |

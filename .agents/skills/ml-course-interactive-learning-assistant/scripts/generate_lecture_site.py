@@ -78,6 +78,22 @@ def _has_valid_visualization_data(visualization_type: object, data: object) -> b
     return False
 
 
+def _has_valid_histogram_bins(controls: object) -> bool:
+    if controls is None:
+        return True
+    if not isinstance(controls, dict):
+        return False
+    bins = controls.get("bins")
+    return (
+        isinstance(bins, list)
+        and bool(bins)
+        and all(
+            not isinstance(value, bool) and isinstance(value, int) and 1 <= value <= 50
+            for value in bins
+        )
+    )
+
+
 def _is_public_source_path(value: object) -> bool:
     if not _is_non_empty_string(value):
         return False
@@ -186,6 +202,10 @@ def validate_payload(payload: dict[str, object]) -> list[str]:
                 visualization.get("data"),
             ):
                 errors.append(f"{location}.data does not match the {visualization_type} schema")
+            if visualization_type == "histogram" and not _has_valid_histogram_bins(
+                visualization.get("controls")
+            ):
+                errors.append(f"{location}.controls.bins must contain positive integers up to 50")
             if not _is_non_empty_string(visualization.get("fallback")):
                 errors.append(f"{location}.fallback must be readable without a graph")
 
@@ -230,8 +250,27 @@ def validate_payload(payload: dict[str, object]) -> list[str]:
                     errors.append(f"{location}.options must contain readable strings")
                 elif question.get("type") in {"single-choice", "multiple-choice"} and not options:
                     errors.append(f"{location}.options must contain choices for this question type")
-                if _is_missing(question.get("answer")):
+                answer = question.get("answer")
+                if _is_missing(answer):
                     errors.append(f"{location}.answer is required")
+                elif question.get("type") == "single-choice" and (
+                    not isinstance(answer, str)
+                    or not isinstance(options, list)
+                    or answer not in options
+                ):
+                    errors.append(f"{location}.answer must be one available option")
+                elif question.get("type") == "multiple-choice" and (
+                    not isinstance(answer, list)
+                    or not answer
+                    or not all(_is_non_empty_string(item) for item in answer)
+                    or not isinstance(options, list)
+                    or not set(answer).issubset(options)
+                ):
+                    errors.append(
+                        f"{location}.answer must be a non-empty subset of available options"
+                    )
+                elif question.get("type") == "interpretation" and not _is_non_empty_string(answer):
+                    errors.append(f"{location}.answer must be a readable interpretation")
 
         extra_levels = sorted(quizzes.keys() - set(QUIZ_LEVELS))
         if extra_levels:

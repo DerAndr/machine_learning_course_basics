@@ -279,6 +279,50 @@ def test_validate_payload_rejects_choice_question_without_options(
     assert any("options" in error for error in errors)
 
 
+@pytest.mark.parametrize("bins", [[0, 4], ["many"], []])
+def test_validate_payload_rejects_invalid_histogram_bins(
+    payload: dict[str, object],
+    bins: list[object],
+) -> None:
+    visualizations = payload["visualizations"]
+    assert isinstance(visualizations, list)
+    visualization = visualizations[0]
+    assert isinstance(visualization, dict)
+    visualization["controls"] = {"bins": bins}
+
+    errors = validate_payload(payload)
+
+    assert any("controls.bins" in error for error in errors)
+
+
+@pytest.mark.parametrize(
+    ("question_type", "answer"),
+    [
+        ("single-choice", "C"),
+        ("single-choice", ["A"]),
+        ("multiple-choice", "A"),
+        ("multiple-choice", ["A", "C"]),
+    ],
+)
+def test_validate_payload_rejects_impossible_choice_answers(
+    payload: dict[str, object],
+    question_type: str,
+    answer: object,
+) -> None:
+    quizzes = payload["quizzes"]
+    assert isinstance(quizzes, dict)
+    questions = quizzes["foundations"]
+    assert isinstance(questions, list)
+    question = questions[0]
+    assert isinstance(question, dict)
+    question["type"] = question_type
+    question["answer"] = answer
+
+    errors = validate_payload(payload)
+
+    assert any("answer" in error for error in errors)
+
+
 @pytest.mark.parametrize(
     "source",
     [
@@ -468,6 +512,8 @@ def test_interactive_template_preserves_non_color_and_focus_friendly_cues() -> N
         'id="interpretation-answer"',
         'tabindex="-1"',
         "validDifficulties",
+        'typeof parsed === "object"',
+        'byId("next-question").focus()',
     ],
 )
 def test_interactive_template_covers_reviewed_runtime_paths(hook: str) -> None:
