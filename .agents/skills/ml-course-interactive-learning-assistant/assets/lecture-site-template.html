@@ -1,17 +1,350 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-focus-friendly="false" data-color-blind="false">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Interactive lecture review</title>
   <style>
+    :root {
+      color-scheme: light;
+      --background: #f6f7f9;
+      --surface: #ffffff;
+      --surface-soft: #edf2f7;
+      --ink: #17212b;
+      --muted: #52606d;
+      --accent: #315c9b;
+      --accent-strong: #173f76;
+      --secondary: #c55a11;
+      --success: #247a4d;
+      --danger: #a33a3a;
+      --border: #cad3dc;
+      --focus: #111111;
+      --shadow: 0 10px 28px rgb(23 33 43 / 8%);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    :root[data-color-blind="true"] {
+      --accent: #0072b2;
+      --accent-strong: #00547f;
+      --secondary: #d55e00;
+      --success: #009e73;
+      --danger: #cc79a7;
+      --focus: #000000;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      background: var(--background);
+      color: var(--ink);
+      line-height: 1.55;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button,
+    select {
+      min-height: 2.75rem;
+    }
+
+    button {
+      border: 1px solid var(--accent);
+      border-radius: 0.6rem;
+      background: var(--accent);
+      color: #ffffff;
+      cursor: pointer;
+      padding: 0.55rem 0.9rem;
+    }
+
+    button:hover {
+      background: var(--accent-strong);
+    }
+
+    button.secondary {
+      background: var(--surface);
+      color: var(--accent-strong);
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+
     :focus-visible {
-      outline: 3px solid currentColor;
+      outline: 3px solid var(--focus);
       outline-offset: 3px;
     }
 
+    .skip-link {
+      position: absolute;
+      left: 0.75rem;
+      top: -5rem;
+      z-index: 10;
+      background: var(--surface);
+      color: var(--ink);
+      padding: 0.65rem;
+    }
+
+    .skip-link:focus {
+      top: 0.75rem;
+    }
+
+    .page-header,
+    main,
+    .page-footer {
+      margin-inline: auto;
+      max-width: 74rem;
+      padding-inline: clamp(1rem, 4vw, 2.5rem);
+    }
+
+    .page-header {
+      padding-block: 2.4rem 1.3rem;
+    }
+
+    .eyebrow {
+      color: var(--accent-strong);
+      font-size: 0.82rem;
+      font-weight: 750;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3 {
+      line-height: 1.18;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      margin: 0.35rem 0 0.6rem;
+    }
+
+    .lede {
+      color: var(--muted);
+      font-size: 1.08rem;
+      max-width: 68ch;
+    }
+
+    .settings,
+    .panel,
+    .concept-card,
+    .visualization-card,
+    .quiz-card,
+    .static-reference {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.9rem;
+      box-shadow: var(--shadow);
+    }
+
+    .settings,
+    .panel,
+    .static-reference {
+      margin-block: 1rem;
+      padding: clamp(1rem, 3vw, 1.5rem);
+    }
+
+    .settings-grid {
+      display: grid;
+      gap: 0.9rem;
+      grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    }
+
+    .setting {
+      align-items: center;
+      display: flex;
+      gap: 0.65rem;
+      min-height: 2.75rem;
+    }
+
+    .setting select {
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      color: var(--ink);
+      flex: 1;
+      padding: 0.45rem;
+    }
+
+    .setting input[type="checkbox"] {
+      height: 1.35rem;
+      width: 1.35rem;
+    }
+
+    .progress-track {
+      background: var(--surface-soft);
+      border-radius: 999px;
+      height: 0.65rem;
+      overflow: hidden;
+    }
+
+    .progress-value {
+      background: var(--accent);
+      height: 100%;
+      transition: width 180ms ease;
+      width: 0;
+    }
+
+    .card-grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+    }
+
+    .concept-card,
+    .visualization-card,
+    .quiz-card {
+      padding: 1.1rem;
+    }
+
+    .concept-card[hidden],
+    .visualization-card[hidden] {
+      display: none;
+    }
+
+    .mistakes {
+      border-left: 0.3rem solid var(--secondary);
+      padding-left: 1rem;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .chart-shell {
+      background: var(--surface-soft);
+      border-radius: 0.65rem;
+      margin-block: 0.8rem;
+      overflow-x: auto;
+      padding: 0.65rem;
+    }
+
+    .chart-shell svg {
+      display: block;
+      height: auto;
+      max-width: 100%;
+    }
+
+    .chart-label {
+      fill: var(--ink);
+      font-size: 12px;
+    }
+
+    .mark-primary {
+      fill: var(--accent);
+      stroke: var(--accent-strong);
+      stroke-width: 2;
+    }
+
+    .mark-secondary {
+      fill: url("#diagonal-hatch");
+      stroke: var(--secondary);
+      stroke-width: 3;
+    }
+
+    .graph-fallback {
+      border-left: 0.3rem solid var(--accent);
+      color: var(--muted);
+      margin-top: 0.8rem;
+      padding-left: 0.9rem;
+    }
+
+    .break-prompt {
+      background: #fff7df;
+      border: 1px solid #e3b84e;
+      border-radius: 0.7rem;
+      color: #402d00;
+      margin-block: 1rem;
+      padding: 0.8rem 1rem;
+    }
+
+    .break-prompt[hidden] {
+      display: none;
+    }
+
+    .quiz-options {
+      border: 0;
+      display: grid;
+      gap: 0.6rem;
+      margin: 0;
+      padding: 0;
+    }
+
+    .quiz-option {
+      align-items: flex-start;
+      border: 1px solid var(--border);
+      border-radius: 0.55rem;
+      display: flex;
+      gap: 0.65rem;
+      padding: 0.7rem;
+    }
+
+    .feedback {
+      border-left: 0.35rem solid var(--accent);
+      margin-top: 1rem;
+      padding-left: 0.9rem;
+    }
+
+    .feedback[data-correct="true"] {
+      border-color: var(--success);
+    }
+
+    .feedback[data-correct="false"] {
+      border-color: var(--danger);
+    }
+
+    .static-reference summary {
+      cursor: pointer;
+      font-weight: 750;
+    }
+
+    .static-reference-body {
+      margin-top: 1rem;
+    }
+
+    .static-reference-body article {
+      border-top: 1px solid var(--border);
+      padding-block: 0.75rem;
+    }
+
+    .source-list {
+      color: var(--muted);
+      overflow-wrap: anywhere;
+    }
+
+    :root[data-focus-friendly="true"] .optional-detail,
+    :root[data-focus-friendly="true"] .visualization-card:not([data-active="true"]) {
+      display: none;
+    }
+
+    :root[data-focus-friendly="true"] .card-grid {
+      display: block;
+    }
+
+    @media (max-width: 42rem) {
+      .button-row button {
+        flex: 1 1 9rem;
+      }
+    }
+
     @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
+      *,
+      *::before,
+      *::after {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         scroll-behavior: auto !important;
@@ -21,8 +354,513 @@
   </style>
 </head>
 <body>
-  <main id="main-content"></main>
-  <noscript><section id="static-content"></section></noscript>
+  <a class="skip-link" href="#main-content">Skip to learning content</a>
+  <header class="page-header">
+    <p class="eyebrow">Interactive lecture review</p>
+    <h1 id="site-title">Lecture review</h1>
+    <p class="lede" id="site-subtitle">Learn, explore, then check your knowledge.</p>
+  </header>
+
+  <main id="main-content">
+    <section class="settings" aria-labelledby="settings-title">
+      <h2 id="settings-title">Choose your learning setup</h2>
+      <div class="settings-grid">
+        <label class="setting">
+          <span>Question depth</span>
+          <select data-setting="difficulty">
+            <option value="foundations">Foundations</option>
+            <option value="applied">Applied</option>
+            <option value="challenge">Challenge</option>
+          </select>
+        </label>
+        <label class="setting">
+          <input data-setting="focus" type="checkbox">
+          <span>Focus-friendly (ADHD-friendly) view</span>
+        </label>
+        <label class="setting">
+          <input data-setting="color-blind" type="checkbox">
+          <span>Color-blind-safe palette</span>
+        </label>
+        <label class="setting">
+          <input data-setting="break-prompts" type="checkbox">
+          <span>Funny topic break prompts</span>
+        </label>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="progress-title">
+      <h2 id="progress-title">Progress</h2>
+      <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100"
+           aria-valuenow="0" aria-label="Lecture review progress">
+        <div class="progress-value"></div>
+      </div>
+      <p id="progress-text">Start with the first concept.</p>
+    </section>
+
+    <section class="panel" aria-labelledby="learn-title">
+      <h2 id="learn-title">Learn the core ideas</h2>
+      <div id="concept-list" class="card-grid"></div>
+      <div class="button-row">
+        <button class="secondary" id="previous-concept" type="button">Previous concept</button>
+        <button id="next-concept" type="button">Next concept</button>
+      </div>
+    </section>
+
+    <aside id="break-prompt" class="break-prompt" aria-live="polite" hidden></aside>
+
+    <section class="panel" aria-labelledby="explore-title">
+      <h2 id="explore-title">Explore the graphs</h2>
+      <p class="graph-fallback">Every graph includes a nearby text fallback with the same lesson.</p>
+      <svg width="0" height="0" aria-hidden="true" focusable="false">
+        <defs>
+          <pattern id="diagonal-hatch" width="8" height="8" patternUnits="userSpaceOnUse">
+            <path d="M-2,2 L2,-2 M0,8 L8,0 M6,10 L10,6" stroke="currentColor"
+                  stroke-width="2"></path>
+          </pattern>
+        </defs>
+      </svg>
+      <div id="visualization-list" class="card-grid" data-shape="circle"></div>
+    </section>
+
+    <section class="panel" aria-labelledby="quiz-title">
+      <h2 id="quiz-title">10-question knowledge check</h2>
+      <div id="quiz-card" class="quiz-card"></div>
+      <div id="quiz-feedback" class="feedback" aria-live="polite" hidden></div>
+      <div id="quiz-results" aria-live="polite" hidden></div>
+      <div class="button-row">
+        <button id="submit-answer" type="button">Check answer</button>
+        <button id="next-question" type="button" hidden>Next question</button>
+        <button id="retry-quiz" class="secondary" type="button" hidden>Retry quiz</button>
+      </div>
+    </section>
+
+    <section id="static-content" class="static-reference">
+      <details>
+        <summary>Open complete static explanations and answer review</summary>
+        __STATIC_CONTENT__
+      </details>
+    </section>
+
+    <noscript>
+      <section class="panel" aria-label="JavaScript unavailable">
+        <p>Interactive controls are unavailable, but complete explanations, graph fallbacks,
+          questions, answers, and feedback remain in the static reference above.</p>
+      </section>
+    </noscript>
+  </main>
+
+  <footer class="page-footer">
+    <p class="source-list" id="source-list"></p>
+  </footer>
+
   <script>const CONTENT = __CONTENT_JSON__;</script>
+  <script>
+    "use strict";
+
+    const safeStorage = {
+      get(key) {
+        try {
+          return window.localStorage.getItem(key);
+        } catch (_error) {
+          return null;
+        }
+      },
+      set(key, value) {
+        try {
+          window.localStorage.setItem(key, value);
+        } catch (_error) {
+          return false;
+        }
+        return true;
+      },
+    };
+
+    const storageKey = `lecture-review:${CONTENT.meta.lecture_slug}`;
+    const savedSettings = (() => {
+      const raw = safeStorage.get(storageKey);
+      if (!raw) return {};
+      try {
+        return JSON.parse(raw);
+      } catch (_error) {
+        return {};
+      }
+    })();
+
+    const state = {
+      difficulty: savedSettings.difficulty || CONTENT.defaults.difficulty,
+      focus: savedSettings.focus ?? CONTENT.defaults.focus_mode,
+      colorBlind: savedSettings.colorBlind ?? CONTENT.defaults.color_blind,
+      breakPrompts: savedSettings.breakPrompts ?? CONTENT.defaults.break_prompts,
+      conceptIndex: 0,
+      quizIndex: 0,
+      responses: [],
+      answered: false,
+    };
+
+    const byId = (id) => document.getElementById(id);
+    const escapeHtml = (value) => String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+
+    function saveSettings() {
+      safeStorage.set(storageKey, JSON.stringify({
+        difficulty: state.difficulty,
+        focus: state.focus,
+        colorBlind: state.colorBlind,
+        breakPrompts: state.breakPrompts,
+      }));
+    }
+
+    function updateProgress() {
+      const conceptPart = CONTENT.concepts.length
+        ? (state.conceptIndex + 1) / CONTENT.concepts.length
+        : 1;
+      const quizPart = state.responses.length / 10;
+      const percentage = Math.round(((conceptPart + quizPart) / 2) * 100);
+      const progress = document.querySelector('[role="progressbar"]');
+      progress.setAttribute("aria-valuenow", String(percentage));
+      document.querySelector(".progress-value").style.width = `${percentage}%`;
+      byId("progress-text").textContent =
+        `Concept ${state.conceptIndex + 1} of ${CONTENT.concepts.length}; ` +
+        `quiz ${state.responses.length} of 10 answered.`;
+    }
+
+    function showBreakPrompt(index) {
+      const prompt = byId("break-prompt");
+      if (!state.breakPrompts || CONTENT.break_prompts.length === 0) {
+        prompt.hidden = true;
+        return;
+      }
+      prompt.textContent = CONTENT.break_prompts[index % CONTENT.break_prompts.length];
+      prompt.hidden = false;
+    }
+
+    function applySettings() {
+      document.documentElement.dataset.focusFriendly = String(state.focus);
+      document.documentElement.dataset.colorBlind = String(state.colorBlind);
+      document.querySelector('[data-setting="difficulty"]').value = state.difficulty;
+      document.querySelector('[data-setting="focus"]').checked = state.focus;
+      document.querySelector('[data-setting="color-blind"]').checked = state.colorBlind;
+      document.querySelector('[data-setting="break-prompts"]').checked = state.breakPrompts;
+      if (!state.breakPrompts) byId("break-prompt").hidden = true;
+      saveSettings();
+      renderConcepts();
+      renderVisualizations();
+    }
+
+    function renderConcepts() {
+      const container = byId("concept-list");
+      container.innerHTML = CONTENT.concepts.map((concept, index) => {
+        const hidden = state.focus && index !== state.conceptIndex ? " hidden" : "";
+        const mistakes = concept.common_mistakes
+          .map((mistake) => `<li>${escapeHtml(mistake)}</li>`).join("");
+        return `<article class="concept-card"${hidden}>
+          <p class="eyebrow">Concept ${index + 1}</p>
+          <h3>${escapeHtml(concept.title)}</h3>
+          <p>${escapeHtml(concept.explanation)}</p>
+          <p><strong>How to read it:</strong> ${escapeHtml(concept.interpretation)}</p>
+          <div class="mistakes optional-detail">
+            <strong>Common mistake</strong><ul>${mistakes}</ul>
+          </div>
+        </article>`;
+      }).join("");
+      byId("previous-concept").disabled = state.conceptIndex === 0;
+      byId("next-concept").disabled = state.conceptIndex >= CONTENT.concepts.length - 1;
+      updateProgress();
+    }
+
+    function numericData(visualization) {
+      return Array.isArray(visualization.data)
+        ? visualization.data.map(Number).filter(Number.isFinite)
+        : [];
+    }
+
+    function renderHistogram(visualization, target) {
+      const values = numericData(visualization);
+      const binChoices = visualization.controls?.bins || [4, 6, 8];
+      const bins = Math.max(1, Number(binChoices[0]) || 4);
+      const min = Math.min(...values);
+      const max = Math.max(...values);
+      const width = max === min ? 1 : (max - min) / bins;
+      const counts = Array.from({ length: bins }, () => 0);
+      values.forEach((value) => {
+        const index = Math.min(bins - 1, Math.floor((value - min) / width));
+        counts[index] += 1;
+      });
+      const peak = Math.max(1, ...counts);
+      target.innerHTML = `<svg viewBox="0 0 520 240" role="img"
+        aria-label="${escapeHtml(visualization.title)} histogram">
+        ${counts.map((count, index) => {
+          const height = (count / peak) * 160;
+          const x = 45 + index * (420 / bins);
+          return `<g><rect class="mark-primary" data-shape="bar" x="${x}" y="${190 - height}"
+            width="${Math.max(8, 380 / bins)}" height="${height}"></rect>
+            <text class="chart-label" x="${x}" y="214">${count}</text></g>`;
+        }).join("")}
+      </svg>`;
+    }
+
+    function quantile(values, fraction) {
+      if (!values.length) return 0;
+      const sorted = [...values].sort((a, b) => a - b);
+      const position = (sorted.length - 1) * fraction;
+      const lower = Math.floor(position);
+      const upper = Math.ceil(position);
+      const weight = position - lower;
+      return sorted[lower] * (1 - weight) + sorted[upper] * weight;
+    }
+
+    function renderBoxplot(visualization, target) {
+      const values = numericData(visualization);
+      const min = Math.min(...values);
+      const max = Math.max(...values);
+      const q1 = quantile(values, 0.25);
+      const median = quantile(values, 0.5);
+      const q3 = quantile(values, 0.75);
+      const scale = (value) => 50 + ((value - min) / Math.max(1, max - min)) * 420;
+      target.innerHTML = `<svg viewBox="0 0 520 180" role="img"
+        aria-label="${escapeHtml(visualization.title)} box plot">
+        <line x1="${scale(min)}" y1="90" x2="${scale(max)}" y2="90"
+          stroke="currentColor" stroke-width="3"></line>
+        <rect class="mark-secondary" data-shape="box" x="${scale(q1)}" y="55"
+          width="${Math.max(2, scale(q3) - scale(q1))}" height="70"></rect>
+        <line x1="${scale(median)}" y1="50" x2="${scale(median)}" y2="130"
+          stroke="currentColor" stroke-width="5"></line>
+        <text class="chart-label" x="50" y="155">min ${min}</text>
+        <text class="chart-label" x="205" y="155">median ${median.toFixed(1)}</text>
+        <text class="chart-label" x="420" y="155">max ${max}</text>
+      </svg>`;
+    }
+
+    function renderScatter(visualization, target) {
+      const points = Array.isArray(visualization.data) ? visualization.data : [];
+      const xs = points.map((point) => Number(point.x)).filter(Number.isFinite);
+      const ys = points.map((point) => Number(point.y)).filter(Number.isFinite);
+      const minX = Math.min(...xs);
+      const maxX = Math.max(...xs);
+      const minY = Math.min(...ys);
+      const maxY = Math.max(...ys);
+      const xScale = (value) => 45 + ((value - minX) / Math.max(1, maxX - minX)) * 430;
+      const yScale = (value) => 195 - ((value - minY) / Math.max(1, maxY - minY)) * 155;
+      target.innerHTML = `<svg viewBox="0 0 520 240" role="img"
+        aria-label="${escapeHtml(visualization.title)} scatter plot">
+        ${points.map((point, index) => {
+          const shape = index % 2 === 0 ? "circle" : "square";
+          if (shape === "circle") {
+            return `<circle class="mark-primary" data-shape="circle"
+              cx="${xScale(Number(point.x))}" cy="${yScale(Number(point.y))}" r="7">
+              <title>x ${escapeHtml(point.x)}, y ${escapeHtml(point.y)}</title></circle>`;
+          }
+          return `<rect class="mark-secondary" data-shape="square"
+            x="${xScale(Number(point.x)) - 7}" y="${yScale(Number(point.y)) - 7}"
+            width="14" height="14"><title>x ${escapeHtml(point.x)},
+            y ${escapeHtml(point.y)}</title></rect>`;
+        }).join("")}
+        <text class="chart-label" x="220" y="228">x value</text>
+        <text class="chart-label" x="8" y="30">y value</text>
+      </svg>`;
+    }
+
+    function renderMissingness(visualization, target) {
+      const rows = Array.isArray(visualization.data) ? visualization.data : [];
+      target.innerHTML = `<svg viewBox="0 0 520 260" role="img"
+        aria-label="${escapeHtml(visualization.title)} missing-data chart">
+        ${rows.map((row, index) => {
+          const ratio = Number(row.total) ? Number(row.missing) / Number(row.total) : 0;
+          const width = Math.max(0, ratio * 330);
+          return `<g><text class="chart-label" x="12" y="${42 + index * 48}">
+            ${escapeHtml(row.label)}</text>
+            <rect class="mark-secondary" data-shape="bar" x="145" y="${24 + index * 48}"
+              width="${width}" height="24"></rect>
+            <text class="chart-label" x="${155 + width}" y="${42 + index * 48}">
+              ${Math.round(ratio * 100)}% (${escapeHtml(row.missing)}/${escapeHtml(row.total)})
+            </text></g>`;
+        }).join("")}
+      </svg>`;
+    }
+
+    function renderVisualizations() {
+      const container = byId("visualization-list");
+      container.innerHTML = CONTENT.visualizations.map((visualization, index) =>
+        `<article class="visualization-card" data-visualization="${escapeHtml(visualization.id)}"
+          data-active="${index === 0}">
+          <h3>${escapeHtml(visualization.title)}</h3>
+          <p>${escapeHtml(visualization.explanation)}</p>
+          <div class="chart-shell" id="chart-${escapeHtml(visualization.id)}"></div>
+          <p class="graph-fallback"><strong>Text fallback:</strong>
+            ${escapeHtml(visualization.fallback)}</p>
+        </article>`
+      ).join("");
+      CONTENT.visualizations.forEach((visualization) => {
+        const target = byId(`chart-${visualization.id}`);
+        const renderer = {
+          histogram: renderHistogram,
+          boxplot: renderBoxplot,
+          scatter: renderScatter,
+          missingness: renderMissingness,
+        }[visualization.type];
+        renderer(visualization, target);
+      });
+    }
+
+    function currentQuestions() {
+      return CONTENT.quizzes[state.difficulty];
+    }
+
+    function renderQuiz() {
+      const questions = currentQuestions();
+      const question = questions[state.quizIndex];
+      const inputType = question.type === "multiple-choice" ? "checkbox" : "radio";
+      const options = question.options.map((option, index) =>
+        `<label class="quiz-option">
+          <input type="${inputType}" name="quiz-answer" value="${escapeHtml(option)}">
+          <span>${escapeHtml(option)}</span>
+        </label>`
+      ).join("");
+      byId("quiz-card").innerHTML = `<p class="eyebrow">${escapeHtml(state.difficulty)}
+        · question ${state.quizIndex + 1} of 10</p>
+        <h3>${escapeHtml(question.prompt)}</h3>
+        <fieldset class="quiz-options"><legend class="optional-detail">
+          Choose ${question.type === "multiple-choice" ? "all correct answers" : "one answer"}
+        </legend>${options}</fieldset>`;
+      byId("quiz-feedback").hidden = true;
+      byId("submit-answer").hidden = false;
+      byId("next-question").hidden = true;
+      state.answered = false;
+      updateProgress();
+    }
+
+    function normalizedAnswer(value) {
+      const values = Array.isArray(value) ? value : [value];
+      return values.map(String).sort();
+    }
+
+    function answersMatch(selected, answer) {
+      return JSON.stringify(normalizedAnswer(selected)) ===
+        JSON.stringify(normalizedAnswer(answer));
+    }
+
+    function submitAnswer() {
+      if (state.answered) return;
+      const selected = [...document.querySelectorAll('[name="quiz-answer"]:checked')]
+        .map((input) => input.value);
+      if (!selected.length) {
+        byId("quiz-feedback").textContent = "Choose an answer before checking.";
+        byId("quiz-feedback").dataset.correct = "false";
+        byId("quiz-feedback").hidden = false;
+        return;
+      }
+      const question = currentQuestions()[state.quizIndex];
+      const correct = answersMatch(selected, question.answer);
+      state.responses.push({
+        id: question.id,
+        prompt: question.prompt,
+        selected,
+        answer: question.answer,
+        explanation: question.explanation,
+        correct,
+      });
+      state.answered = true;
+      byId("quiz-feedback").innerHTML = `<strong>${correct ? "Correct." : "Not yet."}</strong>
+        ${escapeHtml(question.explanation)}`;
+      byId("quiz-feedback").dataset.correct = String(correct);
+      byId("quiz-feedback").hidden = false;
+      byId("submit-answer").hidden = true;
+      byId("next-question").hidden = false;
+      if (state.quizIndex === 4) showBreakPrompt(1);
+      updateProgress();
+    }
+
+    function showQuizResults() {
+      const correct = state.responses.filter((response) => response.correct).length;
+      byId("quiz-card").hidden = true;
+      byId("quiz-feedback").hidden = true;
+      byId("next-question").hidden = true;
+      byId("submit-answer").hidden = true;
+      byId("retry-quiz").hidden = false;
+      byId("quiz-results").innerHTML = `<h3>Your result: ${correct}/10</h3>
+        <ol>${state.responses.map((response) => `<li>
+          <p><strong>${escapeHtml(response.prompt)}</strong></p>
+          <p>Your answer: ${escapeHtml(response.selected.join(", "))}</p>
+          <p>Correct answer: ${escapeHtml(
+            Array.isArray(response.answer) ? response.answer.join(", ") : response.answer
+          )}</p>
+          <p>${escapeHtml(response.explanation)}</p>
+        </li>`).join("")}</ol>`;
+      byId("quiz-results").hidden = false;
+      byId("quiz-results").focus?.();
+      updateProgress();
+    }
+
+    function nextQuestion() {
+      if (!state.answered) return;
+      if (state.quizIndex >= 9) {
+        showQuizResults();
+        return;
+      }
+      state.quizIndex += 1;
+      renderQuiz();
+    }
+
+    function retryQuiz() {
+      state.quizIndex = 0;
+      state.responses = [];
+      state.answered = false;
+      byId("quiz-card").hidden = false;
+      byId("quiz-results").hidden = true;
+      byId("retry-quiz").hidden = true;
+      renderQuiz();
+    }
+
+    document.querySelector('[data-setting="difficulty"]').addEventListener("change", (event) => {
+      if (state.responses.length && !confirm("Changing depth resets your current quiz. Continue?")) {
+        event.target.value = state.difficulty;
+        return;
+      }
+      state.difficulty = event.target.value;
+      retryQuiz();
+      saveSettings();
+    });
+    document.querySelector('[data-setting="focus"]').addEventListener("change", (event) => {
+      state.focus = event.target.checked;
+      applySettings();
+    });
+    document.querySelector('[data-setting="color-blind"]').addEventListener("change", (event) => {
+      state.colorBlind = event.target.checked;
+      applySettings();
+    });
+    document.querySelector('[data-setting="break-prompts"]').addEventListener("change", (event) => {
+      state.breakPrompts = event.target.checked;
+      applySettings();
+      if (state.breakPrompts) showBreakPrompt(0);
+    });
+
+    byId("previous-concept").addEventListener("click", () => {
+      state.conceptIndex = Math.max(0, state.conceptIndex - 1);
+      renderConcepts();
+    });
+    byId("next-concept").addEventListener("click", () => {
+      state.conceptIndex = Math.min(CONTENT.concepts.length - 1, state.conceptIndex + 1);
+      if (state.conceptIndex === 1) showBreakPrompt(0);
+      renderConcepts();
+      if (state.focus) {
+        const active = document.querySelector(".concept-card:not([hidden])");
+        if (document.activeElement !== active) active?.scrollIntoView({ block: "nearest" });
+      }
+    });
+    byId("submit-answer").addEventListener("click", submitAnswer);
+    byId("next-question").addEventListener("click", nextQuestion);
+    byId("retry-quiz").addEventListener("click", retryQuiz);
+
+    byId("site-title").textContent = CONTENT.meta.title;
+    byId("site-subtitle").textContent =
+      CONTENT.meta.subtitle || "Learn, explore, then check your knowledge.";
+    byId("source-list").textContent = `Course sources: ${CONTENT.meta.sources.join(" · ")}`;
+    applySettings();
+    renderQuiz();
+  </script>
 </body>
 </html>

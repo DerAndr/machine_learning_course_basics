@@ -87,19 +87,40 @@ def test_render_site_embeds_deterministic_compact_json(
     payload: dict[str, object],
 ) -> None:
     html = render_site(
-        "<script>const CONTENT = __CONTENT_JSON__;</script>",
+        ("<main>__STATIC_CONTENT__</main><script>const CONTENT = __CONTENT_JSON__;</script>"),
         payload,
     )
 
     assert "__CONTENT_JSON__" not in html
-    assert (
-        json.dumps(
-            payload,
-            ensure_ascii=False,
-            separators=(",", ":"),
-        )
-        in html
+    assert "__STATIC_CONTENT__" not in html
+    expected = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+    expected = (
+        expected.replace("&", "\\u0026")
+        .replace("<", "\\u003c")
+        .replace(">", "\\u003e")
+        .replace("\u2028", "\\u2028")
+        .replace("\u2029", "\\u2029")
     )
+    assert expected in html
+
+
+def test_render_site_escapes_script_closing_sequences_in_embedded_json(
+    payload: dict[str, object],
+) -> None:
+    concepts = payload["concepts"]
+    assert isinstance(concepts, list)
+    concept = concepts[0]
+    assert isinstance(concept, dict)
+    concept["explanation"] = "</script><script>alert('unsafe')</script>"
+
+    rendered = render_site(
+        "<main>__STATIC_CONTENT__</main><script>const CONTENT = __CONTENT_JSON__;</script>",
+        payload,
+    )
+    script = rendered.split("<script>const CONTENT = ", maxsplit=1)[1]
+
+    assert "\\u003c/script\\u003e" in script
+    assert "<script>alert('unsafe')" not in script
 
 
 @pytest.mark.parametrize("marker_count", [0, 2])
@@ -111,6 +132,65 @@ def test_render_site_requires_exactly_one_content_marker(
 
     with pytest.raises(ValueError, match="exactly one"):
         render_site(template, payload)
+
+
+@pytest.mark.parametrize("marker_count", [0, 2])
+def test_render_site_requires_exactly_one_static_content_marker(
+    payload: dict[str, object],
+    marker_count: int,
+) -> None:
+    static = "__STATIC_CONTENT__".join(["<p></p>"] * (marker_count + 1))
+    template = f"{static}<script>const CONTENT = __CONTENT_JSON__;</script>"
+
+    with pytest.raises(ValueError, match="exactly one"):
+        render_site(template, payload)
+
+
+def test_render_site_embeds_escaped_complete_static_reference(
+    payload: dict[str, object],
+) -> None:
+    concepts = payload["concepts"]
+    quizzes = payload["quizzes"]
+    assert isinstance(concepts, list)
+    assert isinstance(concepts[0], dict)
+    assert isinstance(quizzes, dict)
+    concepts[0]["explanation"] = 'Shape <script>alert("no")</script> & spread.'
+    foundations = quizzes["foundations"]
+    assert isinstance(foundations, list)
+    foundations[0]["prompt"] = "Which value is < 3?"
+    foundations[0]["options"] = ["A & B", "<three>"]
+    foundations[0]["answer"] = "<three>"
+
+    html = render_site(
+        "<article>__STATIC_CONTENT__</article><script>const CONTENT = __CONTENT_JSON__;</script>",
+        payload,
+    )
+    static_html = html.split("<script>const CONTENT =", maxsplit=1)[0]
+
+    assert 'Shape &lt;script&gt;alert("no")&lt;/script&gt; &amp; spread.' in static_html
+    assert "Which value is &lt; 3?" in static_html
+    assert "A &amp; B" in static_html
+    assert "&lt;three&gt;" in static_html
+    for level in LEVELS:
+        questions = quizzes[level]
+        assert isinstance(questions, list)
+        for question in questions:
+            assert isinstance(question, dict)
+            for field in ("prompt", "answer", "explanation"):
+                assert (
+                    str(question[field])
+                    .replace("&", "&amp;")
+                    .replace("<", "&lt;")
+                    .replace(">", "&gt;")
+                    in static_html
+                )
+            options = question["options"]
+            assert isinstance(options, list)
+            for option in options:
+                assert (
+                    str(option).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+                    in static_html
+                )
 
 
 def test_validate_payload_reports_all_content_problems(
@@ -243,7 +323,10 @@ def test_generate_site_writes_one_portable_html_file(
     output_path = tmp_path / "site" / "index.html"
     content_path.write_text(json.dumps(payload), encoding="utf-8")
     template_path.write_text(
-        "<!doctype html><script>const CONTENT = __CONTENT_JSON__;</script>",
+        (
+            "<!doctype html><main>__STATIC_CONTENT__</main>"
+            "<script>const CONTENT = __CONTENT_JSON__;</script>"
+        ),
         encoding="utf-8",
     )
 
@@ -267,12 +350,69 @@ def test_minimal_template_exposes_offline_accessibility_contract() -> None:
     template = template_path.read_text(encoding="utf-8")
 
     assert template.count("__CONTENT_JSON__") == 1
+    assert template.count("__STATIC_CONTENT__") == 1
     assert '<meta name="viewport" content="width=device-width, initial-scale=1">' in template
-    assert '<main id="main-content"></main>' in template
-    assert '<noscript><section id="static-content"></section></noscript>' in template
+    assert '<main id="main-content">' in template
+    assert '<section id="static-content"' in template
+    assert "<noscript>" in template
     assert "<script>const CONTENT = __CONTENT_JSON__;</script>" in template
     assert ":focus-visible" in template
     assert "prefers-reduced-motion" in template
+
+
+@pytest.mark.parametrize(
+    "hook",
+    [
+        'data-setting="difficulty"',
+        'data-setting="focus"',
+        'data-setting="color-blind"',
+        'data-setting="break-prompts"',
+        "renderHistogram",
+        "renderBoxplot",
+        "renderScatter",
+        "renderMissingness",
+        "renderQuiz",
+        "showQuizResults",
+        "safeStorage",
+        'aria-live="polite"',
+    ],
+)
+def test_interactive_template_exposes_stable_behavior_hooks(hook: str) -> None:
+    template_path = (
+        ROOT
+        / ".agents"
+        / "skills"
+        / "ml-course-interactive-learning-assistant"
+        / "assets"
+        / "lecture-site-template.html"
+    )
+
+    template = template_path.read_text(encoding="utf-8")
+
+    assert hook in template
+
+
+def test_interactive_template_preserves_non_color_and_focus_friendly_cues() -> None:
+    template_path = (
+        ROOT
+        / ".agents"
+        / "skills"
+        / "ml-course-interactive-learning-assistant"
+        / "assets"
+        / "lecture-site-template.html"
+    )
+    template = template_path.read_text(encoding="utf-8")
+
+    assert "<pattern" in template
+    assert 'data-shape="' in template
+    assert 'class="graph-fallback"' in template
+    assert 'data-focus-friendly="' in template
+    assert "document.activeElement" in template
+    assert "confirm(" in template
+    assert 'id="break-prompt"' in template
+    assert 'id="quiz-feedback"' in template
+    assert 'id="quiz-results"' in template
+    assert 'id="retry-quiz"' in template
 
 
 def _valid_html() -> str:

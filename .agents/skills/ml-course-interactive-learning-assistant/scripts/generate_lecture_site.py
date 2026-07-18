@@ -1,10 +1,12 @@
 import argparse
+import html
 import json
 import re
 from pathlib import Path
 from typing import Any
 
 CONTENT_MARKER = "__CONTENT_JSON__"
+STATIC_CONTENT_MARKER = "__STATIC_CONTENT__"
 REQUIRED_TOP_LEVEL = {
     "meta",
     "defaults",
@@ -208,15 +210,123 @@ def validate_payload(payload: dict[str, object]) -> list[str]:
     return errors
 
 
+def _static_text(value: object) -> str:
+    if isinstance(value, list):
+        return ", ".join(str(item) for item in value)
+    return str(value)
+
+
+def _render_static_content(payload: dict[str, object]) -> str:
+    """Render the complete learning reference without relying on JavaScript."""
+
+    def escape(value: object) -> str:
+        return html.escape(_static_text(value), quote=False)
+
+    sections: list[str] = [
+        '<div class="static-reference-body">',
+        "<h2>Complete static lecture reference</h2>",
+        (
+            "<p>This reference remains available when scripts or browser storage "
+            "are unavailable.</p>"
+        ),
+        "<section><h3>Concepts</h3>",
+    ]
+    for concept in payload["concepts"]:
+        assert isinstance(concept, dict)
+        sections.extend(
+            [
+                "<article>",
+                f"<h4>{escape(concept['title'])}</h4>",
+                f"<p>{escape(concept['explanation'])}</p>",
+                f"<p><strong>How to interpret it:</strong> {escape(concept['interpretation'])}</p>",
+                "<h5>Common mistakes</h5><ul>",
+            ]
+        )
+        for mistake in concept["common_mistakes"]:
+            sections.append(f"<li>{escape(mistake)}</li>")
+        sections.extend(["</ul><p><strong>Sources:</strong> "])
+        sections.append("; ".join(escape(source) for source in concept["sources"]))
+        sections.append("</p></article>")
+    sections.append("</section><section><h3>Visualization reference</h3>")
+    for visualization in payload["visualizations"]:
+        assert isinstance(visualization, dict)
+        sections.extend(
+            [
+                "<article>",
+                f"<h4>{escape(visualization['title'])}</h4>",
+                f"<p>{escape(visualization['explanation'])}</p>",
+                (
+                    '<p class="graph-fallback"><strong>Graph fallback:</strong> '
+                    f"{escape(visualization['fallback'])}</p>"
+                ),
+                "</article>",
+            ]
+        )
+    sections.append("</section><section><h3>Quiz banks and answer review</h3>")
+    quizzes = payload["quizzes"]
+    assert isinstance(quizzes, dict)
+    for level in QUIZ_LEVELS:
+        sections.append(f"<section><h4>{escape(level.title())}</h4><ol>")
+        questions = quizzes[level]
+        assert isinstance(questions, list)
+        for question in questions:
+            assert isinstance(question, dict)
+            sections.extend(
+                [
+                    "<li>",
+                    f"<p><strong>{escape(question['prompt'])}</strong></p>",
+                ]
+            )
+            options = question["options"]
+            assert isinstance(options, list)
+            if options:
+                sections.append("<ul>")
+                for option in options:
+                    sections.append(f"<li>{escape(option)}</li>")
+                sections.append("</ul>")
+            sections.extend(
+                [
+                    f"<p><strong>Answer:</strong> {escape(question['answer'])}</p>",
+                    (f"<p><strong>Explanation:</strong> {escape(question['explanation'])}</p>"),
+                    "</li>",
+                ]
+            )
+        sections.append("</ol></section>")
+    sections.append("</section><section><h3>Course sources</h3><ul>")
+    meta = payload["meta"]
+    assert isinstance(meta, dict)
+    for source in meta["sources"]:
+        sections.append(f"<li>{escape(source)}</li>")
+    sections.append("</ul></section></div>")
+    return "".join(sections)
+
+
 def render_site(template: str, payload: dict[str, object]) -> str:
-    """Embed deterministic compact JSON into a single template marker."""
+    """Embed deterministic JSON and a complete escaped static reference."""
     marker_count = template.count(CONTENT_MARKER)
     if marker_count != 1:
         raise ValueError(
             f"template must contain exactly one {CONTENT_MARKER} marker; found {marker_count}"
         )
+    static_marker_count = template.count(STATIC_CONTENT_MARKER)
+    if static_marker_count != 1:
+        raise ValueError(
+            "template must contain exactly one "
+            f"{STATIC_CONTENT_MARKER} marker; found {static_marker_count}"
+        )
     encoded = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
-    return template.replace(CONTENT_MARKER, encoded)
+    encoded = (
+        encoded.replace("&", "\\u0026")
+        .replace("<", "\\u003c")
+        .replace(">", "\\u003e")
+        .replace("\u2028", "\\u2028")
+        .replace("\u2029", "\\u2029")
+    )
+    static_content = _render_static_content(payload)
+    return template.replace(STATIC_CONTENT_MARKER, static_content).replace(
+        CONTENT_MARKER,
+        encoded,
+    )
 
 
 def generate_site(
