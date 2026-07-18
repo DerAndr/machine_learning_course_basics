@@ -1,9 +1,19 @@
+import json
+import subprocess
+import sys
 from pathlib import Path
 
+import pytest
 import yaml
 
 SKILL_DIR = Path(".agents/skills/ml-course-interactive-learning-assistant")
 SKILL_PATH = SKILL_DIR / "SKILL.md"
+POLICY_WRAPPER = SKILL_DIR / "scripts/generate_course_learning_experience.py"
+CORE_TEMPLATE = (
+    Path(".agents/skills/interactive-learning-experience-builder")
+    / "assets"
+    / "learning-experience-template.html"
+)
 
 
 def test_interactive_learning_assistant_skill_contract() -> None:
@@ -21,13 +31,15 @@ def test_interactive_learning_assistant_skill_contract() -> None:
         "file://",
         "color-blind",
         "focus-friendly",
-        "generate_learning_experience.py",
+        "generate_course_learning_experience.py",
         "learning-experience-template.html",
         "validate_learning_experience.py",
     ):
         assert phrase in text
 
-    assert "ml-course-interactive-learning-assistant/scripts" not in text
+    assert POLICY_WRAPPER.is_file()
+    assert not (SKILL_DIR / "assets/learning-experience-template.html").exists()
+    assert not (SKILL_DIR / "scripts/generate_learning_experience.py").exists()
 
     metadata = yaml.safe_load(metadata_file.read_text(encoding="utf-8"))
     assert metadata["interface"]["display_name"] == ("Interactive Lecture Learning Assistant")
@@ -66,7 +78,7 @@ def test_adapter_preserves_learning_experience_parity() -> None:
         "storage fallback",
         "answer review",
         "whole-quiz Retry",
-        "generate_learning_experience.py",
+        "generate_course_learning_experience.py",
         "validate_learning_experience.py",
         "private solutions",
         "teacher notebooks",
@@ -74,3 +86,134 @@ def test_adapter_preserves_learning_experience_parity() -> None:
         "grading data",
     ):
         assert required in normalized_text
+
+
+def _load_policy_wrapper():
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "generate_course_learning_experience",
+        POLICY_WRAPPER,
+    )
+    assert spec is not None
+    assert spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+@pytest.mark.parametrize(
+    "source",
+    [
+        "lectures/lecture_01_eda/private/notes.md",
+        "lectures/lecture_01_eda/solutions/walkthrough.md",
+        "lectures/lecture_01_eda/quizzes/questions.json",
+        "lectures/lecture_01_eda/grading/rubric.md",
+    ],
+)
+def test_course_policy_behaviorally_rejects_restricted_sources(source: str) -> None:
+    validator = _load_policy_wrapper()
+    payload = {"meta": {"sources": [source]}, "concepts": []}
+
+    errors = validator.validate_course_source_policy(payload, "lecture_01_eda")
+
+    assert errors
+    assert any("restricted" in error for error in errors)
+
+
+def test_course_policy_rejects_a_different_lecture_source() -> None:
+    validator = _load_policy_wrapper()
+    payload = {
+        "meta": {"sources": ["lectures/lecture_02_data_preparation_part_1/lecture_notes.md"]},
+        "concepts": [],
+    }
+
+    errors = validator.validate_course_source_policy(payload, "lecture_01_eda")
+
+    assert errors == [
+        "source belongs to a different lecture than lecture_01_eda: "
+        "lectures/lecture_02_data_preparation_part_1/lecture_notes.md"
+    ]
+
+
+def test_course_policy_allows_selected_lecture_and_read_only_okf_sources() -> None:
+    validator = _load_policy_wrapper()
+    payload = {
+        "meta": {
+            "sources": [
+                "lectures/lecture_01_eda/lecture_notes.md",
+                "okf/course-overview/course-overview.md",
+            ]
+        },
+        "concepts": [
+            {
+                "sources": [
+                    "lectures/lecture_01_eda/practical_session/README.md",
+                    "okf/labs/classification-threshold-explorer.md",
+                ]
+            }
+        ],
+    }
+
+    assert validator.validate_course_source_policy(payload, "lecture_01_eda") == []
+
+
+def test_course_policy_wrapper_cli_rejects_before_writing_output(tmp_path: Path) -> None:
+    content = tmp_path / "content.json"
+    output = tmp_path / "index.html"
+    content.write_text(
+        json.dumps(
+            {
+                "meta": {
+                    "sources": ["lectures/lecture_01_eda/private/answer-key.md"],
+                },
+                "concepts": [],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(POLICY_WRAPPER),
+            "--lecture-slug",
+            "lecture_01_eda",
+            "--content",
+            str(content),
+            "--template",
+            str(CORE_TEMPLATE),
+            "--output",
+            str(output),
+        ],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert completed.returncode == 1
+    assert "restricted course source" in completed.stdout
+    assert not output.exists()
+
+
+@pytest.mark.parametrize(
+    "workflow_path",
+    [
+        Path(".github/workflows/build-textbook-preview.yml"),
+        Path(".github/workflows/validate-okf.yml"),
+    ],
+)
+def test_workflows_cover_portable_scripts_and_tests(workflow_path: Path) -> None:
+    workflow = workflow_path.read_text(encoding="utf-8")
+
+    for required in (
+        ".agents/skills/interactive-learning-experience-builder/scripts/"
+        "generate_learning_experience.py",
+        ".agents/skills/interactive-learning-experience-builder/scripts/"
+        "validate_learning_experience.py",
+        ".agents/skills/ml-course-interactive-learning-assistant/scripts/"
+        "generate_course_learning_experience.py",
+        "tests/test_interactive_learning_experience_builder_skill.py",
+        "tests/test_learning_experience_portability.py",
+    ):
+        assert required in workflow

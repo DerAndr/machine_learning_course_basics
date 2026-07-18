@@ -51,7 +51,8 @@ payload following the portable core's
 
 ```powershell
 $lectureSlug = 'lecture_02_data_preparation_part_1'
-uv run python .agents/skills/interactive-learning-experience-builder/scripts/generate_learning_experience.py `
+uv run python .agents/skills/ml-course-interactive-learning-assistant/scripts/generate_course_learning_experience.py `
+  --lecture-slug $lectureSlug `
   --content "lecture_experiences/content/$lectureSlug.json" `
   --template .agents/skills/interactive-learning-experience-builder/assets/learning-experience-template.html `
   --output "lecture_experiences/$lectureSlug/index.html"
@@ -73,8 +74,8 @@ remains the canonical source; generated files under `site/_build/` are not
 committed. The repository copy of the portable core is canonical too. If it is
 installed globally for use in unrelated repositories, synchronize the global
 copy from `.agents/skills/interactive-learning-experience-builder/` and compare
-the skill, template, generator, validator, and references before use so drift
-is visible.
+the skill, template, quiz state machine, generator, validator, and references
+before use so drift is visible.
 
 ## Quiz retry behavior
 
@@ -89,4 +90,6 @@ inputs, and Check/Next visibility.
 
 Do not use private solutions, answer keys, grading data, teacher quiz banks,
 teacher notes, or untracked workbooks. Every cited source must exist, and
-lecture paths must belong to the selected lecture.
+lecture paths must belong to the selected lecture. The ML-course generation
+wrapper enforces these path rules before delegating to the portable generator;
+`okf/` paths remain allowed only as read-only supporting sources.

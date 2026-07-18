@@ -4,7 +4,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[1]
 CORE = ROOT / ".agents" / "skills" / "interactive-learning-experience-builder"
 
@@ -34,8 +33,12 @@ def _history_payload() -> dict[str, object]:
             {
                 "id": "source-comparison",
                 "title": "Compare perspectives",
-                "explanation": "Historical accounts reflect their authors, audiences, and purposes.",
-                "interpretation": "Compare claims with the context in which each source was created.",
+                "explanation": (
+                    "Historical accounts reflect their authors, audiences, and purposes."
+                ),
+                "interpretation": (
+                    "Compare claims with the context in which each source was created."
+                ),
                 "common_mistakes": ["Treating one source as a complete account."],
                 "sources": ["knowledge/history.md"],
             }
@@ -66,18 +69,17 @@ def test_core_generates_in_an_unrelated_repository_without_course_tooling(
     (tmp_path / "knowledge" / "history.md").write_text(
         "Compare primary accounts with their context.", encoding="utf-8"
     )
-    (tmp_path / "content.json").write_text(
-        json.dumps(_history_payload()), encoding="utf-8"
-    )
+    (tmp_path / "content.json").write_text(json.dumps(_history_payload()), encoding="utf-8")
     shutil.copytree(CORE, tmp_path / ".agents" / "skills" / CORE.name)
 
     assert not (tmp_path / "AGENTS.md").exists()
     assert not (tmp_path / "uv.lock").exists()
     assert not (tmp_path / "publish").exists()
 
-    generator = tmp_path / ".agents" / "skills" / CORE.name / "scripts" / "generate_learning_experience.py"
-    validator = tmp_path / ".agents" / "skills" / CORE.name / "scripts" / "validate_learning_experience.py"
-    template = tmp_path / ".agents" / "skills" / CORE.name / "assets" / "learning-experience-template.html"
+    copied_core = tmp_path / ".agents" / "skills" / CORE.name
+    generator = copied_core / "scripts" / "generate_learning_experience.py"
+    validator = copied_core / "scripts" / "validate_learning_experience.py"
+    template = copied_core / "assets" / "learning-experience-template.html"
     output = tmp_path / "site" / "index.html"
 
     generated = subprocess.run(

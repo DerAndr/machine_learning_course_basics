@@ -32,7 +32,6 @@ VOID_ELEMENTS = {
     "track",
     "wbr",
 }
-NETWORK_URL = re.compile(r"^(?:https?:)?//", re.IGNORECASE)
 VISIBLE_FOCUS = re.compile(
     r":focus-visible\s*\{[^}]*(?:outline|box-shadow)\s*:\s*(?!none\b|0(?:\D|$))",
     re.IGNORECASE | re.DOTALL,
@@ -62,6 +61,27 @@ STICKY_PROGRESS_STYLE = re.compile(
     re.IGNORECASE | re.DOTALL,
 )
 CSS_COMMENT = re.compile(r"/\*.*?\*/", re.DOTALL)
+CSS_URL_REFERENCE = re.compile(
+    r"url\(\s*(?:\"([^\"]*)\"|'([^']*)'|([^)]*?))\s*\)",
+    re.IGNORECASE,
+)
+CSS_IMPORT_REFERENCE = re.compile(
+    r"@import\s+(?!url\s*\()(?:\"([^\"]*)\"|'([^']*)'|([^;\s]+))",
+    re.IGNORECASE,
+)
+
+
+def _has_runtime_css_reference(style: str) -> bool:
+    for pattern in (CSS_URL_REFERENCE, CSS_IMPORT_REFERENCE):
+        for match in pattern.finditer(style):
+            reference = next(
+                (group.strip() for group in match.groups() if group is not None),
+                "",
+            )
+            is_embedded = reference.casefold().startswith("data:") or reference.startswith("#")
+            if reference and not is_embedded:
+                return True
+    return False
 
 
 class _ContractParser(HTMLParser):
@@ -119,10 +139,8 @@ class _ContractParser(HTMLParser):
         if resource:
             self.external_resources.append(f"<{tag}> {resource}")
 
-        style = attributes.get("style", "")
-        if NETWORK_URL.search(style) or re.search(
-            r"url\(\s*['\"]?(?:https?:)?//", style, re.IGNORECASE
-        ):
+        style = CSS_COMMENT.sub("", attributes.get("style", ""))
+        if _has_runtime_css_reference(style):
             self.external_resources.append(f"<{tag}> inline style")
 
     def handle_endtag(self, tag: str) -> None:
@@ -201,11 +219,7 @@ def validate_html(path: Path) -> list[str]:
 
     style_text = "\n".join(parser.style_text)
     style_without_comments = CSS_COMMENT.sub("", style_text)
-    if re.search(
-        r"(?:@import|url\()\s*['\"]?(?:https?:)?//",
-        style_text,
-        re.IGNORECASE,
-    ):
+    if _has_runtime_css_reference(style_without_comments):
         errors.append("external style or font resource is not portable")
 
     executable_scripts = (

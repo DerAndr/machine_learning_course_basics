@@ -23,8 +23,11 @@ on:
       - "tests/test_textbook_contribution_skill.py"
       - "tests/test_interactive_learning_assistant_docs.py"
       - "tests/test_interactive_learning_assistant_skill.py"
+      - "tests/test_interactive_learning_experience_builder_skill.py"
+      - "tests/test_learning_experience_portability.py"
       - "tests/test_lecture_site_generator.py"
       - "tests/test_eda_lecture_experience.py"
+      - "tests/quiz_state_machine.test.js"
       - "pyproject.toml"
       - "uv.lock"
       - ".github/workflows/validate-okf.yml"
@@ -47,8 +50,11 @@ on:
       - "tests/test_textbook_contribution_skill.py"
       - "tests/test_interactive_learning_assistant_docs.py"
       - "tests/test_interactive_learning_assistant_skill.py"
+      - "tests/test_interactive_learning_experience_builder_skill.py"
+      - "tests/test_learning_experience_portability.py"
       - "tests/test_lecture_site_generator.py"
       - "tests/test_eda_lecture_experience.py"
+      - "tests/quiz_state_machine.test.js"
       - "pyproject.toml"
       - "uv.lock"
       - ".github/workflows/validate-okf.yml"
@@ -69,16 +75,21 @@ jobs:
         with:
           enable-cache: true
 
+      - name: Install Node for quiz behavior tests
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
       - name: Install project environment
         run: uv sync --locked --no-default-groups --group dev
 
       - name: Check validator formatting and lint
         run: |
-          uv run --no-sync ruff format --check src/mlcourse/okf_validation.py tools/validate_okf.py tools/build_textbook_preview.py tests/test_okf_validation.py tests/test_textbook_preview.py tests/test_textbook_contribution_skill.py tests/test_interactive_learning_assistant_docs.py tests/test_interactive_learning_assistant_skill.py tests/test_lecture_site_generator.py tests/test_eda_lecture_experience.py
-          uv run --no-sync ruff check src/mlcourse/okf_validation.py tools/validate_okf.py tools/build_textbook_preview.py tests/test_okf_validation.py tests/test_textbook_preview.py tests/test_textbook_contribution_skill.py tests/test_interactive_learning_assistant_docs.py tests/test_interactive_learning_assistant_skill.py tests/test_lecture_site_generator.py tests/test_eda_lecture_experience.py
+          uv run --no-sync ruff format --check src/mlcourse/okf_validation.py tools/validate_okf.py tools/build_textbook_preview.py .agents/skills/interactive-learning-experience-builder/scripts/generate_learning_experience.py .agents/skills/interactive-learning-experience-builder/scripts/validate_learning_experience.py .agents/skills/ml-course-interactive-learning-assistant/scripts/generate_course_learning_experience.py tests/test_okf_validation.py tests/test_textbook_preview.py tests/test_textbook_contribution_skill.py tests/test_interactive_learning_assistant_docs.py tests/test_interactive_learning_assistant_skill.py tests/test_interactive_learning_experience_builder_skill.py tests/test_learning_experience_portability.py tests/test_lecture_site_generator.py tests/test_eda_lecture_experience.py
+          uv run --no-sync ruff check src/mlcourse/okf_validation.py tools/validate_okf.py tools/build_textbook_preview.py .agents/skills/interactive-learning-experience-builder/scripts/generate_learning_experience.py .agents/skills/interactive-learning-experience-builder/scripts/validate_learning_experience.py .agents/skills/ml-course-interactive-learning-assistant/scripts/generate_course_learning_experience.py tests/test_okf_validation.py tests/test_textbook_preview.py tests/test_textbook_contribution_skill.py tests/test_interactive_learning_assistant_docs.py tests/test_interactive_learning_assistant_skill.py tests/test_interactive_learning_experience_builder_skill.py tests/test_learning_experience_portability.py tests/test_lecture_site_generator.py tests/test_eda_lecture_experience.py
 
       - name: Run validator tests
-        run: uv run --no-sync pytest tests/test_okf_validation.py tests/test_textbook_preview.py tests/test_textbook_contribution_skill.py tests/test_interactive_learning_assistant_docs.py tests/test_interactive_learning_assistant_skill.py tests/test_lecture_site_generator.py tests/test_eda_lecture_experience.py
+        run: uv run --no-sync pytest tests/test_okf_validation.py tests/test_textbook_preview.py tests/test_textbook_contribution_skill.py tests/test_interactive_learning_assistant_docs.py tests/test_interactive_learning_assistant_skill.py tests/test_interactive_learning_experience_builder_skill.py tests/test_learning_experience_portability.py tests/test_lecture_site_generator.py tests/test_eda_lecture_experience.py
 
       - name: Validate bundle
         run: uv run --no-sync python tools/validate_okf.py okf/

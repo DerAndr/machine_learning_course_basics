@@ -1,12 +1,17 @@
 import importlib.util
+import os
+import shutil
+import subprocess
 from pathlib import Path
 from types import ModuleType
 
+import pytest
 import yaml
-
 
 ROOT = Path(__file__).resolve().parents[1]
 CORE = ROOT / ".agents" / "skills" / "interactive-learning-experience-builder"
+QUIZ_STATE_MACHINE = CORE / "assets" / "quiz-state-machine.js"
+QUIZ_STATE_MACHINE_TEST = ROOT / "tests" / "quiz_state_machine.test.js"
 
 
 def _load_generator() -> ModuleType:
@@ -99,12 +104,33 @@ def test_core_skill_contract_files_are_present() -> None:
 
 
 def test_core_template_uses_portable_experience_metadata() -> None:
-    template = (CORE / "assets" / "learning-experience-template.html").read_text(
-        encoding="utf-8"
-    )
+    template = (CORE / "assets" / "learning-experience-template.html").read_text(encoding="utf-8")
 
     assert "CONTENT.meta.experience_id" in template
     assert "CONTENT.meta.lecture_slug" not in template
+
+
+def test_core_template_embeds_the_executable_quiz_state_machine() -> None:
+    template = (CORE / "assets" / "learning-experience-template.html").read_text(encoding="utf-8")
+
+    assert QUIZ_STATE_MACHINE.is_file()
+    assert template.count("__QUIZ_STATE_MACHINE__") == 1
+
+
+def test_quiz_state_machine_behavior_with_node() -> None:
+    node = os.environ.get("NODE_BINARY") or shutil.which("node")
+    if node is None:
+        pytest.skip("Node is unavailable; CI installs Node and executes this behavioral test")
+
+    completed = subprocess.run(
+        [node, "--test", str(QUIZ_STATE_MACHINE_TEST)],
+        cwd=ROOT,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert completed.returncode == 0, completed.stdout + completed.stderr
 
 
 def test_payload_accepts_non_ml_source_identifiers(tmp_path: Path) -> None:

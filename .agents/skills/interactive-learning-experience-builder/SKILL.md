@@ -24,8 +24,9 @@ or storage is unavailable.
 4. Read the [content contract](references/content-contract.md). Build a
    source-grounded JSON payload and correct unsupported claims, ambiguous
    answers, and missing provenance before generation.
-5. Generate the HTML with `scripts/generate_learning_experience.py` and
-   `assets/learning-experience-template.html`.
+5. Generate the HTML with `scripts/generate_learning_experience.py`,
+   `assets/learning-experience-template.html`, and the embedded executable quiz
+   state machine in `assets/quiz-state-machine.js`.
 6. Validate the result with `scripts/validate_learning_experience.py`, then
    open the output directly through `file://` and exercise every setting,
    visualization fallback, quiz, keyboard path, visible focus state, reduced

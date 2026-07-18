@@ -35,7 +35,9 @@ Ground claims in this order:
 
 Do not modify `okf/`. Do not use private solutions, teacher notebooks, answer
 keys, grading data, unpublished drafts, or untracked quiz workbooks. Name every
-public course source used in the payload.
+public course source used in the payload. The course generation wrapper enforces
+those restricted path categories and rejects `lectures/` sources outside the
+selected lecture while permitting `okf/` as read-only supporting context.
 
 ## Recurring generation workflow
 
@@ -48,10 +50,12 @@ public course source used in the payload.
 3. Include the three `foundations`, `applied`, and `challenge` quiz banks with
    exactly 10 questions each. Embed break prompts even when their initial display
    setting is off.
-4. Generate with the portable core:
+4. Generate through the thin course-policy wrapper, which delegates rendering to
+   the portable core only after source validation:
 
    ```powershell
-   uv run python .agents/skills/interactive-learning-experience-builder/scripts/generate_learning_experience.py `
+   uv run python .agents/skills/ml-course-interactive-learning-assistant/scripts/generate_course_learning_experience.py `
+     --lecture-slug <lecture_slug> `
      --content lecture_experiences/content/<lecture_slug>.json `
      --template .agents/skills/interactive-learning-experience-builder/assets/learning-experience-template.html `
      --output lecture_experiences/<lecture_slug>/index.html
@@ -77,7 +81,7 @@ Before committing a lecture review, run the focused experience tests and the
 course preview build:
 
 ```powershell
-uv run pytest tests/test_eda_lecture_experience.py tests/test_interactive_learning_assistant_skill.py tests/test_interactive_learning_assistant_docs.py -q
+uv run pytest tests/test_eda_lecture_experience.py tests/test_interactive_learning_assistant_skill.py tests/test_interactive_learning_assistant_docs.py tests/test_interactive_learning_experience_builder_skill.py tests/test_learning_experience_portability.py -q
 uv run python tools/build_textbook_preview.py
 ```
 

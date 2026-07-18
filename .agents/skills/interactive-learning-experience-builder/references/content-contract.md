@@ -19,7 +19,11 @@ meta, defaults, concepts, visualizations, quizzes, break_prompts
   `explanation`, embedded `data`, and a readable `fallback`.
 - `quizzes`: Include `foundations`, `applied`, and `challenge` arrays. Each
   contains exactly 10 question objects with stable IDs, a supported response
-  type, prompt, options, answer, explanation, and assessed concept ID.
+  type, prompt, options, answer, explanation, and assessed concept ID. Every
+  option must be a readable string. Multiple-choice answers must contain unique
+  choices from their options. An interpretation question with options is
+  rendered as a choice question, so its answer must be one of those options;
+  use an empty options array only for a free-text interpretation.
 - `break_prompts`: Always embed at least one readable prompt. The default only
   controls the initial display state.
 

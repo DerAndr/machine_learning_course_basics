@@ -95,8 +95,10 @@ To create or revise an interactive lecture review:
 3. `lecture_experiences/content/<lecture_slug>.json` — grounded content payload
 4. `lecture_experiences/<lecture_slug>/index.html` — generated offline review
 5. `docs/interactive-lecture-learning-assistant.md` — learner and maintainer guide
-6. `.agents/skills/interactive-learning-experience-builder/scripts/generate_learning_experience.py` — deterministic generator
-7. `.agents/skills/interactive-learning-experience-builder/scripts/validate_learning_experience.py` — offline/accessibility validator
+6. `.agents/skills/ml-course-interactive-learning-assistant/scripts/generate_course_learning_experience.py` — course-policy generation wrapper
+7. `.agents/skills/interactive-learning-experience-builder/assets/quiz-state-machine.js` — executable quiz behavior shared by generated pages and Node tests
+8. `.agents/skills/interactive-learning-experience-builder/scripts/generate_learning_experience.py` — deterministic portable generator
+9. `.agents/skills/interactive-learning-experience-builder/scripts/validate_learning_experience.py` — offline/accessibility validator
 
 Create a context profile before authoring: learner and goal, named sources,
 excluded/private material, requested accessibility defaults, output path, and

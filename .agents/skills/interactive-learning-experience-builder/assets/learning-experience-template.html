@@ -498,6 +498,9 @@
     <p class="source-list" id="source-list"></p>
   </footer>
 
+  <script>
+__QUIZ_STATE_MACHINE__
+  </script>
   <script>const CONTENT = __CONTENT_JSON__;</script>
   <script>
     "use strict";
@@ -545,9 +548,7 @@
       breakPrompts: savedBoolean(savedSettings.breakPrompts, CONTENT.defaults.break_prompts),
       conceptIndex: 0,
       visualizationIndex: 0,
-      quizIndex: 0,
-      responses: [],
-      questionStates: [],
+      quiz: null,
     };
 
     const byId = (id) => document.getElementById(id);
@@ -558,27 +559,38 @@
       .replaceAll('"', "&quot;")
       .replaceAll("'", "&#039;");
 
-    function saveSettings() {
-      safeStorage.set(storageKey, JSON.stringify({
+    function learnerSettings() {
+      return {
         difficulty: state.difficulty,
         focus: state.focus,
         colorBlind: state.colorBlind,
         breakPrompts: state.breakPrompts,
-      }));
+      };
+    }
+
+    function saveSettings() {
+      const settings = learnerSettings();
+      if (state.quiz) {
+        state.quiz = LearningExperienceQuiz.withSettings(state.quiz, settings);
+      }
+      safeStorage.set(storageKey, JSON.stringify(settings));
     }
 
     function updateProgress() {
       const conceptPart = CONTENT.concepts.length
         ? (state.conceptIndex + 1) / CONTENT.concepts.length
         : 1;
-      const quizPart = state.responses.length / 10;
+      const completedQuestions = state.quiz
+        ? LearningExperienceQuiz.completedCount(state.quiz)
+        : 0;
+      const quizPart = completedQuestions / 10;
       const percentage = Math.round(((conceptPart + quizPart) / 2) * 100);
       const progress = document.querySelector('[role="progressbar"]');
       progress.setAttribute("aria-valuenow", String(percentage));
       document.querySelector(".progress-value").style.width = `${percentage}%`;
       byId("progress-text").textContent =
         `Concept ${state.conceptIndex + 1} of ${CONTENT.concepts.length}; ` +
-        `quiz ${state.responses.length} of 10 answered.`;
+        `quiz ${completedQuestions} of 10 answered.`;
     }
 
     function showBreakPrompt(index) {
@@ -854,16 +866,8 @@
       return CONTENT.quizzes[state.difficulty];
     }
 
-    function createQuestionStates() {
-      return currentQuestions().map(() => ({
-        attempts: 0,
-        firstAttemptCorrect: null,
-        complete: false,
-      }));
-    }
-
     function currentQuestionState() {
-      return state.questionStates[state.quizIndex];
+      return LearningExperienceQuiz.currentQuestionState(state.quiz);
     }
 
     function clearQuizFeedback() {
@@ -881,7 +885,7 @@
 
     function renderQuiz(focusQuestion = false) {
       const questions = currentQuestions();
-      const question = questions[state.quizIndex];
+      const question = questions[state.quiz.quizIndex];
       const questionState = currentQuestionState();
       const inputType = question.type === "multiple-choice" ? "checkbox" : "radio";
       const options = question.options.map((option) =>
@@ -898,15 +902,16 @@
         </legend>${options}</fieldset>`;
       byId("quiz-card").setAttribute("tabindex", "-1");
       byId("quiz-card").innerHTML = `<p class="eyebrow">${escapeHtml(state.difficulty)}
-        · question ${state.quizIndex + 1} of 10</p>
+        · question ${state.quiz.quizIndex + 1} of 10</p>
         <h3>${escapeHtml(question.prompt)}</h3>
         ${responseControl}`;
       clearQuizFeedback();
       byId("submit-answer").hidden = questionState.complete;
-      byId("next-question").hidden = !questionState.complete;
+      byId("next-question").hidden = !LearningExperienceQuiz.canAdvance(state.quiz);
       if (questionState.complete) disableQuestionInputs();
       byId("quiz-card").querySelectorAll("input, textarea").forEach((input) => {
         input.addEventListener(input.tagName === "TEXTAREA" ? "input" : "change", () => {
+          state.quiz = LearningExperienceQuiz.selectAnswer(state.quiz, selectedAnswer());
           if (!currentQuestionState().complete) clearQuizFeedback();
         });
       });
@@ -914,38 +919,29 @@
       if (focusQuestion) byId("quiz-card").focus();
     }
 
-    function normalizedAnswer(value) {
-      const values = Array.isArray(value) ? value : [value];
-      return values.map((item) => String(item).trim().toLocaleLowerCase()).sort();
-    }
-
-    function answersMatch(selected, answer) {
-      return JSON.stringify(normalizedAnswer(selected)) ===
-        JSON.stringify(normalizedAnswer(answer));
-    }
-
-    function submitAnswer() {
-      const questionState = currentQuestionState();
-      if (questionState.complete) return;
+    function selectedAnswer() {
       const interpretation = byId("interpretation-answer");
-      const selected = interpretation
+      return interpretation
         ? [interpretation.value.trim()].filter(Boolean)
         : [...document.querySelectorAll('[name="quiz-answer"]:checked')]
           .map((input) => input.value);
-      if (!selected.length) {
-        byId("quiz-feedback").textContent = "Choose an answer before checking.";
+    }
+
+    function submitAnswer() {
+      if (currentQuestionState().complete) return;
+      const question = currentQuestions()[state.quiz.quizIndex];
+      state.quiz = LearningExperienceQuiz.selectAnswer(state.quiz, selectedAnswer());
+      state.quiz = LearningExperienceQuiz.submitAnswer(state.quiz, question);
+      const feedback = state.quiz.feedback;
+      if (feedback.missing) {
+        byId("quiz-feedback").textContent = feedback.message;
         byId("quiz-feedback").dataset.correct = "false";
         byId("quiz-feedback").hidden = false;
         return;
       }
-      const question = currentQuestions()[state.quizIndex];
-      const correct = answersMatch(selected, question.answer);
-      questionState.attempts += 1;
-      if (questionState.firstAttemptCorrect === null) {
-        questionState.firstAttemptCorrect = correct;
-      }
+      const correct = feedback.correct;
       byId("quiz-feedback").innerHTML = `<strong>${correct ? "Correct." : "Not yet."}</strong>
-        ${escapeHtml(question.explanation)}`;
+        ${escapeHtml(feedback.message)}`;
       byId("quiz-feedback").dataset.correct = String(correct);
       byId("quiz-feedback").hidden = false;
       if (!correct) {
@@ -953,38 +949,26 @@
         byId("next-question").hidden = true;
         return;
       }
-      questionState.complete = true;
-      state.responses.push({
-        id: question.id,
-        prompt: question.prompt,
-        selected,
-        answer: question.answer,
-        explanation: question.explanation,
-        correct,
-        attempts: questionState.attempts,
-        firstAttemptCorrect: questionState.firstAttemptCorrect,
-      });
       disableQuestionInputs();
       byId("submit-answer").hidden = true;
-      byId("next-question").hidden = false;
+      byId("next-question").hidden = !LearningExperienceQuiz.canAdvance(state.quiz);
       byId("next-question").focus();
       byId("next-question").scrollIntoView({ block: "nearest" });
-      if (state.quizIndex === 4) showBreakPrompt(1);
+      if (state.quiz.quizIndex === 4) showBreakPrompt(1);
       updateProgress();
     }
 
     function showQuizResults() {
-      const firstTryCorrect = state.responses.filter((response) => response.firstAttemptCorrect).length;
-      const totalAttempts = state.responses.reduce((total, response) => total + response.attempts, 0);
+      const summary = LearningExperienceQuiz.summarize(state.quiz);
       byId("quiz-card").hidden = true;
       byId("quiz-feedback").hidden = true;
       byId("next-question").hidden = true;
       byId("submit-answer").hidden = true;
       byId("retry-quiz").hidden = false;
-      byId("quiz-results").innerHTML = `<h3>Your result: ${state.responses.length}/10</h3>
-        <p>First try: ${firstTryCorrect}/10</p>
-        <p>Total attempts: ${totalAttempts}</p>
-        <ol>${state.responses.map((response) => `<li>
+      byId("quiz-results").innerHTML = `<h3>Your result: ${summary.completed}/10</h3>
+        <p>First try: ${summary.firstAttemptCorrect}/10</p>
+        <p>Total attempts: ${summary.totalAttempts}</p>
+        <ol>${state.quiz.responses.map((response) => `<li>
           <p><strong>${escapeHtml(response.prompt)}</strong></p>
           <p>Your answer: ${escapeHtml(response.selected.join(", "))}</p>
           <p>Correct answer: ${escapeHtml(
@@ -998,19 +982,17 @@
     }
 
     function nextQuestion() {
-      if (!currentQuestionState().complete) return;
-      if (state.quizIndex >= 9) {
+      if (!LearningExperienceQuiz.canAdvance(state.quiz)) return;
+      state.quiz = LearningExperienceQuiz.nextQuestion(state.quiz);
+      if (state.quiz.showResults) {
         showQuizResults();
         return;
       }
-      state.quizIndex += 1;
       renderQuiz(true);
     }
 
     function retryQuiz() {
-      state.quizIndex = 0;
-      state.responses = [];
-      state.questionStates = createQuestionStates();
+      state.quiz = LearningExperienceQuiz.retryQuiz(state.quiz);
       byId("quiz-card").hidden = false;
       byId("quiz-results").hidden = true;
       byId("retry-quiz").hidden = true;
@@ -1021,7 +1003,7 @@
     }
 
     document.querySelector('[data-setting="difficulty"]').addEventListener("change", (event) => {
-      if (state.questionStates.some((questionState) => questionState.attempts) &&
+      if (state.quiz.questionStates.some((questionState) => questionState.attempts) &&
           !confirm("Changing depth resets your current quiz. Continue?")) {
         event.target.value = state.difficulty;
         return;
@@ -1081,8 +1063,11 @@
     byId("site-subtitle").textContent =
       CONTENT.meta.subtitle || "Learn, explore, then check your knowledge.";
     byId("source-list").textContent = `Sources: ${CONTENT.meta.sources.join(" · ")}`;
+    state.quiz = LearningExperienceQuiz.createQuizState(
+      currentQuestions().length,
+      learnerSettings(),
+    );
     applySettings();
-    state.questionStates = createQuestionStates();
     renderQuiz();
   </script>
 </body>

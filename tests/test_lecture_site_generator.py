@@ -331,6 +331,58 @@ def test_validate_payload_rejects_impossible_choice_answers(
     assert any("answer" in error for error in errors)
 
 
+def test_validate_payload_rejects_duplicate_multiple_choice_answers(
+    payload: dict[str, object],
+) -> None:
+    quizzes = payload["quizzes"]
+    assert isinstance(quizzes, dict)
+    questions = quizzes["foundations"]
+    assert isinstance(questions, list)
+    question = questions[0]
+    assert isinstance(question, dict)
+    question["type"] = "multiple-choice"
+    question["answer"] = ["A", "A"]
+
+    errors = validate_payload(payload)
+
+    assert any("answer" in error and "unique" in error for error in errors)
+
+
+def test_validate_payload_reports_non_string_multiple_choice_options_without_crashing(
+    payload: dict[str, object],
+) -> None:
+    quizzes = payload["quizzes"]
+    assert isinstance(quizzes, dict)
+    questions = quizzes["foundations"]
+    assert isinstance(questions, list)
+    question = questions[0]
+    assert isinstance(question, dict)
+    question["type"] = "multiple-choice"
+    question["options"] = ["A", {"label": "B"}]
+    question["answer"] = ["A"]
+
+    errors = validate_payload(payload)
+
+    assert any("options must contain readable strings" in error for error in errors)
+
+
+def test_validate_payload_requires_option_based_interpretation_answer_to_be_available(
+    payload: dict[str, object],
+) -> None:
+    quizzes = payload["quizzes"]
+    assert isinstance(quizzes, dict)
+    questions = quizzes["foundations"]
+    assert isinstance(questions, list)
+    question = questions[0]
+    assert isinstance(question, dict)
+    question["type"] = "interpretation"
+    question["answer"] = "A different interpretation"
+
+    errors = validate_payload(payload)
+
+    assert any("answer must be one available option" in error for error in errors)
+
+
 @pytest.mark.parametrize(
     "source",
     ["/knowledge/source.md", "C:/knowledge/source.md", "../knowledge/source.md", ""],
@@ -639,6 +691,42 @@ def test_validate_html_rejects_external_runtime_resources(
     errors = validate_html(path)
 
     assert any("external" in error.lower() for error in errors)
+
+
+@pytest.mark.parametrize(
+    "style_dependency",
+    [
+        '@import "./theme.css";',
+        '.chart { background-image: url("./chart.png"); }',
+    ],
+)
+def test_validate_html_rejects_local_css_runtime_dependencies(
+    tmp_path: Path,
+    style_dependency: str,
+) -> None:
+    path = tmp_path / "index.html"
+    path.write_text(
+        _valid_html().replace("</style>", f"{style_dependency}</style>"),
+        encoding="utf-8",
+    )
+
+    errors = validate_html(path)
+
+    assert any("style" in error.lower() and "not portable" in error.lower() for error in errors)
+
+
+def test_validate_html_allows_embedded_and_fragment_css_urls(tmp_path: Path) -> None:
+    path = tmp_path / "index.html"
+    css = """
+    .embedded { background-image: url("data:image/svg+xml,%3Csvg%3E%3C/svg%3E"); }
+    .patterned { fill: url("#diagonal-hatch"); }
+    """
+    path.write_text(
+        _valid_html().replace("</style>", f"{css}</style>"),
+        encoding="utf-8",
+    )
+
+    assert validate_html(path) == []
 
 
 @pytest.mark.parametrize(

@@ -8,6 +8,7 @@ from typing import Any
 
 CONTENT_MARKER = "__CONTENT_JSON__"
 STATIC_CONTENT_MARKER = "__STATIC_CONTENT__"
+QUIZ_STATE_MACHINE_MARKER = "__QUIZ_STATE_MACHINE__"
 REQUIRED_TOP_LEVEL = {
     "meta",
     "defaults",
@@ -120,9 +121,7 @@ def _payload_sources(payload: dict[str, object]) -> list[str]:
     return sources
 
 
-def _validate_source_files(
-    payload: dict[str, object], repository_root: Path | None
-) -> list[str]:
+def _validate_source_files(payload: dict[str, object], repository_root: Path | None) -> list[str]:
     if repository_root is None:
         return []
     errors: list[str] = []
@@ -132,9 +131,7 @@ def _validate_source_files(
     return errors
 
 
-def validate_payload(
-    payload: dict[str, object], repository_root: Path | None = None
-) -> list[str]:
+def validate_payload(payload: dict[str, object], repository_root: Path | None = None) -> list[str]:
     """Return every content-contract violation in a portable experience payload."""
     errors: list[str] = []
 
@@ -264,9 +261,12 @@ def validate_payload(
                     if not _is_non_empty_string(question.get(field)):
                         errors.append(f"{location}.{field} must be a non-empty string")
                 options = question.get("options")
+                options_are_readable = isinstance(options, list) and all(
+                    _is_non_empty_string(option) for option in options
+                )
                 if not isinstance(options, list):
                     errors.append(f"{location}.options must be an array")
-                elif not all(_is_non_empty_string(option) for option in options):
+                elif not options_are_readable:
                     errors.append(f"{location}.options must contain readable strings")
                 elif question.get("type") in {"single-choice", "multiple-choice"} and not options:
                     errors.append(f"{location}.options must contain choices for this question type")
@@ -283,14 +283,23 @@ def validate_payload(
                     not isinstance(answer, list)
                     or not answer
                     or not all(_is_non_empty_string(item) for item in answer)
-                    or not isinstance(options, list)
-                    or not set(answer).issubset(options)
                 ):
                     errors.append(
                         f"{location}.answer must be a non-empty subset of available options"
                     )
-                elif question.get("type") == "interpretation" and not _is_non_empty_string(answer):
-                    errors.append(f"{location}.answer must be a readable interpretation")
+                elif question.get("type") == "multiple-choice" and len(answer) != len(set(answer)):
+                    errors.append(f"{location}.answer choices must be unique")
+                elif question.get("type") == "multiple-choice" and (
+                    not options_are_readable or not set(answer).issubset(set(options))
+                ):
+                    errors.append(
+                        f"{location}.answer must be a non-empty subset of available options"
+                    )
+                elif question.get("type") == "interpretation":
+                    if not _is_non_empty_string(answer):
+                        errors.append(f"{location}.answer must be a readable interpretation")
+                    elif options_are_readable and options and answer not in options:
+                        errors.append(f"{location}.answer must be one available option")
 
         extra_levels = sorted(quizzes.keys() - set(QUIZ_LEVELS))
         if extra_levels:
@@ -399,7 +408,11 @@ def _render_static_content(payload: dict[str, object]) -> str:
     return "".join(sections)
 
 
-def render_site(template: str, payload: dict[str, object]) -> str:
+def render_site(
+    template: str,
+    payload: dict[str, object],
+    quiz_state_machine: str | None = None,
+) -> str:
     """Embed deterministic JSON and a complete escaped static reference."""
     marker_count = template.count(CONTENT_MARKER)
     if marker_count != 1:
@@ -412,6 +425,14 @@ def render_site(template: str, payload: dict[str, object]) -> str:
             "template must contain exactly one "
             f"{STATIC_CONTENT_MARKER} marker; found {static_marker_count}"
         )
+    quiz_marker_count = template.count(QUIZ_STATE_MACHINE_MARKER)
+    if quiz_marker_count > 1:
+        raise ValueError(
+            "template must contain no more than one "
+            f"{QUIZ_STATE_MACHINE_MARKER} marker; found {quiz_marker_count}"
+        )
+    if quiz_marker_count == 1 and quiz_state_machine is None:
+        raise ValueError("template requires the embedded quiz state machine")
     encoded = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
     encoded = (
         encoded.replace("&", "\\u0026")
@@ -421,18 +442,25 @@ def render_site(template: str, payload: dict[str, object]) -> str:
         .replace("\u2029", "\\u2029")
     )
     static_content = _render_static_content(payload)
-    return template.replace(STATIC_CONTENT_MARKER, static_content).replace(
-        CONTENT_MARKER,
-        encoded,
+    rendered = template.replace(STATIC_CONTENT_MARKER, static_content).replace(
+        CONTENT_MARKER, encoded
     )
+    if quiz_marker_count == 1:
+        assert quiz_state_machine is not None
+        rendered = rendered.replace(QUIZ_STATE_MACHINE_MARKER, quiz_state_machine)
+    return rendered
 
 
-def generate_site(payload: dict[str, object], template: str) -> str:
+def generate_site(
+    payload: dict[str, object],
+    template: str,
+    quiz_state_machine: str | None = None,
+) -> str:
     """Validate payload content and return one portable HTML document."""
     errors = validate_payload(payload)
     if errors:
         raise ValueError("\n".join(errors))
-    return render_site(template, payload)
+    return render_site(template, payload, quiz_state_machine)
 
 
 def write_site(
@@ -451,7 +479,12 @@ def write_site(
         raise ValueError("\n".join(errors))
 
     template = template_path.read_text(encoding="utf-8")
-    html = generate_site(payload, template)
+    quiz_state_machine = None
+    if QUIZ_STATE_MACHINE_MARKER in template:
+        quiz_state_machine = template_path.with_name("quiz-state-machine.js").read_text(
+            encoding="utf-8"
+        )
+    html = generate_site(payload, template, quiz_state_machine)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(html, encoding="utf-8", newline="\n")
     return output_path

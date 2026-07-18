@@ -15,6 +15,14 @@ TEMPLATE_PATH = (
     / "assets"
     / "learning-experience-template.html"
 )
+COURSE_GENERATOR_PATH = (
+    ROOT
+    / ".agents"
+    / "skills"
+    / "ml-course-interactive-learning-assistant"
+    / "scripts"
+    / "generate_course_learning_experience.py"
+)
 LEVELS = ("foundations", "applied", "challenge")
 EXPECTED_CONCEPTS = {
     "eda-before-modeling",
@@ -101,14 +109,25 @@ def test_eda_payload_and_generated_site_meet_learning_contract(
     html = SITE_PATH.read_text(encoding="utf-8")
     assert "__CONTENT_JSON__" not in html
     assert "__STATIC_CONTENT__" not in html
+    assert "__QUIZ_STATE_MACHINE__" not in html
+    assert "LearningExperienceQuiz" in html
     assert payload["meta"]["title"] in html
     assert _load_script("validate_learning_experience").validate_html(SITE_PATH) == []
 
     okf_before = _okf_hashes()
-    generated_path = _load_script("generate_learning_experience").write_site(
+    course_generator_spec = importlib.util.spec_from_file_location(
+        "generate_course_learning_experience",
+        COURSE_GENERATOR_PATH,
+    )
+    assert course_generator_spec is not None
+    assert course_generator_spec.loader is not None
+    course_generator = importlib.util.module_from_spec(course_generator_spec)
+    course_generator_spec.loader.exec_module(course_generator)
+    generated_path = course_generator.generate_course_site(
         CONTENT_PATH,
         TEMPLATE_PATH,
         tmp_path / "index.html",
+        "lecture_01_eda",
         repository_root=ROOT,
     )
     generated_bytes = generated_path.read_bytes()
