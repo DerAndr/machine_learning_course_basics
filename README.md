@@ -59,7 +59,8 @@ checks.
 
 - [Live EDA interactive review](https://derandr.github.io/machine_learning_course_basics/demos/lecture_01_eda/)
 - [Offline EDA review](lecture_experiences/lecture_01_eda/index.html)
-- [Learning-assistant guide](docs/interactive-lecture-learning-assistant.md)
+- [Learning companions architecture](docs/learning-companions-architecture.md)
+- [Operational generation and publishing guide](docs/interactive-lecture-learning-assistant.md)
 
 The portable core at
 `.agents/skills/interactive-learning-experience-builder/` owns the content

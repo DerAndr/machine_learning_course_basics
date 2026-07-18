@@ -90,15 +90,16 @@ When improving textbook content, keep the student page, OKF metadata, index card
 
 To create or revise an interactive lecture review:
 
-1. `.agents/skills/interactive-learning-experience-builder/SKILL.md` — portable content contract, deterministic generator, and offline validator
-2. `.agents/skills/ml-course-interactive-learning-assistant/SKILL.md` — ML-course source, safety, output, and publishing adapter
-3. `lecture_experiences/content/<lecture_slug>.json` — grounded content payload
-4. `lecture_experiences/<lecture_slug>/index.html` — generated offline review
-5. `docs/interactive-lecture-learning-assistant.md` — learner and maintainer guide
-6. `.agents/skills/ml-course-interactive-learning-assistant/scripts/generate_course_learning_experience.py` — course-policy generation wrapper
-7. `.agents/skills/interactive-learning-experience-builder/assets/quiz-state-machine.js` — executable quiz behavior shared by generated pages and Node tests
-8. `.agents/skills/interactive-learning-experience-builder/scripts/generate_learning_experience.py` — deterministic portable generator
-9. `.agents/skills/interactive-learning-experience-builder/scripts/validate_learning_experience.py` — offline/accessibility validator
+1. `docs/learning-companions-architecture.md` — conceptual layers, ownership boundaries, portability model, and lifecycle
+2. `.agents/skills/interactive-learning-experience-builder/SKILL.md` — portable content contract, deterministic generator, and offline validator
+3. `.agents/skills/ml-course-interactive-learning-assistant/SKILL.md` — ML-course source, safety, output, and publishing adapter
+4. `lecture_experiences/content/<lecture_slug>.json` — grounded content payload
+5. `lecture_experiences/<lecture_slug>/index.html` — generated offline review
+6. `docs/interactive-lecture-learning-assistant.md` — operational guide for generating, validating, and publishing learning companions
+7. `.agents/skills/ml-course-interactive-learning-assistant/scripts/generate_course_learning_experience.py` — course-policy generation wrapper
+8. `.agents/skills/interactive-learning-experience-builder/assets/quiz-state-machine.js` — executable quiz behavior shared by generated pages and Node tests
+9. `.agents/skills/interactive-learning-experience-builder/scripts/generate_learning_experience.py` — deterministic portable generator
+10. `.agents/skills/interactive-learning-experience-builder/scripts/validate_learning_experience.py` — offline/accessibility validator
 
 Create a context profile before authoring: learner and goal, named sources,
 excluded/private material, requested accessibility defaults, output path, and
@@ -177,6 +178,8 @@ Detailed setup: `docs/student-quickstart.md`
 
 - `docs/` — student-facing setup guides and workflow documentation
 - `docs/deep-learning-colab-guide.md` — instructions for running heavy deep learning models locally or on Colab
+- `docs/learning-companions-architecture.md` — conceptual reference for learning-companion layers, boundaries, portability, and lifecycle
+- `docs/interactive-lecture-learning-assistant.md` — operational generation, validation, and publishing guide for ML-course learning companions
 - `okf/` — concise textbook concepts, learning paths, lab descriptions, and contribution modules
 - `.agents/skills/ml-course-textbook-contributor/` — agent workflow for safe textbook contributions
 - `.agents/skills/ml-course-student-navigator/` — agent workflow for helping students navigate the course and set up their environment

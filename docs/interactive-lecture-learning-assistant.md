@@ -1,5 +1,10 @@
 # Interactive Lecture Learning Assistant
 
+This is the operational guide for generating, validating, and publishing an
+ML-course learning companion. For the conceptual model, component boundaries,
+and portability strategy, read
+[Learning Companions Architecture](learning-companions-architecture.md).
+
 The learning assistant creates small, self-contained lecture review pages with
 grounded explanations, interactive graphs, accessibility controls, funny
 topic-related break prompts, and a 10-question quiz selected from one of three

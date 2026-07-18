@@ -112,6 +112,20 @@ A lab should teach one mechanism. It must include:
 - a static fallback for readers without JavaScript;
 - tests that confirm the lab renders.
 
+## Learning companions
+
+Standalone learning companions complement the durable concepts and
+relationships in `okf/`. They combine grounded explanations, focused
+interactive views, accessibility controls, and corrective quizzes in one
+self-contained HTML artifact.
+
+Read [Learning Companions Architecture](learning-companions-architecture.md)
+for the high-level model and
+[Interactive Lecture Learning Assistant](interactive-lecture-learning-assistant.md)
+for the ML-course generation workflow. Keep durable pedagogy in `okf/`; keep
+companion payloads and generated offline artifacts under
+`lecture_experiences/`.
+
 ## Agent skill
 
 Agents improving the textbook should use the repo skill:

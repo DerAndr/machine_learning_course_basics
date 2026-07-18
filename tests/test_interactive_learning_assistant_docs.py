@@ -66,6 +66,33 @@ def test_learning_companions_architecture_contract() -> None:
     assert "one skill per lecture" in text
 
 
+def test_learning_companions_architecture_is_linked_from_repository_guides() -> None:
+    architecture_path = "docs/learning-companions-architecture.md"
+    documents = {
+        "README.md": Path("README.md").read_text(encoding="utf-8"),
+        "AGENTS.md": Path("AGENTS.md").read_text(encoding="utf-8"),
+        "docs/interactive-lecture-learning-assistant.md": Path(
+            "docs/interactive-lecture-learning-assistant.md"
+        ).read_text(encoding="utf-8"),
+        "docs/contributing-to-textbook.md": Path(
+            "docs/contributing-to-textbook.md"
+        ).read_text(encoding="utf-8"),
+    }
+
+    assert architecture_path in documents["README.md"]
+    assert architecture_path in documents["AGENTS.md"]
+    assert "learning-companions-architecture.md" in documents[
+        "docs/interactive-lecture-learning-assistant.md"
+    ]
+    assert "learning-companions-architecture.md" in documents[
+        "docs/contributing-to-textbook.md"
+    ]
+    assert "operational guide" in documents[
+        "docs/interactive-lecture-learning-assistant.md"
+    ].lower()
+    assert "complement" in documents["docs/contributing-to-textbook.md"].lower()
+
+
 def test_pages_deployment_is_limited_to_student_repository() -> None:
     workflow = Path(".github/workflows/build-textbook-preview.yml").read_text(encoding="utf-8")
 
