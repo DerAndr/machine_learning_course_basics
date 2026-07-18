@@ -466,10 +466,21 @@ def _render_page(page: Page, pages: list[Page], output: Path, data_path: Path) -
 """
 
 
+def _copy_lecture_experiences(experiences: Path, build_dir: Path) -> None:
+    """Copy self-contained lecture demos into the Pages artifact."""
+    if not experiences.is_dir():
+        return
+    for source in sorted(experiences.glob("*/index.html")):
+        destination = build_dir / "demos" / source.parent.name / "index.html"
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, destination)
+
+
 def build_textbook_preview(
     bundle: Path = Path("okf"),
     site: Path = Path("site"),
     output: Path | None = None,
+    experiences: Path = Path("lecture_experiences"),
 ) -> Path:
     """Build the textbook preview and return the output directory."""
 
@@ -489,6 +500,7 @@ def build_textbook_preview(
 
     shutil.copytree(site / "assets", build_dir / "assets")
     shutil.copytree(site / "data", build_dir / "data")
+    _copy_lecture_experiences(experiences, build_dir)
 
     pages = _load_pages(bundle.resolve(), build_dir.resolve())
     _write_manifest(pages, build_dir.resolve())
@@ -507,12 +519,22 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--bundle", default=Path("okf"), type=Path)
     parser.add_argument("--site", default=Path("site"), type=Path)
     parser.add_argument("--output", type=Path)
+    parser.add_argument(
+        "--experiences",
+        default=Path("lecture_experiences"),
+        type=Path,
+    )
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
-    output = build_textbook_preview(args.bundle, args.site, args.output)
+    output = build_textbook_preview(
+        bundle=args.bundle,
+        site=args.site,
+        output=args.output,
+        experiences=args.experiences,
+    )
     print(f"Built textbook preview at {output}")
     return 0
 

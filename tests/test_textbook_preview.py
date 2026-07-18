@@ -73,3 +73,16 @@ def test_textbook_preview_builds_interactive_lab(tmp_path: Path) -> None:
     ).read_text(encoding="utf-8")
     assert "\\mathrm{Precision}" in metrics_html
     assert "F_\\beta" in metrics_html
+
+
+def test_textbook_preview_publishes_standalone_lecture_demo(tmp_path: Path) -> None:
+    build_textbook_preview = load_builder()
+    output = build_textbook_preview(output=tmp_path / "textbook")
+
+    source = Path("lecture_experiences/lecture_01_eda/index.html")
+    published = output / "demos" / "lecture_01_eda" / "index.html"
+
+    assert published.is_file()
+    assert published.read_bytes() == source.read_bytes()
+    assert "Exploratory Data Analysis: Interactive Review" in published.read_text(encoding="utf-8")
+    assert not (output / "demos" / "content").exists()
