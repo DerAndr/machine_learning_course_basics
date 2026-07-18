@@ -1,51 +1,85 @@
 ---
 name: ml-course-interactive-learning-assistant
-description: Use when creating a self-contained interactive lecture review site with grounded explanations, interactive graphs, accessibility controls, and a 10-question knowledge quiz for this ML course.
+description: Use when creating an interactive review for an ML-course lecture and its course-specific source, safety, and publishing rules are needed.
 ---
 
-# Interactive Lecture Learning Assistant
+# ML Course Interactive Learning Assistant
 
-Create one deterministic, portable `index.html` that opens through `file://`
-without a server, network request, external font, CDN, account, or runtime
-dependency. Embed all content, styles, scripts, SVG, fallbacks, and quiz banks.
-Keep explanations and full quiz content statically readable if JavaScript fails.
+This is the ML-course adapter for
+`interactive-learning-experience-builder`. Use that portable core for the
+experience specification, content contract, single-file rendering, accessibility
+requirements, and reusable validation. This adapter supplies only stable
+ML-course constraints.
 
-## Workflow
+## Course context
 
-1. Resolve the lecture slug through `lectures/index.yaml`.
-2. Ask the user to choose four generation defaults:
-   - quiz depth: Foundations, Applied, or Challenge;
-   - focus-friendly mode: on or off;
-   - color-blind-safe palette: on or off;
-   - funny topic-related break prompts: on or off.
-3. Ground content in this source order:
-   1. `lectures/<slug>/lecture_notes.md`;
-   2. `lectures/<slug>/README.md` and `links.yaml`;
-   3. public `lecture_examples/` material;
-   4. the public practical README and student notebook;
-   5. relevant OKF concepts as read-only supporting sources.
-4. Do not modify `okf/`. Do not use private solutions, answer keys, grading data,
-   or untracked quiz workbooks.
-5. Read [references/content-contract.md](references/content-contract.md), then
-   write a grounded JSON payload to the user-selected path. Name every course
-   source used. Fix unsupported claims, ambiguous answers, and missing evidence
-   before generation.
-6. Generate the site:
+- Read repository instructions and relevant contributor guidance before selecting
+  sources.
+- Resolve the requested lecture slug through `lectures/index.yaml`.
+- Store the grounded payload at `lecture_experiences/content/<lecture_slug>.json`
+  and the generated review at
+  `lecture_experiences/<lecture_slug>/index.html`.
+- The committed offline HTML is the source for the Pages copy. Build tooling
+  copies it to `site/_build/demos/<lecture_slug>/index.html`; do not maintain a
+  second demo under `site/`.
+
+## Source and safety policy
+
+Ground claims in this order:
+
+1. `lectures/<lecture_slug>/lecture_notes.md`;
+2. `lectures/<lecture_slug>/README.md` and `links.yaml`;
+3. public `lecture_examples/` material;
+4. the public practical README and student notebook;
+5. relevant `okf/` concepts as read-only supporting sources.
+
+Do not modify `okf/`. Do not use private solutions, teacher notebooks, answer
+keys, grading data, unpublished drafts, or untracked quiz workbooks. Name every
+public course source used in the payload.
+
+## Recurring generation workflow
+
+1. Ask the learner for four defaults: Foundations, Applied, or Challenge quiz
+   depth; focus-friendly mode on or off; color-blind-safe palette on or off; and
+   funny topic-related break prompts on or off.
+2. Create the short experience specification required by
+   `interactive-learning-experience-builder`, then ground the payload using the
+   course source order above.
+3. Include the three `foundations`, `applied`, and `challenge` quiz banks with
+   exactly 10 questions each. Embed break prompts even when their initial display
+   setting is off.
+4. Generate with the portable core:
 
    ```powershell
-   uv run python .agents/skills/ml-course-interactive-learning-assistant/scripts/generate_lecture_site.py `
-     --content <content.json> `
-     --template .agents/skills/ml-course-interactive-learning-assistant/assets/lecture-site-template.html `
-     --output <output-directory>/index.html
+   uv run python .agents/skills/interactive-learning-experience-builder/scripts/generate_learning_experience.py `
+     --content lecture_experiences/content/<lecture_slug>.json `
+     --template .agents/skills/interactive-learning-experience-builder/assets/learning-experience-template.html `
+     --output lecture_experiences/<lecture_slug>/index.html
    ```
 
-7. Validate the generated file:
+5. Validate with the portable core:
 
    ```powershell
-   uv run python .agents/skills/ml-course-interactive-learning-assistant/scripts/validate_lecture_site.py <output-directory>/index.html
+   uv run python .agents/skills/interactive-learning-experience-builder/scripts/validate_learning_experience.py `
+     lecture_experiences/<lecture_slug>/index.html
    ```
 
-8. Open the generated `index.html` directly through `file://`. Verify all four
-   settings, every graph control and fallback, one exactly 10-question quiz,
-   answer review, retry, keyboard navigation, visible focus, reduced motion,
-   storage-disabled behavior, and a clean browser console.
+6. Open the generated `index.html` directly through `file://`. Verify all four
+   learner settings, visualizations and their fallbacks, answer review and
+   whole-quiz Retry, keyboard navigation, visible focus, reduced motion, and
+   storage-disabled behavior. The core remains responsible for deterministic
+   single-file output, static no-JavaScript explanations and quiz review, and
+   accessible chart fallbacks.
+
+## Course checks and deployment
+
+Before committing a lecture review, run the focused experience tests and the
+course preview build:
+
+```powershell
+uv run pytest tests/test_eda_lecture_experience.py tests/test_interactive_learning_assistant_skill.py tests/test_interactive_learning_assistant_docs.py -q
+uv run python tools/build_textbook_preview.py
+```
+
+After merging to `main`, verify GitHub Actions and the deployed Pages review in
+the public student repository.

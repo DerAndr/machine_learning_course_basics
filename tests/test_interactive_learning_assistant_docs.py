@@ -27,3 +27,11 @@ def test_pages_deployment_is_limited_to_student_repository() -> None:
     workflow = Path(".github/workflows/build-textbook-preview.yml").read_text(encoding="utf-8")
 
     assert "github.repository == 'DerAndr/machine_learning_course_basics'" in workflow
+
+
+def test_textbook_skill_requires_mobile_quiz_contract() -> None:
+    text = Path(".agents/skills/ml-course-textbook-contributor/SKILL.md").read_text()
+
+    assert "wrong answers" in text.lower()
+    assert "sticky progress" in text.lower()
+    assert "mobile chrome" in text.lower()

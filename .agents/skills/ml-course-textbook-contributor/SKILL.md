@@ -47,6 +47,17 @@ For interactive labs, require:
 - a no-JavaScript fallback;
 - tests that confirm the rendered lab exists and exposes the intended interaction.
 
+For interactive learning experiences and browser labs, also require:
+
+- wrong answers to keep the learner on the current question, preserve an
+  explanation, and never mark the question complete or reveal the next one;
+- changing an answer to clear stale feedback before another submission;
+- whole-quiz Retry to preserve learner settings while resetting question state,
+  feedback, results, and progress;
+- sticky progress that remains visible but never obscures focused controls;
+- mobile Chrome verification with a touch viewport, including retry, focus, and
+  scrolling behavior around the sticky progress panel.
+
 ## Consistency rules
 
 - Do not author `skills` separately. Agent-facing `skills` are generated from `learning_objectives`.

@@ -1,4 +1,4 @@
 interface:
   display_name: "Interactive Lecture Learning Assistant"
-  short_description: "Build an offline interactive review site for one ML lecture."
-  default_prompt: "Use $ml-course-interactive-learning-assistant to create a grounded, accessible, self-contained review site for a selected lecture."
+  short_description: "Apply ML-course source and publishing rules to an offline review."
+  default_prompt: "Use $ml-course-interactive-learning-assistant with $interactive-learning-experience-builder to create a grounded, accessible, self-contained review for a selected ML-course lecture."
