@@ -8,6 +8,7 @@ description: Use when creating a self-contained interactive lecture review site 
 Create one deterministic, portable `index.html` that opens through `file://`
 without a server, network request, external font, CDN, account, or runtime
 dependency. Embed all content, styles, scripts, SVG, fallbacks, and quiz banks.
+Keep explanations and full quiz content statically readable if JavaScript fails.
 
 ## Workflow
 

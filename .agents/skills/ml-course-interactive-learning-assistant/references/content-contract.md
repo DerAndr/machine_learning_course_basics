@@ -12,15 +12,21 @@ meta, defaults, concepts, visualizations, quizzes, break_prompts
   public course files that ground the payload.
 - `defaults`: Include `difficulty`, `focus_mode`, `color_blind`, and
   `break_prompts`. Set `difficulty` to `foundations`, `applied`, or `challenge`;
-  set the other values to booleans.
+  set the other values to booleans. Treat `break_prompts` as the initial display
+  state, not as permission to omit prompt content.
 - `concepts`: Provide grounded concept objects with a stable `id`, `title`,
   concise `explanation`, interpretation guidance, common mistakes, and source
   references.
 - `visualizations`: Provide visualization objects as defined below.
 - `quizzes`: Include `foundations`, `applied`, and `challenge` arrays. Each array
   must contain exactly 10 question objects.
-- `break_prompts`: Provide short, funny, lecture-related strings. Use an empty
-  array when break prompts are disabled.
+- `break_prompts`: Always embed `break_prompts` content as short, funny,
+  lecture-related strings. Its generation default controls only the initial state
+  so the learner can enable prompts inside the finished page.
+
+Keep explanations and full quiz content statically readable if JavaScript fails.
+Include every concept explanation and every quiz prompt, option, answer, and
+explanation in that static representation.
 
 ## Quiz questions
 
@@ -51,3 +57,4 @@ Include a stable `id`, title, explanatory text, embedded data, and any controls
 needed by the selected type. Include `fallback` on every visualization. Make
 `fallback` a readable text summary and/or data table that communicates the same
 essential lesson without JavaScript, SVG interaction, or color alone.
+Make functioning charts encode meaning with labels, shapes, patterns, or line styles in addition to color.
