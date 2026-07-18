@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Interactive lecture review</title>
+  <title>Interactive learning experience</title>
   <style>
     :root {
       color-scheme: light;
@@ -365,8 +365,8 @@
 <body>
   <a class="skip-link" href="#main-content">Skip to learning content</a>
   <header class="page-header">
-    <p class="eyebrow">Interactive lecture review</p>
-    <h1 id="site-title">Lecture review</h1>
+    <p class="eyebrow">Interactive learning experience</p>
+    <h1 id="site-title">Learning experience</h1>
     <p class="lede" id="site-subtitle">Learn, explore, then check your knowledge.</p>
   </header>
 
@@ -400,7 +400,7 @@
     <section class="panel" aria-labelledby="progress-title">
       <h2 id="progress-title">Progress</h2>
       <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100"
-           aria-valuenow="0" aria-label="Lecture review progress">
+           aria-valuenow="0" aria-label="Learning experience progress">
         <div class="progress-value"></div>
       </div>
       <p id="progress-text">Start with the first concept.</p>
@@ -490,7 +490,7 @@
       },
     };
 
-    const storageKey = `lecture-review:${CONTENT.meta.lecture_slug}`;
+    const storageKey = `learning-experience:${CONTENT.meta.experience_id}`;
     const savedSettings = (() => {
       const raw = safeStorage.get(storageKey);
       if (!raw) return {};
@@ -998,7 +998,7 @@
     byId("site-title").textContent = CONTENT.meta.title;
     byId("site-subtitle").textContent =
       CONTENT.meta.subtitle || "Learn, explore, then check your knowledge.";
-    byId("source-list").textContent = `Course sources: ${CONTENT.meta.sources.join(" · ")}`;
+    byId("source-list").textContent = `Sources: ${CONTENT.meta.sources.join(" · ")}`;
     applySettings();
     renderQuiz();
   </script>

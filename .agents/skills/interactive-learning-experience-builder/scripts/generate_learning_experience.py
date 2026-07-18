@@ -28,18 +28,7 @@ QUESTION_FIELDS = {
 }
 QUESTION_TYPES = {"single-choice", "multiple-choice", "interpretation"}
 VISUALIZATION_TYPES = {"histogram", "boxplot", "scatter", "missingness"}
-PRIVATE_SOURCE_PARTS = {
-    "answer_key",
-    "answer_keys",
-    "gradebook",
-    "grading",
-    "private",
-    "quiz",
-    "quizzes",
-    "solution",
-    "solutions",
-}
-REPOSITORY_ROOT = Path(__file__).resolve().parents[4]
+SOURCE_IDENTIFIER = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:[^/].+")
 
 
 def _is_non_empty_string(value: object) -> bool:
@@ -95,28 +84,27 @@ def _has_valid_histogram_bins(controls: object) -> bool:
     )
 
 
-def _is_public_source_path(value: object) -> bool:
+def _is_repository_relative_path(value: object) -> bool:
     if not _is_non_empty_string(value):
         return False
     source = value.strip()
-    if "\\" in source or "://" in source or "?" in source or "#" in source:
+    if "\\" in source or ":" in source or "?" in source or "#" in source:
         return False
     if source.startswith("/") or re.match(r"^[A-Za-z]:", source):
         return False
     parts = source.split("/")
-    if parts[0] not in {"lectures", "okf"}:
-        return False
-    if any(part in {"", ".", ".."} for part in parts):
-        return False
-    normalized_parts = {part.lower().replace("-", "_") for part in parts}
-    return normalized_parts.isdisjoint(PRIVATE_SOURCE_PARTS)
+    return not any(part in {"", ".", ".."} for part in parts)
 
 
-def _belongs_to_lecture(source: object, lecture_slug: object) -> bool:
-    if not _is_public_source_path(source) or not _is_non_empty_string(lecture_slug):
+def _is_named_source(value: object) -> bool:
+    if not _is_non_empty_string(value):
         return False
-    parts = source.strip().split("/")
-    return parts[0] == "okf" or (len(parts) > 1 and parts[1] == lecture_slug.strip())
+    source = value.strip()
+    return (
+        _is_repository_relative_path(source)
+        or source.startswith(("http://", "https://"))
+        or bool(SOURCE_IDENTIFIER.fullmatch(source))
+    )
 
 
 def _payload_sources(payload: dict[str, object]) -> list[str]:
@@ -132,16 +120,22 @@ def _payload_sources(payload: dict[str, object]) -> list[str]:
     return sources
 
 
-def _validate_source_files(payload: dict[str, object]) -> list[str]:
+def _validate_source_files(
+    payload: dict[str, object], repository_root: Path | None
+) -> list[str]:
+    if repository_root is None:
+        return []
     errors: list[str] = []
     for source in sorted(set(_payload_sources(payload))):
-        if not (REPOSITORY_ROOT / source).is_file():
+        if _is_repository_relative_path(source) and not (repository_root / source).is_file():
             errors.append(f"source file does not exist: {source}")
     return errors
 
 
-def validate_payload(payload: dict[str, object]) -> list[str]:
-    """Return every content-contract violation in a lecture payload."""
+def validate_payload(
+    payload: dict[str, object], repository_root: Path | None = None
+) -> list[str]:
+    """Return every content-contract violation in a portable experience payload."""
     errors: list[str] = []
 
     missing_keys = sorted(REQUIRED_TOP_LEVEL - payload.keys())
@@ -155,20 +149,16 @@ def validate_payload(payload: dict[str, object]) -> list[str]:
     if not isinstance(meta, dict):
         errors.append("meta must be an object")
     else:
-        for field in ("lecture_slug", "title"):
+        for field in ("experience_id", "title"):
             if not _is_non_empty_string(meta.get(field)):
                 errors.append(f"meta.{field} must be a non-empty string")
         sources = meta.get("sources")
         if (
             not isinstance(sources, list)
             or not sources
-            or not all(_is_public_source_path(source) for source in sources)
+            or not all(_is_named_source(source) for source in sources)
         ):
-            errors.append(
-                "meta.sources must contain public repository-relative paths under lectures/ or okf/"
-            )
-        elif not all(_belongs_to_lecture(source, meta.get("lecture_slug")) for source in sources):
-            errors.append("meta.sources lecture paths must belong to the selected lecture")
+            errors.append("meta.sources must contain named repository paths, URLs, or identifiers")
 
     defaults = payload.get("defaults")
     if not isinstance(defaults, dict):
@@ -203,17 +193,10 @@ def validate_payload(payload: dict[str, object]) -> list[str]:
             if (
                 not isinstance(sources, list)
                 or not sources
-                or not all(_is_public_source_path(source) for source in sources)
+                or not all(_is_named_source(source) for source in sources)
             ):
                 errors.append(
-                    f"{location}.sources must contain public repository-relative "
-                    "paths under lectures/ or okf/"
-                )
-            elif isinstance(meta, dict) and not all(
-                _belongs_to_lecture(source, meta.get("lecture_slug")) for source in sources
-            ):
-                errors.append(
-                    f"{location}.sources lecture paths must belong to the selected lecture"
+                    f"{location}.sources must contain named repository paths, URLs, or identifiers"
                 )
 
     visualizations = payload.get("visualizations")
@@ -319,8 +302,9 @@ def validate_payload(payload: dict[str, object]) -> list[str]:
         or not break_prompts
         or not all(_is_non_empty_string(prompt) for prompt in break_prompts)
     ):
-        errors.append("break_prompts must always embed at least one readable lecture prompt")
+        errors.append("break_prompts must always embed at least one readable prompt")
 
+    errors.extend(_validate_source_files(payload, repository_root))
     return errors
 
 
@@ -338,7 +322,7 @@ def _render_static_content(payload: dict[str, object]) -> str:
 
     sections: list[str] = [
         '<div class="static-reference-body">',
-        "<h2>Complete static lecture reference</h2>",
+        "<h2>Complete static learning reference</h2>",
         (
             "<p>This reference remains available when scripts or browser storage "
             "are unavailable.</p>"
@@ -406,7 +390,7 @@ def _render_static_content(payload: dict[str, object]) -> str:
                 ]
             )
         sections.append("</ol></section>")
-    sections.append("</section><section><h3>Course sources</h3><ul>")
+    sections.append("</section><section><h3>Sources</h3><ul>")
     meta = payload["meta"]
     assert isinstance(meta, dict)
     for source in meta["sources"]:
@@ -443,24 +427,31 @@ def render_site(template: str, payload: dict[str, object]) -> str:
     )
 
 
-def generate_site(
+def generate_site(payload: dict[str, object], template: str) -> str:
+    """Validate payload content and return one portable HTML document."""
+    errors = validate_payload(payload)
+    if errors:
+        raise ValueError("\n".join(errors))
+    return render_site(template, payload)
+
+
+def write_site(
     content_path: Path,
     template_path: Path,
     output_path: Path,
+    repository_root: Path | None = None,
 ) -> Path:
     """Validate content and write one deterministic, portable HTML file."""
     raw_payload: Any = json.loads(content_path.read_text(encoding="utf-8"))
     if not isinstance(raw_payload, dict):
         raise ValueError("content JSON must contain one top-level object")
     payload: dict[str, object] = raw_payload
-    errors = validate_payload(payload)
-    if not errors:
-        errors.extend(_validate_source_files(payload))
+    errors = validate_payload(payload, repository_root=repository_root)
     if errors:
         raise ValueError("\n".join(errors))
 
     template = template_path.read_text(encoding="utf-8")
-    html = render_site(template, payload)
+    html = generate_site(payload, template)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(html, encoding="utf-8")
     return output_path
@@ -468,7 +459,7 @@ def generate_site(
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Generate one offline interactive lecture review site."
+        description="Generate one offline interactive learning experience."
     )
     parser.add_argument("--content", type=Path, required=True)
     parser.add_argument("--template", type=Path, required=True)
@@ -476,7 +467,12 @@ def main() -> int:
     args = parser.parse_args()
 
     try:
-        output_path = generate_site(args.content, args.template, args.output)
+        output_path = write_site(
+            args.content,
+            args.template,
+            args.output,
+            repository_root=Path.cwd(),
+        )
     except (OSError, json.JSONDecodeError, ValueError) as error:
         for line in str(error).splitlines():
             print(f"ERROR: {line}")

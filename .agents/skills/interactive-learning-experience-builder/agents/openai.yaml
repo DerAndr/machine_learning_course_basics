@@ -1,0 +1,4 @@
+interface:
+  display_name: "Interactive Learning Experience Builder"
+  short_description: "Build an accessible, self-contained learning experience from grounded sources."
+  default_prompt: "Use $interactive-learning-experience-builder to create a grounded, offline interactive learning experience from this repository's knowledge sources."

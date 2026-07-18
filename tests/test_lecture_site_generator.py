@@ -6,7 +6,7 @@ from types import ModuleType
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPTS = ROOT / ".agents" / "skills" / "ml-course-interactive-learning-assistant" / "scripts"
+SCRIPTS = ROOT / ".agents" / "skills" / "interactive-learning-experience-builder" / "scripts"
 
 
 def _load_script(name: str) -> ModuleType:
@@ -18,8 +18,8 @@ def _load_script(name: str) -> ModuleType:
     return module
 
 
-generator = _load_script("generate_lecture_site")
-validator = _load_script("validate_lecture_site")
+generator = _load_script("generate_learning_experience")
+validator = _load_script("validate_learning_experience")
 generate_site = generator.generate_site
 render_site = generator.render_site
 validate_payload = generator.validate_payload
@@ -45,9 +45,9 @@ def _question(level: str, number: int) -> dict[str, object]:
 def payload() -> dict[str, object]:
     return {
         "meta": {
-            "lecture_slug": "lecture_01_eda",
-            "title": "Exploratory Data Analysis",
-            "sources": ["lectures/lecture_01_eda/lecture_notes.md"],
+            "experience_id": "distribution-basics",
+            "title": "Distribution Basics",
+            "sources": ["knowledge/distributions.md"],
         },
         "defaults": {
             "difficulty": "foundations",
@@ -62,7 +62,7 @@ def payload() -> dict[str, object]:
                 "explanation": "A distribution describes how values vary.",
                 "interpretation": "Inspect shape, centre, and spread together.",
                 "common_mistakes": ["Treating one summary as the whole distribution."],
-                "sources": ["lectures/lecture_01_eda/lecture_notes.md"],
+                "sources": ["knowledge/distributions.md"],
             }
         ],
         "visualizations": [
@@ -325,22 +325,9 @@ def test_validate_payload_rejects_impossible_choice_answers(
 
 @pytest.mark.parametrize(
     "source",
-    [
-        "https://example.test/lecture-notes",
-        "/lectures/lecture_01_eda/lecture_notes.md",
-        "C:/lectures/lecture_01_eda/lecture_notes.md",
-        "../lectures/lecture_01_eda/lecture_notes.md",
-        "lectures/lecture_01_eda/../private_notes.md",
-        "lectures/lecture_01_eda/answer_keys/solutions.md",
-        "lectures/lecture_01_eda/quizzes/questions.json",
-        "lectures/lecture_01_eda/private/draft.md",
-        "lectures/lecture_01_eda/solution/walkthrough.md",
-        "lectures/lecture_01_eda/solutions/walkthrough.md",
-        "lectures/lecture_01_eda/grading/rubric.md",
-        "lectures/lecture_01_eda/gradebook/scores.csv",
-    ],
+    ["/knowledge/source.md", "C:/knowledge/source.md", "../knowledge/source.md", ""],
 )
-def test_validate_payload_rejects_non_public_source_paths(
+def test_validate_payload_rejects_unsafe_meta_source_paths(
     payload: dict[str, object],
     source: str,
 ) -> None:
@@ -355,16 +342,9 @@ def test_validate_payload_rejects_non_public_source_paths(
 
 @pytest.mark.parametrize(
     "source",
-    [
-        "https://example.test/concept",
-        "lectures/lecture_01_eda/../private_notes.md",
-        "lectures/lecture_01_eda/answer_keys/answers.md",
-        "lectures/lecture_01_eda/solutions/walkthrough.md",
-        "lectures/lecture_01_eda/grading/rubric.md",
-        "lectures/lecture_01_eda/gradebook/scores.csv",
-    ],
+    ["/knowledge/source.md", "C:/knowledge/source.md", "../knowledge/source.md", ""],
 )
-def test_validate_payload_rejects_non_public_concept_source_paths(
+def test_validate_payload_rejects_unsafe_concept_source_paths(
     payload: dict[str, object],
     source: str,
 ) -> None:
@@ -379,90 +359,44 @@ def test_validate_payload_rejects_non_public_concept_source_paths(
     assert any("concepts[0].sources" in error for error in errors)
 
 
-@pytest.mark.parametrize(
-    "source",
-    [
-        "lectures/lecture_02_data_preparation_part_1/lecture_notes.md",
-        "lectures/lecture_18_llm_overview/README.md",
-    ],
-)
-def test_validate_payload_rejects_sources_from_another_lecture(
-    payload: dict[str, object],
-    source: str,
-) -> None:
-    meta = payload["meta"]
-    assert isinstance(meta, dict)
-    meta["sources"] = [source]
-
-    errors = validate_payload(payload)
-
-    assert any("selected lecture" in error for error in errors)
-
-
-def test_generate_site_rejects_missing_source_file(
+def test_validate_payload_checks_only_repository_relative_source_files(
     tmp_path: Path,
     payload: dict[str, object],
 ) -> None:
     meta = payload["meta"]
     assert isinstance(meta, dict)
-    meta["sources"] = ["lectures/lecture_01_eda/not-a-real-file.md"]
-    content_path = tmp_path / "content.json"
-    template_path = tmp_path / "template.html"
-    output_path = tmp_path / "output" / "index.html"
-    content_path.write_text(json.dumps(payload), encoding="utf-8")
-    template_path.write_text(
-        "<main>__STATIC_CONTENT__</main><script>__CONTENT_JSON__</script>",
-        encoding="utf-8",
-    )
+    meta["sources"] = ["knowledge/not-a-real-file.md", "https://example.test/source", "kb:item"]
+    concepts = payload["concepts"]
+    assert isinstance(concepts, list)
+    concept = concepts[0]
+    assert isinstance(concept, dict)
+    concept["sources"] = meta["sources"]
 
-    with pytest.raises(ValueError, match="source file does not exist"):
-        generate_site(content_path, template_path, output_path)
+    errors = validate_payload(payload, repository_root=tmp_path)
 
-    assert not output_path.exists()
+    assert errors == ["source file does not exist: knowledge/not-a-real-file.md"]
 
 
-def test_generate_site_rejects_invalid_payload_before_writing(
-    tmp_path: Path,
-    payload: dict[str, object],
-) -> None:
+def test_generate_site_rejects_invalid_payload(payload: dict[str, object]) -> None:
     quizzes = payload["quizzes"]
     assert isinstance(quizzes, dict)
     challenge = quizzes["challenge"]
     assert isinstance(challenge, list)
     challenge.pop()
-    content_path = tmp_path / "content.json"
-    template_path = tmp_path / "template.html"
-    output_path = tmp_path / "output" / "index.html"
-    content_path.write_text(json.dumps(payload), encoding="utf-8")
-    template_path.write_text("__CONTENT_JSON__", encoding="utf-8")
-
     with pytest.raises(ValueError, match="challenge"):
-        generate_site(content_path, template_path, output_path)
-
-    assert not output_path.exists()
+        generate_site(payload, "<main>__STATIC_CONTENT__</main><script>__CONTENT_JSON__</script>")
 
 
-def test_generate_site_writes_one_portable_html_file(
-    tmp_path: Path,
-    payload: dict[str, object],
-) -> None:
-    content_path = tmp_path / "content.json"
-    template_path = tmp_path / "template.html"
-    output_path = tmp_path / "site" / "index.html"
-    content_path.write_text(json.dumps(payload), encoding="utf-8")
-    template_path.write_text(
-        (
-            "<!doctype html><main>__STATIC_CONTENT__</main>"
-            "<script>const CONTENT = __CONTENT_JSON__;</script>"
-        ),
-        encoding="utf-8",
+def test_generate_site_returns_one_portable_html_document(payload: dict[str, object]) -> None:
+    result = generate_site(
+        payload,
+        "<!doctype html><main>__STATIC_CONTENT__</main>"
+        "<script>const CONTENT = __CONTENT_JSON__;</script>",
     )
 
-    result = generate_site(content_path, template_path, output_path)
-
-    assert result == output_path
-    assert output_path.is_file()
-    assert not any(path.is_file() for path in output_path.parent.glob("*.*") if path != output_path)
+    assert result.startswith("<!doctype html>")
+    assert "__CONTENT_JSON__" not in result
+    assert "__STATIC_CONTENT__" not in result
 
 
 def test_minimal_template_exposes_offline_accessibility_contract() -> None:
@@ -470,9 +404,9 @@ def test_minimal_template_exposes_offline_accessibility_contract() -> None:
         ROOT
         / ".agents"
         / "skills"
-        / "ml-course-interactive-learning-assistant"
+        / "interactive-learning-experience-builder"
         / "assets"
-        / "lecture-site-template.html"
+        / "learning-experience-template.html"
     )
 
     template = template_path.read_text(encoding="utf-8")
@@ -510,9 +444,9 @@ def test_interactive_template_exposes_stable_behavior_hooks(hook: str) -> None:
         ROOT
         / ".agents"
         / "skills"
-        / "ml-course-interactive-learning-assistant"
+        / "interactive-learning-experience-builder"
         / "assets"
-        / "lecture-site-template.html"
+        / "learning-experience-template.html"
     )
 
     template = template_path.read_text(encoding="utf-8")
@@ -525,9 +459,9 @@ def test_interactive_template_preserves_non_color_and_focus_friendly_cues() -> N
         ROOT
         / ".agents"
         / "skills"
-        / "ml-course-interactive-learning-assistant"
+        / "interactive-learning-experience-builder"
         / "assets"
-        / "lecture-site-template.html"
+        / "learning-experience-template.html"
     )
     template = template_path.read_text(encoding="utf-8")
 
@@ -563,9 +497,9 @@ def test_interactive_template_covers_reviewed_runtime_paths(hook: str) -> None:
         ROOT
         / ".agents"
         / "skills"
-        / "ml-course-interactive-learning-assistant"
+        / "interactive-learning-experience-builder"
         / "assets"
-        / "lecture-site-template.html"
+        / "learning-experience-template.html"
     )
 
     assert hook in template_path.read_text(encoding="utf-8")
