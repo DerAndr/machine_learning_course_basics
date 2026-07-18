@@ -41,6 +41,7 @@
       color: var(--ink);
       line-height: 1.55;
       scroll-behavior: smooth;
+      scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 8rem);
     }
 
     body {
@@ -205,6 +206,21 @@
       width: 0;
     }
 
+    .progress-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: calc(env(safe-area-inset-top, 0px) + 0.75rem);
+      z-index: 2;
+    }
+
+    .quiz-card,
+    #quiz-feedback,
+    #quiz-results {
+      scroll-margin-top: calc(env(safe-area-inset-top, 0px) + 8rem);
+    }
+
     .card-grid {
       display: grid;
       gap: 1rem;
@@ -345,6 +361,20 @@
     }
 
     @media (max-width: 42rem) {
+      .progress-panel {
+        margin-block: 0.65rem;
+        padding: 0.75rem 0.9rem;
+      }
+
+      .progress-panel h2,
+      .progress-panel p {
+        margin-block: 0.25rem;
+      }
+
+      .progress-track {
+        height: 0.5rem;
+      }
+
       .button-row button {
         flex: 1 1 9rem;
       }
@@ -397,7 +427,7 @@
       </div>
     </section>
 
-    <section class="panel" aria-labelledby="progress-title">
+    <section class="panel progress-panel" aria-labelledby="progress-title">
       <h2 id="progress-title">Progress</h2>
       <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100"
            aria-valuenow="0" aria-label="Learning experience progress">

@@ -527,12 +527,27 @@ def test_quiz_retry_state_contract() -> None:
         assert hook in template
 
 
+def test_template_has_mobile_sticky_progress_contract() -> None:
+    template = TEMPLATE.read_text(encoding="utf-8")
+
+    for hook in (
+        'class="panel progress-panel"',
+        "position: sticky",
+        "env(safe-area-inset-top",
+        "scroll-padding-top",
+        "@media (max-width:",
+    ):
+        assert hook in template
+
+
 def _valid_html() -> str:
     return """<!doctype html>
 <html lang="en">
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
+    html { scroll-padding-top: 4rem; }
+    .progress-panel { position: sticky; }
     :focus-visible { outline: 3px solid currentColor; }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation: none; transition: none; }
@@ -545,12 +560,33 @@ def _valid_html() -> str:
   <label>Colour blind <input data-setting="color-blind" type="checkbox"></label>
   <label>Break prompts <input data-setting="break-prompts" type="checkbox"></label>
   <main id="main-content">
+    <section class="panel progress-panel">Progress</section>
     <section class="graph-fallback">The same lesson is available as text.</section>
   </main>
   <noscript><section id="static-content">Static learning content.</section></noscript>
 </body>
 </html>
 """
+
+
+@pytest.mark.parametrize(
+    ("fragment", "expected"),
+    [
+        ('class="panel progress-panel"', "progress panel"),
+        ("position: sticky", "sticky progress"),
+    ],
+)
+def test_validate_html_requires_sticky_progress_contract(
+    tmp_path: Path,
+    fragment: str,
+    expected: str,
+) -> None:
+    path = tmp_path / "index.html"
+    path.write_text(_valid_html().replace(fragment, ""), encoding="utf-8")
+
+    errors = validate_html(path)
+
+    assert any(expected in error.lower() for error in errors)
 
 
 @pytest.mark.parametrize(

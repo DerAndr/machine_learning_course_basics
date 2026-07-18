@@ -57,6 +57,10 @@ CONTENT_DATA_SCRIPT = re.compile(
     r"^\s*const\s+CONTENT\s*=\s*(\{.*\})\s*;\s*$",
     re.DOTALL,
 )
+STICKY_PROGRESS_STYLE = re.compile(
+    r"\.progress-panel\s*\{[^}]*\bposition\s*:\s*sticky\b",
+    re.IGNORECASE | re.DOTALL,
+)
 
 
 class _ContractParser(HTMLParser):
@@ -68,6 +72,7 @@ class _ContractParser(HTMLParser):
         self.graph_fallbacks: list[list[str]] = []
         self.has_main = False
         self.has_viewport = False
+        self.has_progress_panel = False
         self._inside_style = False
         self._inside_script = False
         self._fallback_depth = 0
@@ -101,6 +106,8 @@ class _ContractParser(HTMLParser):
             self.settings.add(setting)
 
         classes = set(attributes.get("class", "").split())
+        if "progress-panel" in classes:
+            self.has_progress_panel = True
         if "graph-fallback" in classes or "data-graph-fallback" in attributes:
             self.graph_fallbacks.append([])
             self._fallback_depth = 1
@@ -223,6 +230,10 @@ def validate_html(path: Path) -> list[str]:
         errors.append("missing main-content landmark")
     if not parser.has_viewport:
         errors.append("missing viewport metadata")
+    if not parser.has_progress_panel:
+        errors.append("missing progress panel")
+    if not STICKY_PROGRESS_STYLE.search(style_text):
+        errors.append("missing sticky progress style")
     return errors
 
 
