@@ -21,3 +21,9 @@ def test_learning_assistant_documentation_is_discoverable() -> None:
     assert SKILL_PATH in guide_text
     assert "lecture_experiences/content/" in agents
     assert "validate_lecture_site.py" in agents
+
+
+def test_pages_deployment_is_limited_to_student_repository() -> None:
+    workflow = Path(".github/workflows/build-textbook-preview.yml").read_text(encoding="utf-8")
+
+    assert "github.repository == 'DerAndr/machine_learning_course_basics'" in workflow

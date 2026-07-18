@@ -67,7 +67,7 @@ jobs:
           path: site/_build
 
   deploy:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && github.repository == 'DerAndr/machine_learning_course_basics'
     needs: build
     runs-on: ubuntu-latest
     permissions:
