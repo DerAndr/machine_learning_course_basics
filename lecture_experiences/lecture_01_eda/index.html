@@ -968,6 +968,7 @@
       byId("submit-answer").hidden = true;
       byId("next-question").hidden = false;
       byId("next-question").focus();
+      byId("next-question").scrollIntoView({ block: "nearest" });
       if (state.quizIndex === 4) showBreakPrompt(1);
       updateProgress();
     }

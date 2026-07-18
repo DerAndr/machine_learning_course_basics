@@ -527,6 +527,15 @@ def test_quiz_retry_state_contract() -> None:
         assert hook in template
 
 
+def test_correct_answer_scrolls_focused_next_control_into_view() -> None:
+    template = TEMPLATE.read_text(encoding="utf-8")
+
+    expected_sequence = """byId("next-question").focus();
+      byId("next-question").scrollIntoView({ block: "nearest" });"""
+
+    assert expected_sequence in template
+
+
 def test_template_has_mobile_sticky_progress_contract() -> None:
     template = TEMPLATE.read_text(encoding="utf-8")
 
