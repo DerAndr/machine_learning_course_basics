@@ -90,7 +90,7 @@ When improving textbook content, keep the student page, OKF metadata, index card
 
 To create or revise an interactive lecture review:
 
-1. `docs/learning-companions-architecture.md` — conceptual layers, ownership boundaries, portability model, and lifecycle
+1. [Learning companions architecture](docs/learning-companions-architecture.md) — conceptual layers, ownership boundaries, portability model, and lifecycle
 2. `.agents/skills/interactive-learning-experience-builder/SKILL.md` — portable content contract, deterministic generator, and offline validator
 3. `.agents/skills/ml-course-interactive-learning-assistant/SKILL.md` — ML-course source, safety, output, and publishing adapter
 4. `lecture_experiences/content/<lecture_slug>.json` — grounded content payload
@@ -178,7 +178,7 @@ Detailed setup: `docs/student-quickstart.md`
 
 - `docs/` — student-facing setup guides and workflow documentation
 - `docs/deep-learning-colab-guide.md` — instructions for running heavy deep learning models locally or on Colab
-- `docs/learning-companions-architecture.md` — conceptual reference for learning-companion layers, boundaries, portability, and lifecycle
+- [Learning companions architecture](docs/learning-companions-architecture.md) — conceptual reference for learning-companion layers, boundaries, portability, and lifecycle
 - `docs/interactive-lecture-learning-assistant.md` — operational generation, validation, and publishing guide for ML-course learning companions
 - `okf/` — concise textbook concepts, learning paths, lab descriptions, and contribution modules
 - `.agents/skills/ml-course-textbook-contributor/` — agent workflow for safe textbook contributions

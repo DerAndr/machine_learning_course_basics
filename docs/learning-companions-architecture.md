@@ -60,13 +60,16 @@ flowchart LR
     G --> A["Self-contained offline<br/>learning companion"]
     A --> V["Validation, tests,<br/>and mobile browser checks"]
     V -->|pass| D["Local use and<br/>optional publication"]
-    V -->|correct| C
+    V -->|context or specification| C
+    V -->|payload| P
+    V -->|reusable generator or core behavior| S
 ```
 
-The correction edge is deliberate. Failed assurance sends the work back to
-context discovery and the experience specification so that provenance,
-accessibility, safety, or deterministic output problems are corrected before
-local delivery or publication.
+The correction edges are deliberate. Assurance defects in context or the
+experience specification return to context discovery; grounded-content defects
+return to the payload; and reusable generator or core-behavior defects return
+to the portable-core or adapter layer. Generated artifacts are regenerated,
+never hand-edited.
 
 ## Responsibility boundaries
 
@@ -86,6 +89,7 @@ The portable core remains domain-neutral. A repository adapter narrows and
 connects it to one repository without forking the generator or its learning
 runtime. The experience specification and payload vary by audience and topic;
 the generated companion is their reproducible, learner-facing result.
+A repository adapter owns only stable local rules.
 
 ## Portability model
 
@@ -160,7 +164,7 @@ repository, use the
 ## Assurance and safety
 
 Every explanation, visualization, question, and item of feedback needs named
-provenance. Private sources are excluded at context discovery and must remain
+provenance. Private sources are excluded at context discovery. They must remain
 absent from specifications, payloads, artifacts, and publication.
 
 The learner experience must remain usable when interactive enhancement is

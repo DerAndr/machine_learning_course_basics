@@ -5,6 +5,16 @@ OFFLINE_PATH = "lecture_experiences/lecture_01_eda/index.html"
 SKILL_PATH = ".agents/skills/ml-course-interactive-learning-assistant/SKILL.md"
 CORE_SKILL_PATH = ".agents/skills/interactive-learning-experience-builder/SKILL.md"
 ARCHITECTURE_PATH = "docs/learning-companions-architecture.md"
+ARCHITECTURE_LINKS = {
+    "README.md": "[Learning companions architecture](docs/learning-companions-architecture.md)",
+    "AGENTS.md": "[Learning companions architecture](docs/learning-companions-architecture.md)",
+    "docs/interactive-lecture-learning-assistant.md": (
+        "[Learning Companions Architecture](learning-companions-architecture.md)"
+    ),
+    "docs/contributing-to-textbook.md": (
+        "[Learning Companions Architecture](learning-companions-architecture.md)"
+    ),
+}
 
 
 def test_learning_assistant_documentation_is_discoverable() -> None:
@@ -63,33 +73,27 @@ def test_learning_companions_architecture_contract() -> None:
     assert "```mermaid" in text
     assert "flowchart LR" in text
     assert "| Portable core skill |" in text
-    assert "one skill per lecture" in text
+    for statement in (
+        "Do not create one skill per lecture or topic.",
+        "The portable core remains domain-neutral.",
+        "A repository adapter owns only stable local rules.",
+        "Private sources are excluded at context discovery.",
+    ):
+        assert statement in text
 
 
 def test_learning_companions_architecture_is_linked_from_repository_guides() -> None:
-    architecture_path = "docs/learning-companions-architecture.md"
-    documents = {
-        "README.md": Path("README.md").read_text(encoding="utf-8"),
-        "AGENTS.md": Path("AGENTS.md").read_text(encoding="utf-8"),
-        "docs/interactive-lecture-learning-assistant.md": Path(
-            "docs/interactive-lecture-learning-assistant.md"
-        ).read_text(encoding="utf-8"),
-        "docs/contributing-to-textbook.md": Path("docs/contributing-to-textbook.md").read_text(
-            encoding="utf-8"
-        ),
-    }
+    for document_path, link in ARCHITECTURE_LINKS.items():
+        document = Path(document_path)
+        assert link in document.read_text(encoding="utf-8")
 
-    assert architecture_path in documents["README.md"]
-    assert architecture_path in documents["AGENTS.md"]
-    assert (
-        "learning-companions-architecture.md"
-        in documents["docs/interactive-lecture-learning-assistant.md"]
-    )
-    assert "learning-companions-architecture.md" in documents["docs/contributing-to-textbook.md"]
-    assert (
-        "operational guide" in documents["docs/interactive-lecture-learning-assistant.md"].lower()
-    )
-    assert "complement" in documents["docs/contributing-to-textbook.md"].lower()
+        target = link.removesuffix(")").rsplit("(", maxsplit=1)[1]
+        assert (document.parent / target).is_file()
+
+    guide_text = Path("docs/interactive-lecture-learning-assistant.md").read_text(encoding="utf-8")
+    contributor_text = Path("docs/contributing-to-textbook.md").read_text(encoding="utf-8")
+    assert "operational guide" in guide_text.lower()
+    assert "complement" in contributor_text.lower()
 
 
 def test_pages_deployment_is_limited_to_student_repository() -> None:
