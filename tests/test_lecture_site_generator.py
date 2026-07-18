@@ -652,6 +652,22 @@ def test_validate_html_rejects_inline_network_capabilities(
     assert any("network-capable" in error for error in errors)
 
 
+def test_validate_html_allows_network_api_words_inside_content_json(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "index.html"
+    html = _valid_html().replace(
+        "</body>",
+        (
+            '<script>const CONTENT = {"explanation": '
+            '"The word fetch() is inert lecture text."};</script></body>'
+        ),
+    )
+    path.write_text(html, encoding="utf-8")
+
+    assert validate_html(path) == []
+
+
 @pytest.mark.parametrize(
     ("fragment", "expected"),
     [

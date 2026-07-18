@@ -1,4 +1,5 @@
 import argparse
+import json
 import re
 from html.parser import HTMLParser
 from pathlib import Path
@@ -52,6 +53,10 @@ NETWORK_CAPABILITIES = (
         re.IGNORECASE,
     ),
 )
+CONTENT_DATA_SCRIPT = re.compile(
+    r"^\s*const\s+CONTENT\s*=\s*(\{.*\})\s*;\s*$",
+    re.DOTALL,
+)
 
 
 class _ContractParser(HTMLParser):
@@ -67,7 +72,7 @@ class _ContractParser(HTMLParser):
         self._inside_script = False
         self._fallback_depth = 0
         self.style_text: list[str] = []
-        self.script_text: list[str] = []
+        self.scripts: list[list[str]] = []
 
     def handle_starttag(
         self,
@@ -89,6 +94,7 @@ class _ContractParser(HTMLParser):
             self._inside_style = True
         elif tag == "script":
             self._inside_script = True
+            self.scripts.append([])
 
         setting = attributes.get("data-setting")
         if setting and self._is_usable_control(tag, attributes):
@@ -123,7 +129,7 @@ class _ContractParser(HTMLParser):
         if self._inside_style:
             self.style_text.append(data)
         if self._inside_script:
-            self.script_text.append(data)
+            self.scripts[-1].append(data)
         if self._fallback_depth:
             self.graph_fallbacks[-1].append(data)
 
@@ -156,6 +162,17 @@ class _ContractParser(HTMLParser):
         return next((candidate for candidate in candidates if candidate), None)
 
 
+def _is_content_data_script(script: str) -> bool:
+    match = CONTENT_DATA_SCRIPT.fullmatch(script)
+    if not match:
+        return False
+    try:
+        payload = json.loads(match.group(1))
+    except json.JSONDecodeError:
+        return False
+    return isinstance(payload, dict)
+
+
 def validate_html(path: Path) -> list[str]:
     """Return every offline, settings, and accessibility contract violation."""
     try:
@@ -182,8 +199,12 @@ def validate_html(path: Path) -> list[str]:
     ):
         errors.append("external style or font resource is not portable")
 
-    script_text = "\n".join(parser.script_text)
-    if any(pattern.search(script_text) for pattern in NETWORK_CAPABILITIES):
+    executable_scripts = (
+        "".join(parts) for parts in parser.scripts if not _is_content_data_script("".join(parts))
+    )
+    if any(
+        pattern.search(script) for script in executable_scripts for pattern in NETWORK_CAPABILITIES
+    ):
         errors.append("inline script contains a network-capable runtime operation")
 
     for setting in sorted(SETTINGS - parser.settings):
