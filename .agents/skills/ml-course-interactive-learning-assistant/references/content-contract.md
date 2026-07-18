@@ -9,7 +9,9 @@ meta, defaults, concepts, visualizations, quizzes, break_prompts
 ## Required shape
 
 - `meta`: Include the lecture slug, title, and `sources`. List repository-relative
-  public course files that ground the payload.
+  public course files that ground the payload. Every path must exist. Paths under
+  `lectures/` must stay inside the directory named by `lecture_slug`; supporting
+  paths under `okf/` are read-only.
 - `defaults`: Include `difficulty`, `focus_mode`, `color_blind`, and
   `break_prompts`. Set `difficulty` to `foundations`, `applied`, or `challenge`;
   set the other values to booleans. Treat `break_prompts` as the initial display

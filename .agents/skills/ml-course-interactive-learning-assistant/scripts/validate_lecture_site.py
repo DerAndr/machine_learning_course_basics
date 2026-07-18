@@ -36,6 +36,22 @@ VISIBLE_FOCUS = re.compile(
     r":focus-visible\s*\{[^}]*(?:outline|box-shadow)\s*:\s*(?!none\b|0(?:\D|$))",
     re.IGNORECASE | re.DOTALL,
 )
+NETWORK_CAPABILITIES = (
+    re.compile(r"\bfetch\s*\(", re.IGNORECASE),
+    re.compile(r"\b(?:XMLHttpRequest|WebSocket|EventSource)\b", re.IGNORECASE),
+    re.compile(r"\bnavigator\s*\.\s*sendBeacon\s*\(", re.IGNORECASE),
+    re.compile(r"\bimport\s*\(", re.IGNORECASE),
+    re.compile(
+        r"\bdocument\s*\.\s*createElement\s*\(\s*['\"]"
+        r"(?:script|link|img|iframe|audio|video|source)['\"]",
+        re.IGNORECASE,
+    ),
+    re.compile(
+        r"\.\s*(?:src|href)\s*=\s*['\"]"
+        r"(?:(?:https?|wss?):)?//",
+        re.IGNORECASE,
+    ),
+)
 
 
 class _ContractParser(HTMLParser):
@@ -48,8 +64,10 @@ class _ContractParser(HTMLParser):
         self.has_main = False
         self.has_viewport = False
         self._inside_style = False
+        self._inside_script = False
         self._fallback_depth = 0
         self.style_text: list[str] = []
+        self.script_text: list[str] = []
 
     def handle_starttag(
         self,
@@ -69,6 +87,8 @@ class _ContractParser(HTMLParser):
             self.has_viewport = True
         elif tag == "style":
             self._inside_style = True
+        elif tag == "script":
+            self._inside_script = True
 
         setting = attributes.get("data-setting")
         if setting and self._is_usable_control(tag, attributes):
@@ -94,12 +114,16 @@ class _ContractParser(HTMLParser):
     def handle_endtag(self, tag: str) -> None:
         if tag == "style":
             self._inside_style = False
+        elif tag == "script":
+            self._inside_script = False
         if self._fallback_depth:
             self._fallback_depth -= 1
 
     def handle_data(self, data: str) -> None:
         if self._inside_style:
             self.style_text.append(data)
+        if self._inside_script:
+            self.script_text.append(data)
         if self._fallback_depth:
             self.graph_fallbacks[-1].append(data)
 
@@ -157,6 +181,10 @@ def validate_html(path: Path) -> list[str]:
         re.IGNORECASE,
     ):
         errors.append("external style or font resource is not portable")
+
+    script_text = "\n".join(parser.script_text)
+    if any(pattern.search(script_text) for pattern in NETWORK_CAPABILITIES):
+        errors.append("inline script contains a network-capable runtime operation")
 
     for setting in sorted(SETTINGS - parser.settings):
         errors.append(f"missing settings control: {setting}")

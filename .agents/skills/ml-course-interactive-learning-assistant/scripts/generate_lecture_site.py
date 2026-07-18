@@ -39,6 +39,7 @@ PRIVATE_SOURCE_PARTS = {
     "solution",
     "solutions",
 }
+REPOSITORY_ROOT = Path(__file__).resolve().parents[4]
 
 
 def _is_non_empty_string(value: object) -> bool:
@@ -111,6 +112,34 @@ def _is_public_source_path(value: object) -> bool:
     return normalized_parts.isdisjoint(PRIVATE_SOURCE_PARTS)
 
 
+def _belongs_to_lecture(source: object, lecture_slug: object) -> bool:
+    if not _is_public_source_path(source) or not _is_non_empty_string(lecture_slug):
+        return False
+    parts = source.strip().split("/")
+    return parts[0] == "okf" or (len(parts) > 1 and parts[1] == lecture_slug.strip())
+
+
+def _payload_sources(payload: dict[str, object]) -> list[str]:
+    sources: list[str] = []
+    meta = payload.get("meta")
+    if isinstance(meta, dict) and isinstance(meta.get("sources"), list):
+        sources.extend(source for source in meta["sources"] if isinstance(source, str))
+    concepts = payload.get("concepts")
+    if isinstance(concepts, list):
+        for concept in concepts:
+            if isinstance(concept, dict) and isinstance(concept.get("sources"), list):
+                sources.extend(source for source in concept["sources"] if isinstance(source, str))
+    return sources
+
+
+def _validate_source_files(payload: dict[str, object]) -> list[str]:
+    errors: list[str] = []
+    for source in sorted(set(_payload_sources(payload))):
+        if not (REPOSITORY_ROOT / source).is_file():
+            errors.append(f"source file does not exist: {source}")
+    return errors
+
+
 def validate_payload(payload: dict[str, object]) -> list[str]:
     """Return every content-contract violation in a lecture payload."""
     errors: list[str] = []
@@ -138,6 +167,8 @@ def validate_payload(payload: dict[str, object]) -> list[str]:
             errors.append(
                 "meta.sources must contain public repository-relative paths under lectures/ or okf/"
             )
+        elif not all(_belongs_to_lecture(source, meta.get("lecture_slug")) for source in sources):
+            errors.append("meta.sources lecture paths must belong to the selected lecture")
 
     defaults = payload.get("defaults")
     if not isinstance(defaults, dict):
@@ -177,6 +208,12 @@ def validate_payload(payload: dict[str, object]) -> list[str]:
                 errors.append(
                     f"{location}.sources must contain public repository-relative "
                     "paths under lectures/ or okf/"
+                )
+            elif isinstance(meta, dict) and not all(
+                _belongs_to_lecture(source, meta.get("lecture_slug")) for source in sources
+            ):
+                errors.append(
+                    f"{location}.sources lecture paths must belong to the selected lecture"
                 )
 
     visualizations = payload.get("visualizations")
@@ -417,6 +454,8 @@ def generate_site(
         raise ValueError("content JSON must contain one top-level object")
     payload: dict[str, object] = raw_payload
     errors = validate_payload(payload)
+    if not errors:
+        errors.extend(_validate_source_files(payload))
     if errors:
         raise ValueError("\n".join(errors))
 

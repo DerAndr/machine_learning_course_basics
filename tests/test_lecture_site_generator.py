@@ -379,6 +379,48 @@ def test_validate_payload_rejects_non_public_concept_source_paths(
     assert any("concepts[0].sources" in error for error in errors)
 
 
+@pytest.mark.parametrize(
+    "source",
+    [
+        "lectures/lecture_02_data_preparation_part_1/lecture_notes.md",
+        "lectures/lecture_18_llm_overview/README.md",
+    ],
+)
+def test_validate_payload_rejects_sources_from_another_lecture(
+    payload: dict[str, object],
+    source: str,
+) -> None:
+    meta = payload["meta"]
+    assert isinstance(meta, dict)
+    meta["sources"] = [source]
+
+    errors = validate_payload(payload)
+
+    assert any("selected lecture" in error for error in errors)
+
+
+def test_generate_site_rejects_missing_source_file(
+    tmp_path: Path,
+    payload: dict[str, object],
+) -> None:
+    meta = payload["meta"]
+    assert isinstance(meta, dict)
+    meta["sources"] = ["lectures/lecture_01_eda/not-a-real-file.md"]
+    content_path = tmp_path / "content.json"
+    template_path = tmp_path / "template.html"
+    output_path = tmp_path / "output" / "index.html"
+    content_path.write_text(json.dumps(payload), encoding="utf-8")
+    template_path.write_text(
+        "<main>__STATIC_CONTENT__</main><script>__CONTENT_JSON__</script>",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="source file does not exist"):
+        generate_site(content_path, template_path, output_path)
+
+    assert not output_path.exists()
+
+
 def test_generate_site_rejects_invalid_payload_before_writing(
     tmp_path: Path,
     payload: dict[str, object],
@@ -579,6 +621,35 @@ def test_validate_html_rejects_external_runtime_resources(
     errors = validate_html(path)
 
     assert any("external" in error.lower() for error in errors)
+
+
+@pytest.mark.parametrize(
+    "runtime_code",
+    [
+        'fetch("https://example.test/data.json")',
+        "new XMLHttpRequest()",
+        'new WebSocket("wss://example.test/socket")',
+        'new EventSource("https://example.test/events")',
+        'navigator.sendBeacon("https://example.test/progress", "done")',
+        'import("./lecture-chunk.js")',
+        'document.createElement("script")',
+        "element.src = 'https://example.test/chart.png'",
+    ],
+)
+def test_validate_html_rejects_inline_network_capabilities(
+    tmp_path: Path,
+    runtime_code: str,
+) -> None:
+    path = tmp_path / "index.html"
+    html = _valid_html().replace(
+        "</body>",
+        f"<script>{runtime_code}</script></body>",
+    )
+    path.write_text(html, encoding="utf-8")
+
+    errors = validate_html(path)
+
+    assert any("network-capable" in error for error in errors)
 
 
 @pytest.mark.parametrize(
