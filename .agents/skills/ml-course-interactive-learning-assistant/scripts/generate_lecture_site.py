@@ -28,9 +28,13 @@ VISUALIZATION_TYPES = {"histogram", "boxplot", "scatter", "missingness"}
 PRIVATE_SOURCE_PARTS = {
     "answer_key",
     "answer_keys",
+    "gradebook",
+    "grading",
     "private",
     "quiz",
     "quizzes",
+    "solution",
+    "solutions",
 }
 
 
@@ -120,9 +124,12 @@ def validate_payload(payload: dict[str, object]) -> list[str]:
             if (
                 not isinstance(sources, list)
                 or not sources
-                or not all(_is_non_empty_string(source) for source in sources)
+                or not all(_is_public_source_path(source) for source in sources)
             ):
-                errors.append(f"{location}.sources must contain source paths")
+                errors.append(
+                    f"{location}.sources must contain public repository-relative "
+                    "paths under lectures/ or okf/"
+                )
 
     visualizations = payload.get("visualizations")
     if not isinstance(visualizations, list) or not visualizations:

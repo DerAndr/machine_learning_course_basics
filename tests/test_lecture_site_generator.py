@@ -168,6 +168,10 @@ def test_validate_payload_requires_embedded_break_prompts(
         "lectures/lecture_01_eda/answer_keys/solutions.md",
         "lectures/lecture_01_eda/quizzes/questions.json",
         "lectures/lecture_01_eda/private/draft.md",
+        "lectures/lecture_01_eda/solution/walkthrough.md",
+        "lectures/lecture_01_eda/solutions/walkthrough.md",
+        "lectures/lecture_01_eda/grading/rubric.md",
+        "lectures/lecture_01_eda/gradebook/scores.csv",
     ],
 )
 def test_validate_payload_rejects_non_public_source_paths(
@@ -181,6 +185,32 @@ def test_validate_payload_rejects_non_public_source_paths(
     errors = validate_payload(payload)
 
     assert any("meta.sources" in error for error in errors)
+
+
+@pytest.mark.parametrize(
+    "source",
+    [
+        "https://example.test/concept",
+        "lectures/lecture_01_eda/../private_notes.md",
+        "lectures/lecture_01_eda/answer_keys/answers.md",
+        "lectures/lecture_01_eda/solutions/walkthrough.md",
+        "lectures/lecture_01_eda/grading/rubric.md",
+        "lectures/lecture_01_eda/gradebook/scores.csv",
+    ],
+)
+def test_validate_payload_rejects_non_public_concept_source_paths(
+    payload: dict[str, object],
+    source: str,
+) -> None:
+    concepts = payload["concepts"]
+    assert isinstance(concepts, list)
+    concept = concepts[0]
+    assert isinstance(concept, dict)
+    concept["sources"] = [source]
+
+    errors = validate_payload(payload)
+
+    assert any("concepts[0].sources" in error for error in errors)
 
 
 def test_generate_site_rejects_invalid_payload_before_writing(
