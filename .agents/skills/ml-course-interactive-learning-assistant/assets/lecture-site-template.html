@@ -49,7 +49,8 @@
 
     button,
     input,
-    select {
+    select,
+    textarea {
       font: inherit;
     }
 
@@ -180,6 +181,14 @@
     .setting input[type="checkbox"] {
       height: 1.35rem;
       width: 1.35rem;
+    }
+
+    textarea {
+      border: 1px solid var(--border);
+      border-radius: 0.55rem;
+      min-height: 7rem;
+      padding: 0.7rem;
+      width: 100%;
     }
 
     .progress-track {
@@ -420,13 +429,19 @@
         </defs>
       </svg>
       <div id="visualization-list" class="card-grid" data-shape="circle"></div>
+      <div class="button-row">
+        <button class="secondary" id="previous-visualization" type="button">
+          Previous graph
+        </button>
+        <button id="next-visualization" type="button">Next graph</button>
+      </div>
     </section>
 
     <section class="panel" aria-labelledby="quiz-title">
       <h2 id="quiz-title">10-question knowledge check</h2>
       <div id="quiz-card" class="quiz-card"></div>
       <div id="quiz-feedback" class="feedback" aria-live="polite" hidden></div>
-      <div id="quiz-results" aria-live="polite" hidden></div>
+      <div id="quiz-results" aria-live="polite" tabindex="-1" hidden></div>
       <div class="button-row">
         <button id="submit-answer" type="button">Check answer</button>
         <button id="next-question" type="button" hidden>Next question</button>
@@ -486,12 +501,19 @@
       }
     })();
 
+    const validDifficulties = new Set(["foundations", "applied", "challenge"]);
+    const savedBoolean = (value, fallback) =>
+      typeof value === "boolean" ? value : fallback;
+
     const state = {
-      difficulty: savedSettings.difficulty || CONTENT.defaults.difficulty,
-      focus: savedSettings.focus ?? CONTENT.defaults.focus_mode,
-      colorBlind: savedSettings.colorBlind ?? CONTENT.defaults.color_blind,
-      breakPrompts: savedSettings.breakPrompts ?? CONTENT.defaults.break_prompts,
+      difficulty: validDifficulties.has(savedSettings.difficulty)
+        ? savedSettings.difficulty
+        : CONTENT.defaults.difficulty,
+      focus: savedBoolean(savedSettings.focus, CONTENT.defaults.focus_mode),
+      colorBlind: savedBoolean(savedSettings.colorBlind, CONTENT.defaults.color_blind),
+      breakPrompts: savedBoolean(savedSettings.breakPrompts, CONTENT.defaults.break_prompts),
       conceptIndex: 0,
+      visualizationIndex: 0,
       quizIndex: 0,
       responses: [],
       answered: false,
@@ -578,10 +600,8 @@
         : [];
     }
 
-    function renderHistogram(visualization, target) {
+    function renderHistogram(visualization, target, summary, bins) {
       const values = numericData(visualization);
-      const binChoices = visualization.controls?.bins || [4, 6, 8];
-      const bins = Math.max(1, Number(binChoices[0]) || 4);
       const min = Math.min(...values);
       const max = Math.max(...values);
       const width = max === min ? 1 : (max - min) / bins;
@@ -598,9 +618,11 @@
           const x = 45 + index * (420 / bins);
           return `<g><rect class="mark-primary" data-shape="bar" x="${x}" y="${190 - height}"
             width="${Math.max(8, 380 / bins)}" height="${height}"></rect>
-            <text class="chart-label" x="${x}" y="214">${count}</text></g>`;
+          <text class="chart-label" x="${x}" y="214">${count}</text></g>`;
         }).join("")}
       </svg>`;
+      summary.textContent =
+        `${bins} bins. Counts from left to right: ${counts.join(", ")}.`;
     }
 
     function quantile(values, fraction) {
@@ -613,29 +635,41 @@
       return sorted[lower] * (1 - weight) + sorted[upper] * weight;
     }
 
-    function renderBoxplot(visualization, target) {
+    function renderBoxplot(visualization, target, summary, multiplier) {
       const values = numericData(visualization);
       const min = Math.min(...values);
       const max = Math.max(...values);
       const q1 = quantile(values, 0.25);
       const median = quantile(values, 0.5);
       const q3 = quantile(values, 0.75);
+      const iqr = q3 - q1;
+      const lowerFence = q1 - multiplier * iqr;
+      const upperFence = q3 + multiplier * iqr;
+      const inliers = values.filter((value) => value >= lowerFence && value <= upperFence);
+      const whiskerMin = Math.min(...inliers);
+      const whiskerMax = Math.max(...inliers);
+      const outliers = values.filter((value) => value < lowerFence || value > upperFence);
       const scale = (value) => 50 + ((value - min) / Math.max(1, max - min)) * 420;
       target.innerHTML = `<svg viewBox="0 0 520 180" role="img"
         aria-label="${escapeHtml(visualization.title)} box plot">
-        <line x1="${scale(min)}" y1="90" x2="${scale(max)}" y2="90"
+        <line x1="${scale(whiskerMin)}" y1="90" x2="${scale(whiskerMax)}" y2="90"
           stroke="currentColor" stroke-width="3"></line>
         <rect class="mark-secondary" data-shape="box" x="${scale(q1)}" y="55"
           width="${Math.max(2, scale(q3) - scale(q1))}" height="70"></rect>
         <line x1="${scale(median)}" y1="50" x2="${scale(median)}" y2="130"
           stroke="currentColor" stroke-width="5"></line>
+        ${outliers.map((value) => `<circle class="mark-primary" data-shape="outlier"
+          cx="${scale(value)}" cy="90" r="6"><title>Outlier ${value}</title></circle>`).join("")}
         <text class="chart-label" x="50" y="155">min ${min}</text>
         <text class="chart-label" x="205" y="155">median ${median.toFixed(1)}</text>
         <text class="chart-label" x="420" y="155">max ${max}</text>
       </svg>`;
+      summary.textContent =
+        `Median ${median.toFixed(1)}; IQR ${iqr.toFixed(1)}; ` +
+        `${outliers.length} values beyond ${multiplier} × IQR.`;
     }
 
-    function renderScatter(visualization, target) {
+    function renderScatter(visualization, target, summary, showTrend) {
       const points = Array.isArray(visualization.data) ? visualization.data : [];
       const xs = points.map((point) => Number(point.x)).filter(Number.isFinite);
       const ys = points.map((point) => Number(point.y)).filter(Number.isFinite);
@@ -645,8 +679,23 @@
       const maxY = Math.max(...ys);
       const xScale = (value) => 45 + ((value - minX) / Math.max(1, maxX - minX)) * 430;
       const yScale = (value) => 195 - ((value - minY) / Math.max(1, maxY - minY)) * 155;
+      const meanX = xs.reduce((sum, value) => sum + value, 0) / xs.length;
+      const meanY = ys.reduce((sum, value) => sum + value, 0) / ys.length;
+      const numerator = points.reduce(
+        (sum, point) => sum + (Number(point.x) - meanX) * (Number(point.y) - meanY),
+        0,
+      );
+      const denominator = xs.reduce((sum, value) => sum + (value - meanX) ** 2, 0);
+      const slope = denominator === 0 ? 0 : numerator / denominator;
+      const intercept = meanY - slope * meanX;
+      const trend = showTrend
+        ? `<line x1="${xScale(minX)}" y1="${yScale(intercept + slope * minX)}"
+          x2="${xScale(maxX)}" y2="${yScale(intercept + slope * maxX)}"
+          stroke="currentColor" stroke-width="3" stroke-dasharray="8 6"></line>`
+        : "";
       target.innerHTML = `<svg viewBox="0 0 520 240" role="img"
         aria-label="${escapeHtml(visualization.title)} scatter plot">
+        ${trend}
         ${points.map((point, index) => {
           const shape = index % 2 === 0 ? "circle" : "square";
           if (shape === "circle") {
@@ -662,10 +711,21 @@
         <text class="chart-label" x="220" y="228">x value</text>
         <text class="chart-label" x="8" y="30">y value</text>
       </svg>`;
+      const direction = slope > 0 ? "positive" : slope < 0 ? "negative" : "flat";
+      summary.textContent =
+        `${points.length} points; ${direction} linear trend. ` +
+        `${showTrend ? "Dashed trend line shown." : "Trend line hidden."}`;
     }
 
-    function renderMissingness(visualization, target) {
-      const rows = Array.isArray(visualization.data) ? visualization.data : [];
+    function renderMissingness(visualization, target, summary, sortMode) {
+      const sourceRows = Array.isArray(visualization.data) ? visualization.data : [];
+      const rows = sortMode === "descending"
+        ? [...sourceRows].sort(
+          (left, right) =>
+            Number(right.missing) / Number(right.total) -
+            Number(left.missing) / Number(left.total),
+        )
+        : sourceRows;
       target.innerHTML = `<svg viewBox="0 0 520 260" role="img"
         aria-label="${escapeHtml(visualization.title)} missing-data chart">
         ${rows.map((row, index) => {
@@ -680,62 +740,121 @@
             </text></g>`;
         }).join("")}
       </svg>`;
+      summary.textContent = rows.map((row) =>
+        `${row.label}: ${Math.round((Number(row.missing) / Number(row.total)) * 100)}% missing`
+      ).join("; ");
+    }
+
+    function visualizationControl(visualization) {
+      if (visualization.type === "histogram") {
+        const choices = visualization.controls?.bins || [4, 6, 8];
+        return `<label>Number of bins
+          <select data-viz-control="${escapeHtml(visualization.id)}">
+            ${choices.map((value) => `<option value="${Number(value)}">${Number(value)}</option>`)
+              .join("")}
+          </select></label>`;
+      }
+      if (visualization.type === "boxplot") {
+        return `<label>Outlier fence
+          <select data-viz-control="${escapeHtml(visualization.id)}">
+            <option value="1">1 × IQR</option>
+            <option value="1.5" selected>1.5 × IQR</option>
+            <option value="2">2 × IQR</option>
+          </select></label>`;
+      }
+      if (visualization.type === "scatter") {
+        return `<label class="setting"><input type="checkbox"
+          data-viz-control="${escapeHtml(visualization.id)}">
+          <span>Show dashed trend line</span></label>`;
+      }
+      return `<label>Order
+        <select data-viz-control="${escapeHtml(visualization.id)}">
+          <option value="source">Source order</option>
+          <option value="descending">Most missing first</option>
+        </select></label>`;
+    }
+
+    function renderOneVisualization(visualization) {
+      const target = byId(`chart-${visualization.id}`);
+      const summary = byId(`summary-${visualization.id}`);
+      const control = document.querySelector(
+        `[data-viz-control="${CSS.escape(visualization.id)}"]`,
+      );
+      if (visualization.type === "histogram") {
+        renderHistogram(visualization, target, summary, Math.max(1, Number(control.value)));
+      } else if (visualization.type === "boxplot") {
+        renderBoxplot(visualization, target, summary, Number(control.value));
+      } else if (visualization.type === "scatter") {
+        renderScatter(visualization, target, summary, control.checked);
+      } else {
+        renderMissingness(visualization, target, summary, control.value);
+      }
     }
 
     function renderVisualizations() {
       const container = byId("visualization-list");
       container.innerHTML = CONTENT.visualizations.map((visualization, index) =>
         `<article class="visualization-card" data-visualization="${escapeHtml(visualization.id)}"
-          data-active="${index === 0}">
+          data-active="${index === state.visualizationIndex}"
+          ${state.focus && index !== state.visualizationIndex ? "hidden" : ""}>
           <h3>${escapeHtml(visualization.title)}</h3>
           <p>${escapeHtml(visualization.explanation)}</p>
+          ${visualizationControl(visualization)}
           <div class="chart-shell" id="chart-${escapeHtml(visualization.id)}"></div>
+          <p class="chart-summary" id="summary-${escapeHtml(visualization.id)}"
+            aria-live="polite"></p>
           <p class="graph-fallback"><strong>Text fallback:</strong>
             ${escapeHtml(visualization.fallback)}</p>
         </article>`
       ).join("");
       CONTENT.visualizations.forEach((visualization) => {
-        const target = byId(`chart-${visualization.id}`);
-        const renderer = {
-          histogram: renderHistogram,
-          boxplot: renderBoxplot,
-          scatter: renderScatter,
-          missingness: renderMissingness,
-        }[visualization.type];
-        renderer(visualization, target);
+        const control = document.querySelector(
+          `[data-viz-control="${CSS.escape(visualization.id)}"]`,
+        );
+        control.addEventListener("change", () => renderOneVisualization(visualization));
+        renderOneVisualization(visualization);
       });
+      byId("previous-visualization").disabled = state.visualizationIndex === 0;
+      byId("next-visualization").disabled =
+        state.visualizationIndex >= CONTENT.visualizations.length - 1;
     }
 
     function currentQuestions() {
       return CONTENT.quizzes[state.difficulty];
     }
 
-    function renderQuiz() {
+    function renderQuiz(focusQuestion = false) {
       const questions = currentQuestions();
       const question = questions[state.quizIndex];
       const inputType = question.type === "multiple-choice" ? "checkbox" : "radio";
-      const options = question.options.map((option, index) =>
+      const options = question.options.map((option) =>
         `<label class="quiz-option">
           <input type="${inputType}" name="quiz-answer" value="${escapeHtml(option)}">
           <span>${escapeHtml(option)}</span>
         </label>`
       ).join("");
+      const responseControl = question.type === "interpretation" && !question.options.length
+        ? `<label for="interpretation-answer">Your interpretation</label>
+          <textarea id="interpretation-answer"></textarea>`
+        : `<fieldset class="quiz-options"><legend class="optional-detail">
+          Choose ${question.type === "multiple-choice" ? "all correct answers" : "one answer"}
+        </legend>${options}</fieldset>`;
+      byId("quiz-card").setAttribute("tabindex", "-1");
       byId("quiz-card").innerHTML = `<p class="eyebrow">${escapeHtml(state.difficulty)}
         · question ${state.quizIndex + 1} of 10</p>
         <h3>${escapeHtml(question.prompt)}</h3>
-        <fieldset class="quiz-options"><legend class="optional-detail">
-          Choose ${question.type === "multiple-choice" ? "all correct answers" : "one answer"}
-        </legend>${options}</fieldset>`;
+        ${responseControl}`;
       byId("quiz-feedback").hidden = true;
       byId("submit-answer").hidden = false;
       byId("next-question").hidden = true;
       state.answered = false;
       updateProgress();
+      if (focusQuestion) byId("quiz-card").focus();
     }
 
     function normalizedAnswer(value) {
       const values = Array.isArray(value) ? value : [value];
-      return values.map(String).sort();
+      return values.map((item) => String(item).trim().toLocaleLowerCase()).sort();
     }
 
     function answersMatch(selected, answer) {
@@ -745,8 +864,11 @@
 
     function submitAnswer() {
       if (state.answered) return;
-      const selected = [...document.querySelectorAll('[name="quiz-answer"]:checked')]
-        .map((input) => input.value);
+      const interpretation = byId("interpretation-answer");
+      const selected = interpretation
+        ? [interpretation.value.trim()].filter(Boolean)
+        : [...document.querySelectorAll('[name="quiz-answer"]:checked')]
+          .map((input) => input.value);
       if (!selected.length) {
         byId("quiz-feedback").textContent = "Choose an answer before checking.";
         byId("quiz-feedback").dataset.correct = "false";
@@ -802,7 +924,7 @@
         return;
       }
       state.quizIndex += 1;
-      renderQuiz();
+      renderQuiz(true);
     }
 
     function retryQuiz() {
@@ -812,7 +934,7 @@
       byId("quiz-card").hidden = false;
       byId("quiz-results").hidden = true;
       byId("retry-quiz").hidden = true;
-      renderQuiz();
+      renderQuiz(true);
     }
 
     document.querySelector('[data-setting="difficulty"]').addEventListener("change", (event) => {
@@ -849,6 +971,22 @@
       if (state.focus) {
         const active = document.querySelector(".concept-card:not([hidden])");
         if (document.activeElement !== active) active?.scrollIntoView({ block: "nearest" });
+      }
+    });
+    byId("previous-visualization").addEventListener("click", () => {
+      state.visualizationIndex = Math.max(0, state.visualizationIndex - 1);
+      renderVisualizations();
+    });
+    byId("next-visualization").addEventListener("click", () => {
+      state.visualizationIndex = Math.min(
+        CONTENT.visualizations.length - 1,
+        state.visualizationIndex + 1,
+      );
+      renderVisualizations();
+      if (state.focus) {
+        document.querySelector('.visualization-card[data-active="true"]')?.scrollIntoView({
+          block: "nearest",
+        });
       }
     });
     byId("submit-answer").addEventListener("click", submitAnswer);

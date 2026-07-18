@@ -238,6 +238,48 @@ def test_validate_payload_requires_embedded_break_prompts(
 
 
 @pytest.mark.parametrize(
+    ("visualization_type", "data"),
+    [
+        ("histogram", []),
+        ("boxplot", [1, "not-a-number"]),
+        ("scatter", [{"x": 1}]),
+        ("missingness", [{"label": "age", "missing": 3, "total": 0}]),
+    ],
+)
+def test_validate_payload_rejects_invalid_visualization_data(
+    payload: dict[str, object],
+    visualization_type: str,
+    data: object,
+) -> None:
+    visualizations = payload["visualizations"]
+    assert isinstance(visualizations, list)
+    visualization = visualizations[0]
+    assert isinstance(visualization, dict)
+    visualization["type"] = visualization_type
+    visualization["data"] = data
+
+    errors = validate_payload(payload)
+
+    assert any("data" in error for error in errors)
+
+
+def test_validate_payload_rejects_choice_question_without_options(
+    payload: dict[str, object],
+) -> None:
+    quizzes = payload["quizzes"]
+    assert isinstance(quizzes, dict)
+    questions = quizzes["foundations"]
+    assert isinstance(questions, list)
+    question = questions[0]
+    assert isinstance(question, dict)
+    question["options"] = []
+
+    errors = validate_payload(payload)
+
+    assert any("options" in error for error in errors)
+
+
+@pytest.mark.parametrize(
     "source",
     [
         "https://example.test/lecture-notes",
@@ -413,6 +455,32 @@ def test_interactive_template_preserves_non_color_and_focus_friendly_cues() -> N
     assert 'id="quiz-feedback"' in template
     assert 'id="quiz-results"' in template
     assert 'id="retry-quiz"' in template
+
+
+@pytest.mark.parametrize(
+    "hook",
+    [
+        'data-viz-control="',
+        'class="chart-summary"',
+        'id="previous-visualization"',
+        'id="next-visualization"',
+        "visualizationIndex",
+        'id="interpretation-answer"',
+        'tabindex="-1"',
+        "validDifficulties",
+    ],
+)
+def test_interactive_template_covers_reviewed_runtime_paths(hook: str) -> None:
+    template_path = (
+        ROOT
+        / ".agents"
+        / "skills"
+        / "ml-course-interactive-learning-assistant"
+        / "assets"
+        / "lecture-site-template.html"
+    )
+
+    assert hook in template_path.read_text(encoding="utf-8")
 
 
 def _valid_html() -> str:

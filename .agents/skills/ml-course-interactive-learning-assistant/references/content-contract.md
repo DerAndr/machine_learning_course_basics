@@ -58,3 +58,12 @@ needed by the selected type. Include `fallback` on every visualization. Make
 `fallback` a readable text summary and/or data table that communicates the same
 essential lesson without JavaScript, SVG interaction, or color alone.
 Make functioning charts encode meaning with labels, shapes, patterns, or line styles in addition to color.
+
+Use these exact data shapes:
+
+| Type | `data` | Interactive control |
+|---|---|---|
+| `histogram` | Non-empty array of finite numbers. | `controls.bins`: positive integer choices; defaults to `4, 6, 8`. |
+| `boxplot` | Non-empty array of finite numbers. | Whisker multiplier choices are supplied by the template. |
+| `scatter` | Non-empty array of objects with finite `x` and `y`. | Learner toggles a labeled trend line. |
+| `missingness` | Non-empty array of `{label, missing, total}` where `total > 0` and `0 <= missing <= total`. | Learner switches between source and descending order. |

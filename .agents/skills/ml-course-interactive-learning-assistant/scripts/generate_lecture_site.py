@@ -1,6 +1,7 @@
 import argparse
 import html
 import json
+import math
 import re
 from pathlib import Path
 from typing import Any
@@ -46,6 +47,35 @@ def _is_non_empty_string(value: object) -> bool:
 
 def _is_missing(value: object) -> bool:
     return value is None or value == "" or value == []
+
+
+def _is_finite_number(value: object) -> bool:
+    return not isinstance(value, bool) and isinstance(value, (int, float)) and math.isfinite(value)
+
+
+def _has_valid_visualization_data(visualization_type: object, data: object) -> bool:
+    if not isinstance(data, list) or not data:
+        return False
+    if visualization_type in {"histogram", "boxplot"}:
+        return all(_is_finite_number(value) for value in data)
+    if visualization_type == "scatter":
+        return all(
+            isinstance(point, dict)
+            and _is_finite_number(point.get("x"))
+            and _is_finite_number(point.get("y"))
+            for point in data
+        )
+    if visualization_type == "missingness":
+        return all(
+            isinstance(row, dict)
+            and _is_non_empty_string(row.get("label"))
+            and _is_finite_number(row.get("missing"))
+            and _is_finite_number(row.get("total"))
+            and row["total"] > 0
+            and 0 <= row["missing"] <= row["total"]
+            for row in data
+        )
+    return False
 
 
 def _is_public_source_path(value: object) -> bool:
@@ -151,8 +181,11 @@ def validate_payload(payload: dict[str, object]) -> list[str]:
             for field in ("id", "title", "explanation"):
                 if not _is_non_empty_string(visualization.get(field)):
                     errors.append(f"{location}.{field} must be a non-empty string")
-            if "data" not in visualization:
-                errors.append(f"{location}.data is required")
+            if not _has_valid_visualization_data(
+                visualization_type,
+                visualization.get("data"),
+            ):
+                errors.append(f"{location}.data does not match the {visualization_type} schema")
             if not _is_non_empty_string(visualization.get("fallback")):
                 errors.append(f"{location}.fallback must be readable without a graph")
 
@@ -190,8 +223,13 @@ def validate_payload(payload: dict[str, object]) -> list[str]:
                 for field in ("prompt", "explanation", "concept"):
                     if not _is_non_empty_string(question.get(field)):
                         errors.append(f"{location}.{field} must be a non-empty string")
-                if not isinstance(question.get("options"), list):
+                options = question.get("options")
+                if not isinstance(options, list):
                     errors.append(f"{location}.options must be an array")
+                elif not all(_is_non_empty_string(option) for option in options):
+                    errors.append(f"{location}.options must contain readable strings")
+                elif question.get("type") in {"single-choice", "multiple-choice"} and not options:
+                    errors.append(f"{location}.options must contain choices for this question type")
                 if _is_missing(question.get("answer")):
                     errors.append(f"{location}.answer is required")
 
