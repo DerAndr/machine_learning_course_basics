@@ -67,9 +67,9 @@ public course source used in the payload.
 6. Open the generated `index.html` directly through `file://`. Verify all four
    learner settings, visualizations and their fallbacks, answer review and
    whole-quiz Retry, keyboard navigation, visible focus, reduced motion, and
-   storage-disabled behavior. The core remains responsible for deterministic
-   single-file output, static no-JavaScript explanations and quiz review, and
-   accessible chart fallbacks.
+   storage fallback when storage is disabled. The core remains responsible for
+   deterministic single-file output, static no-JavaScript explanations and quiz
+   review, and accessible chart fallbacks.
 
 ## Course checks and deployment
 

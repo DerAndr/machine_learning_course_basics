@@ -40,7 +40,32 @@ def test_adapter_preserves_course_constraints() -> None:
         "lecture_notes.md",
         "okf/",
         "Do not modify `okf/`",
-        "exactly 10",
         "interactive-learning-experience-builder",
     ):
         assert required in text
+
+
+def test_adapter_preserves_learning_experience_parity() -> None:
+    text = SKILL_PATH.read_text(encoding="utf-8")
+    normalized_text = " ".join(text.split())
+
+    for required in (
+        "Foundations",
+        "Applied",
+        "Challenge",
+        "focus-friendly mode",
+        "color-blind-safe palette",
+        "funny topic-related break prompts",
+        "`foundations`, `applied`, and `challenge` quiz banks",
+        "exactly 10 questions each",
+        "static no-JavaScript explanations and quiz review",
+        "accessible chart fallbacks",
+        "keyboard navigation",
+        "reduced motion",
+        "storage fallback",
+        "answer review",
+        "whole-quiz Retry",
+        "generate_learning_experience.py",
+        "validate_learning_experience.py",
+    ):
+        assert required in normalized_text
