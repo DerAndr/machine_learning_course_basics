@@ -9,6 +9,7 @@
 .ruff_cache/
 .ty_cache/
 .venv/
+.worktrees/
 __pycache__/
 build/
 dist/
