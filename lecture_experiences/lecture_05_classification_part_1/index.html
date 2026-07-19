@@ -1,0 +1,1247 @@
+<!doctype html>
+<html lang="en" data-focus-friendly="false" data-color-blind="false">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Interactive learning experience</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --background: #f6f7f9;
+      --surface: #ffffff;
+      --surface-soft: #edf2f7;
+      --ink: #17212b;
+      --muted: #52606d;
+      --accent: #315c9b;
+      --accent-strong: #173f76;
+      --secondary: #c55a11;
+      --success: #247a4d;
+      --danger: #a33a3a;
+      --border: #cad3dc;
+      --focus: #111111;
+      --shadow: 0 10px 28px rgb(23 33 43 / 8%);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    :root[data-color-blind="true"] {
+      --accent: #0072b2;
+      --accent-strong: #00547f;
+      --secondary: #d55e00;
+      --success: #009e73;
+      --danger: #cc79a7;
+      --focus: #000000;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      background: var(--background);
+      color: var(--ink);
+      line-height: 1.55;
+      scroll-behavior: smooth;
+      scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 8rem);
+    }
+
+    body {
+      margin: 0;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button,
+    select {
+      min-height: 2.75rem;
+    }
+
+    button {
+      border: 1px solid var(--accent);
+      border-radius: 0.6rem;
+      background: var(--accent);
+      color: #ffffff;
+      cursor: pointer;
+      padding: 0.55rem 0.9rem;
+    }
+
+    button:hover {
+      background: var(--accent-strong);
+    }
+
+    button.secondary {
+      background: var(--surface);
+      color: var(--accent-strong);
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+
+    :focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 3px;
+    }
+
+    .skip-link {
+      position: absolute;
+      left: 0.75rem;
+      top: -5rem;
+      z-index: 10;
+      background: var(--surface);
+      color: var(--ink);
+      padding: 0.65rem;
+    }
+
+    .skip-link:focus {
+      top: 0.75rem;
+    }
+
+    .page-header,
+    main,
+    .page-footer {
+      margin-inline: auto;
+      max-width: 74rem;
+      padding-inline: clamp(1rem, 4vw, 2.5rem);
+    }
+
+    .page-header {
+      padding-block: 2.4rem 1.3rem;
+    }
+
+    .eyebrow {
+      color: var(--accent-strong);
+      font-size: 0.82rem;
+      font-weight: 750;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3 {
+      line-height: 1.18;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      margin: 0.35rem 0 0.6rem;
+    }
+
+    .lede {
+      color: var(--muted);
+      font-size: 1.08rem;
+      max-width: 68ch;
+    }
+
+    .settings,
+    .panel,
+    .concept-card,
+    .visualization-card,
+    .quiz-card,
+    .static-reference {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.9rem;
+      box-shadow: var(--shadow);
+    }
+
+    .settings,
+    .panel,
+    .static-reference {
+      margin-block: 1rem;
+      padding: clamp(1rem, 3vw, 1.5rem);
+    }
+
+    .settings-grid {
+      display: grid;
+      gap: 0.9rem;
+      grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    }
+
+    .setting {
+      align-items: center;
+      display: flex;
+      gap: 0.65rem;
+      min-height: 2.75rem;
+    }
+
+    .setting select {
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      color: var(--ink);
+      flex: 1;
+      padding: 0.45rem;
+    }
+
+    .setting input[type="checkbox"] {
+      height: 1.35rem;
+      width: 1.35rem;
+    }
+
+    textarea {
+      border: 1px solid var(--border);
+      border-radius: 0.55rem;
+      min-height: 7rem;
+      padding: 0.7rem;
+      width: 100%;
+    }
+
+    .progress-track {
+      background: var(--surface-soft);
+      border-radius: 999px;
+      height: 0.65rem;
+      overflow: hidden;
+    }
+
+    .progress-value {
+      background: var(--accent);
+      height: 100%;
+      transition: width 180ms ease;
+      width: 0;
+    }
+
+    .progress-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: calc(env(safe-area-inset-top, 0px) + 0.75rem);
+      z-index: 2;
+    }
+
+    .quiz-card,
+    #quiz-feedback,
+    #quiz-results {
+      scroll-margin-top: calc(env(safe-area-inset-top, 0px) + 8rem);
+    }
+
+    .card-grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+    }
+
+    .concept-card,
+    .visualization-card,
+    .quiz-card {
+      padding: 1.1rem;
+    }
+
+    .concept-card[hidden],
+    .visualization-card[hidden] {
+      display: none;
+    }
+
+    .mistakes {
+      border-left: 0.3rem solid var(--secondary);
+      padding-left: 1rem;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .chart-shell {
+      background: var(--surface-soft);
+      border-radius: 0.65rem;
+      margin-block: 0.8rem;
+      overflow-x: auto;
+      padding: 0.65rem;
+    }
+
+    .chart-shell svg {
+      display: block;
+      height: auto;
+      max-width: 100%;
+    }
+
+    .chart-label {
+      fill: var(--ink);
+      font-size: 12px;
+    }
+
+    .mark-primary {
+      fill: var(--accent);
+      stroke: var(--accent-strong);
+      stroke-width: 2;
+    }
+
+    .mark-secondary {
+      fill: url("#diagonal-hatch");
+      stroke: var(--secondary);
+      stroke-width: 3;
+    }
+
+    .graph-fallback {
+      border-left: 0.3rem solid var(--accent);
+      color: var(--muted);
+      margin-top: 0.8rem;
+      padding-left: 0.9rem;
+    }
+
+    .break-prompt {
+      background: #fff7df;
+      border: 1px solid #e3b84e;
+      border-radius: 0.7rem;
+      color: #402d00;
+      margin-block: 1rem;
+      padding: 0.8rem 1rem;
+    }
+
+    .break-prompt[hidden] {
+      display: none;
+    }
+
+    .quiz-options {
+      border: 0;
+      display: grid;
+      gap: 0.6rem;
+      margin: 0;
+      padding: 0;
+    }
+
+    .quiz-option {
+      align-items: flex-start;
+      border: 1px solid var(--border);
+      border-radius: 0.55rem;
+      display: flex;
+      gap: 0.65rem;
+      padding: 0.7rem;
+    }
+
+    .feedback {
+      border-left: 0.35rem solid var(--accent);
+      margin-top: 1rem;
+      padding-left: 0.9rem;
+    }
+
+    .feedback[data-correct="true"] {
+      border-color: var(--success);
+    }
+
+    .feedback[data-correct="false"] {
+      border-color: var(--danger);
+    }
+
+    .static-reference summary {
+      cursor: pointer;
+      font-weight: 750;
+    }
+
+    .static-reference-body {
+      margin-top: 1rem;
+    }
+
+    .static-reference-body article {
+      border-top: 1px solid var(--border);
+      padding-block: 0.75rem;
+    }
+
+    .source-list {
+      color: var(--muted);
+      overflow-wrap: anywhere;
+    }
+
+    :root[data-focus-friendly="true"] .optional-detail,
+    :root[data-focus-friendly="true"] .visualization-card:not([data-active="true"]) {
+      display: none;
+    }
+
+    :root[data-focus-friendly="true"] .card-grid {
+      display: block;
+    }
+
+    @media (max-width: 42rem) {
+      .progress-panel {
+        margin-block: 0.65rem;
+        padding: 0.75rem 0.9rem;
+      }
+
+      .progress-panel h2,
+      .progress-panel p {
+        margin-block: 0.25rem;
+      }
+
+      .progress-track {
+        height: 0.5rem;
+      }
+
+      .button-row button {
+        flex: 1 1 9rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to learning content</a>
+  <header class="page-header">
+    <p class="eyebrow">Interactive learning experience</p>
+    <h1 id="site-title">Learning experience</h1>
+    <p class="lede" id="site-subtitle">Learn, explore, then check your knowledge.</p>
+  </header>
+
+  <main id="main-content">
+    <section class="settings" aria-labelledby="settings-title">
+      <h2 id="settings-title">Choose your learning setup</h2>
+      <div class="settings-grid">
+        <label class="setting">
+          <span>Question depth</span>
+          <select data-setting="difficulty">
+            <option value="foundations">Foundations</option>
+            <option value="applied">Applied</option>
+            <option value="challenge">Challenge</option>
+          </select>
+        </label>
+        <label class="setting">
+          <input data-setting="focus" type="checkbox">
+          <span>Focus-friendly (ADHD-friendly) view</span>
+        </label>
+        <label class="setting">
+          <input data-setting="color-blind" type="checkbox">
+          <span>Color-blind-safe palette</span>
+        </label>
+        <label class="setting">
+          <input data-setting="break-prompts" type="checkbox">
+          <span>Funny topic break prompts</span>
+        </label>
+      </div>
+    </section>
+
+    <section class="panel progress-panel" aria-labelledby="progress-title">
+      <h2 id="progress-title">Progress</h2>
+      <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100"
+           aria-valuenow="0" aria-label="Learning experience progress">
+        <div class="progress-value"></div>
+      </div>
+      <p id="progress-text">Start with the first concept.</p>
+    </section>
+
+    <section class="panel" aria-labelledby="learn-title">
+      <h2 id="learn-title">Learn the core ideas</h2>
+      <div id="concept-list" class="card-grid"></div>
+      <div class="button-row">
+        <button class="secondary" id="previous-concept" type="button">Previous concept</button>
+        <button id="next-concept" type="button">Next concept</button>
+      </div>
+    </section>
+
+    <aside id="break-prompt" class="break-prompt" aria-live="polite" hidden></aside>
+
+    <section class="panel" aria-labelledby="explore-title">
+      <h2 id="explore-title">Explore the graphs</h2>
+      <p class="graph-fallback">Every graph includes a nearby text fallback with the same lesson.</p>
+      <svg width="0" height="0" aria-hidden="true" focusable="false">
+        <defs>
+          <pattern id="diagonal-hatch" width="8" height="8" patternUnits="userSpaceOnUse">
+            <path d="M-2,2 L2,-2 M0,8 L8,0 M6,10 L10,6" stroke="currentColor"
+                  stroke-width="2"></path>
+          </pattern>
+        </defs>
+      </svg>
+      <div id="visualization-list" class="card-grid" data-shape="circle"></div>
+      <div class="button-row">
+        <button class="secondary" id="previous-visualization" type="button">
+          Previous graph
+        </button>
+        <button id="next-visualization" type="button">Next graph</button>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="quiz-title">
+      <h2 id="quiz-title">10-question knowledge check</h2>
+      <div id="quiz-card" class="quiz-card"></div>
+      <div id="quiz-feedback" class="feedback" aria-live="polite" hidden></div>
+      <div id="quiz-results" aria-live="polite" tabindex="-1" hidden></div>
+      <div class="button-row">
+        <button id="submit-answer" type="button">Check answer</button>
+        <button id="next-question" type="button" hidden>Next question</button>
+        <button id="retry-quiz" class="secondary" type="button" hidden>Retry quiz</button>
+      </div>
+    </section>
+
+    <section id="static-content" class="static-reference">
+      <details>
+        <summary>Open complete static explanations and answer review</summary>
+        <div class="static-reference-body"><h2>Complete static learning reference</h2><p>This reference remains available when scripts or browser storage are unavailable.</p><section><h3>Concepts</h3><article><h4>Match the classifier to the target structure</h4><p>Classification predicts categorical targets or probabilities over categories. Binary tasks have two outcomes, multiclass tasks choose among more than two classes, multilabel tasks can assign several labels to one observation, and ordinal tasks use ordered classes whose gaps are not necessarily equal.</p><p><strong>How to interpret it:</strong> Identify whether one or several labels can apply and whether label order matters before choosing modeling and evaluation methods. An ordinal target preserves order without turning the levels into an ordinary continuous measurement.</p><h5>Common mistakes</h5><ul><li>Treating a multilabel task as multiclass even though several labels can be correct at once.</li><li>Treating ordered labels as equally spaced numerical values without justification.</li></ul><p><strong>Sources:</strong> lectures/lecture_05_classification_part_1/lecture_notes.md; lectures/lecture_05_classification_part_1/README.md</p></article><article><h4>KNN depends on meaningful distances</h4><p>K-Nearest Neighbors stores the training data and predicts from the majority class among the k nearest observations. The distance metric, feature scaling, dimensionality, and choice of k all change which observations count as neighbors.</p><p><strong>How to interpret it:</strong> Scale numerical features before distance-based comparison when their units differ, and select k with validation. Small k can follow local noise, while large k creates smoother neighborhoods that may blur a real boundary.</p><h5>Common mistakes</h5><ul><li>Letting a large-unit feature dominate distance solely because of its measurement scale.</li><li>Choosing k from training performance alone.</li></ul><p><strong>Sources:</strong> lectures/lecture_05_classification_part_1/lecture_notes.md; lectures/lecture_05_classification_part_1/lecture_examples/README.md; lectures/lecture_05_classification_part_1/practical_session/README.md</p></article><article><h4>Tree splits seek purer child nodes</h4><p>A decision tree recursively applies feature-threshold rules. Gini impurity and entropy measure how mixed the classes are in a node, and a useful split reduces impurity or uncertainty in its children.</p><p><strong>How to interpret it:</strong> Read a split as a local rule that partitions the current observations. Low impurity means one class dominates the node; it does not by itself prove that the rule will generalize to new data.</p><h5>Common mistakes</h5><ul><li>Assuming every impurity-reducing training split improves validation performance.</li><li>Reading Gini impurity as a feature importance score.</li></ul><p><strong>Sources:</strong> lectures/lecture_05_classification_part_1/lecture_notes.md; lectures/lecture_05_classification_part_1/lecture_examples/README.md</p></article><article><h4>Control tree complexity before it memorizes noise</h4><p>Deep trees can keep making greedy splits until small training patterns are memorized. Maximum depth, minimum samples per split or leaf, pruning, and cost-complexity control reduce effective tree complexity.</p><p><strong>How to interpret it:</strong> Compare training and validation behavior while changing a complexity control. A shallow tree may underfit, while an unconstrained tree can be accurate on training data yet fragile on unseen observations.</p><h5>Common mistakes</h5><ul><li>Choosing the deepest tree because it has the highest training accuracy.</li><li>Calling a very deep tree easy to interpret merely because every rule is technically visible.</li></ul><p><strong>Sources:</strong> lectures/lecture_05_classification_part_1/lecture_notes.md; lectures/lecture_05_classification_part_1/practical_session/README.md</p></article><article><h4>Separate probability estimation from the decision threshold</h4><p>Logistic regression applies the sigmoid function to a linear score, producing an estimated positive-class probability between zero and one. A threshold, often 0.5 by default, then converts that probability into a class decision.</p><p><strong>How to interpret it:</strong> Choose the threshold according to the cost of false positives and false negatives. Raising it usually produces fewer positive predictions; lowering it usually catches more positives but can also create more false alarms.</p><h5>Common mistakes</h5><ul><li>Treating 0.5 as the correct threshold for every application.</li><li>Interpreting a positive coefficient as a guaranteed causal effect.</li></ul><p><strong>Sources:</strong> lectures/lecture_05_classification_part_1/lecture_notes.md; lectures/lecture_05_classification_part_1/lecture_examples/README.md; lectures/lecture_05_classification_part_1/practical_session/README.md</p></article><article><h4>Name each kind of classification outcome</h4><p>For a binary classifier, the confusion matrix counts true positives, false positives, true negatives, and false negatives. These four counts distinguish correct decisions from the two error types.</p><p><strong>How to interpret it:</strong> Define the positive class first, then ask which error matters in the application. False-positive rate divides false positives by all actual negatives, while false-negative rate divides false negatives by all actual positives.</p><h5>Common mistakes</h5><ul><li>Swapping false positives and false negatives by forgetting what the actual class was.</li><li>Comparing error counts without considering the number of actual positives or negatives.</li></ul><p><strong>Sources:</strong> lectures/lecture_05_classification_part_1/lecture_notes.md; lectures/lecture_05_classification_part_1/practical_session/README.md</p></article><article><h4>Choose metrics around the error cost</h4><p>Precision is TP divided by TP plus FP and asks how often positive predictions are correct. Recall is TP divided by TP plus FN and asks how many actual positives were found. F-beta combines precision and recall, with beta above one emphasizing recall and beta below one emphasizing precision.</p><p><strong>How to interpret it:</strong> Accuracy can hide failure on a rare class. Prefer precision when false positives are especially costly, recall when missing positives is especially costly, and an F-score when a stated balance between them is useful.</p><h5>Common mistakes</h5><ul><li>Reporting only accuracy for a strongly imbalanced target.</li><li>Assuming F1 reveals whether precision or recall is the weaker component.</li></ul><p><strong>Sources:</strong> lectures/lecture_05_classification_part_1/lecture_notes.md; lectures/lecture_05_classification_part_1/practical_session/README.md</p></article><article><h4>Evaluate rankings and probabilities, not only hard labels</h4><p>The ROC curve plots true-positive rate against false-positive rate across thresholds, while ROC-AUC summarizes ranking quality. Log loss evaluates predicted probabilities directly and heavily penalizes confident wrong predictions.</p><p><strong>How to interpret it:</strong> Use ROC-AUC to examine threshold-spanning ranking behavior and log loss when probability quality matters. A score-distribution view can reveal class overlap that makes threshold selection difficult, even when one hard-label metric looks acceptable.</p><h5>Common mistakes</h5><ul><li>Reading AUC as accuracy at the default threshold.</li><li>Ignoring overconfident probability errors because the final class label happened to be the main reported output.</li></ul><p><strong>Sources:</strong> lectures/lecture_05_classification_part_1/lecture_notes.md; lectures/lecture_05_classification_part_1/practical_session/README.md</p></article></section><section><h3>Visualization reference</h3><article><h4>Illustrative predicted-score distribution</h4><p>These fixed illustrative probability-like scores show how bin choice changes the visible shape of a score distribution. This control changes histogram resolution; it is not a decision-threshold control and does not report classifier performance by itself.</p><p class="graph-fallback"><strong>Graph fallback:</strong> Illustrative probability-like scores, sorted: 0.04, 0.07, 0.09, 0.12, 0.16, 0.19, 0.23, 0.27, 0.31, 0.36, 0.42, 0.48, 0.54, 0.59, 0.64, 0.69, 0.73, 0.77, 0.81, 0.85, 0.89, 0.92, 0.95, 0.97. Different bin counts change the visible grouping, not the scores or a classification threshold.</p></article><article><h4>Illustrative feature geometry and local separation</h4><p>These fixed illustrative feature coordinates form two broadly separated regions with some overlap. The optional trend line summarizes association between the two coordinates; it is not a class boundary. KNN neighborhoods and a linear classifier can respond differently to this geometry.</p><p class="graph-fallback"><strong>Graph fallback:</strong> Illustrative class A points: (1.0, 1.2), (1.3, 1.0), (1.6, 1.7), (1.9, 1.5), (2.2, 2.4), (2.5, 2.0). Illustrative class B points: (2.7, 3.0), (3.0, 2.6), (3.3, 3.5), (3.7, 3.2), (4.0, 4.1), (4.4, 3.9). The coordinates generally rise together and the class regions nearly meet around the middle.</p></article><article><h4>Illustrative classification margins need context</h4><p>These fixed illustrative absolute margin-like values represent distances from a decision boundary. Wider fence settings change which large margins are flagged. A flagged value is unusual in this teaching sample, not evidence of a data error or a wrong prediction.</p><p class="graph-fallback"><strong>Graph fallback:</strong> Illustrative absolute margin-like values, sorted: 0.05, 0.08, 0.10, 0.11, 0.12, 0.14, 0.15, 0.16, 0.18, 0.20, 0.22, 0.25, 0.28, 0.45, 0.75. A 1 or 1.5 times IQR fence flags 0.45 and 0.75, while a 2 times IQR fence flags only 0.75. These are unusual margins, not automatically errors.</p></article></section><section><h3>Quiz banks and answer review</h3><section><h4>Foundations</h4><ol><li><p><strong>Which task allows several labels to be assigned to one observation?</strong></p><ul><li>Multilabel classification</li><li>Binary classification</li><li>Ordinary regression</li></ul><p><strong>Answer:</strong> Multilabel classification</p><p><strong>Explanation:</strong> In multilabel classification, several labels can apply simultaneously to the same observation.</p></li><li><p><strong>Why is feature scaling important for KNN?</strong></p><ul><li>Large-unit features can dominate distance</li><li>It makes every class balanced</li><li>It removes the need to select k</li></ul><p><strong>Answer:</strong> Large-unit features can dominate distance</p><p><strong>Explanation:</strong> KNN relies directly on distances, so a feature with a large numerical scale can overwhelm other features even when that dominance is not meaningful.</p></li><li><p><strong>What usually happens as k becomes very large in KNN?</strong></p><ul><li>The decision regions become smoother</li><li>The model uses only one neighbor</li><li>Distance stops mattering</li></ul><p><strong>Answer:</strong> The decision regions become smoother</p><p><strong>Explanation:</strong> Larger neighborhoods average over more observations, increasing smoothing and potentially blurring local class boundaries.</p></li><li><p><strong>What does low impurity mean in a decision-tree node?</strong></p><ul><li>One class dominates the node</li><li>All features have equal importance</li><li>The tree cannot overfit</li></ul><p><strong>Answer:</strong> One class dominates the node</p><p><strong>Explanation:</strong> Gini impurity and entropy are low when the class labels in the node are relatively homogeneous.</p></li><li><p><strong>Which control directly limits how many levels a decision tree can grow?</strong></p><ul><li>Maximum depth</li><li>Probability threshold</li><li>Number of KNN neighbors</li></ul><p><strong>Answer:</strong> Maximum depth</p><p><strong>Explanation:</strong> Maximum depth restricts tree complexity and can reduce the tendency to memorize small training patterns.</p></li><li><p><strong>What does the sigmoid function do in binary logistic regression?</strong></p><ul><li>Maps a linear score into a value from 0 to 1</li><li>Chooses the nearest neighbors</li><li>Builds axis-aligned splits</li></ul><p><strong>Answer:</strong> Maps a linear score into a value from 0 to 1</p><p><strong>Explanation:</strong> The sigmoid transforms the linear score into an estimated positive-class probability.</p></li><li><p><strong>What normally happens when the positive-class decision threshold is lowered?</strong></p><ul><li>More observations are predicted positive</li><li>No predictions change</li><li>Only true negatives increase</li></ul><p><strong>Answer:</strong> More observations are predicted positive</p><p><strong>Explanation:</strong> A lower threshold makes it easier for an estimated probability to qualify as positive, which can increase both true and false positives.</p></li><li><p><strong>Which confusion-matrix outcome is an actual positive predicted as negative?</strong></p><ul><li>False negative</li><li>False positive</li><li>True negative</li></ul><p><strong>Answer:</strong> False negative</p><p><strong>Explanation:</strong> The prediction missed an actual positive, so the outcome is a false negative.</p></li><li><p><strong>Which metric asks how often positive predictions are correct?</strong></p><ul><li>Precision</li><li>Recall</li><li>False-negative rate</li></ul><p><strong>Answer:</strong> Precision</p><p><strong>Explanation:</strong> Precision is TP divided by TP plus FP, so its denominator is all predicted positives.</p></li><li><p><strong>Which metric directly penalizes confident wrong probability predictions?</strong></p><ul><li>Log loss</li><li>Accuracy only</li><li>Tree depth</li></ul><p><strong>Answer:</strong> Log loss</p><p><strong>Explanation:</strong> Log loss evaluates probabilities and imposes a large penalty when a wrong prediction is made with high confidence.</p></li></ol></section><section><h4>Applied</h4><ol><li><p><strong>A photo can be tagged both indoor and nature. Which target structure fits?</strong></p><ul><li>Multilabel</li><li>Multiclass with exactly one class</li><li>Continuous regression</li></ul><p><strong>Answer:</strong> Multilabel</p><p><strong>Explanation:</strong> The labels are not mutually exclusive, so more than one can be correct for the same photo.</p></li><li><p><strong>A target has levels low, medium, and high. What must the analysis preserve?</strong></p><ul><li>Their natural order</li><li>Equal numeric gaps between levels</li><li>No relationship among levels</li></ul><p><strong>Answer:</strong> Their natural order</p><p><strong>Explanation:</strong> Ordinal classes have meaningful order, but the spacing between adjacent levels is not automatically equal.</p></li><li><p><strong>A KNN model uses age in years and income in euros without scaling. What is the main risk?</strong></p><ul><li>Income may dominate the distance calculation</li><li>The tree becomes too deep</li><li>The sigmoid stops returning probabilities</li></ul><p><strong>Answer:</strong> Income may dominate the distance calculation</p><p><strong>Explanation:</strong> The larger numerical scale can drive nearest-neighbor distances even if that influence is not substantively justified.</p></li><li><p><strong>How should k usually be selected for KNN?</strong></p><ul><li>With validation or cross-validation</li><li>From training accuracy alone</li><li>Always set to 1</li></ul><p><strong>Answer:</strong> With validation or cross-validation</p><p><strong>Explanation:</strong> Validation checks the bias-variance tradeoff on held-out data rather than rewarding a neighborhood that merely fits training noise.</p></li><li><p><strong>A tree has tiny leaves that memorize rare training combinations. Which change directly addresses this?</strong></p><ul><li>Increase minimum samples per leaf</li><li>Lower the logistic threshold</li><li>Use more histogram bins</li></ul><p><strong>Answer:</strong> Increase minimum samples per leaf</p><p><strong>Explanation:</strong> Requiring more observations in each leaf prevents the tree from creating rules for extremely small training groups.</p></li><li><p><strong>Missing a disease case is especially costly. Which threshold change commonly supports higher recall?</strong></p><ul><li>Lower the positive threshold</li><li>Raise the positive threshold</li><li>Remove probability estimates</li></ul><p><strong>Answer:</strong> Lower the positive threshold</p><p><strong>Explanation:</strong> Lowering the threshold usually predicts more observations as positive and can catch more actual positives, though false positives may also rise.</p></li><li><p><strong>A classifier has 30 true positives and 10 false positives. What is its precision?</strong></p><ul><li>0.75</li><li>0.60</li><li>0.30</li></ul><p><strong>Answer:</strong> 0.75</p><p><strong>Explanation:</strong> Precision is 30 divided by 30 plus 10, which equals 0.75.</p></li><li><p><strong>A classifier has 30 true positives and 20 false negatives. What is its recall?</strong></p><ul><li>0.60</li><li>0.75</li><li>0.40</li></ul><p><strong>Answer:</strong> 0.60</p><p><strong>Explanation:</strong> Recall is 30 divided by 30 plus 20, which equals 0.60.</p></li><li><p><strong>Only 1 percent of cases are positive, and a model always predicts negative. Why is accuracy misleading?</strong></p><ul><li>It hides complete failure on the positive class</li><li>It directly measures probability calibration</li><li>It gives equal detail about both error types</li></ul><p><strong>Answer:</strong> It hides complete failure on the positive class</p><p><strong>Explanation:</strong> The model can be 99 percent accurate while its recall for the rare positive class is zero.</p></li><li><p><strong>Which evaluation is most directly concerned with the quality of estimated probabilities?</strong></p><ul><li>Log loss</li><li>Maximum tree depth</li><li>KNN fit time</li></ul><p><strong>Answer:</strong> Log loss</p><p><strong>Explanation:</strong> Log loss uses the predicted probabilities themselves rather than only the final hard labels.</p></li></ol></section><section><h4>Challenge</h4><ol><li><p><strong>Why can KNN degrade in a very high-dimensional feature space?</strong></p><ul><li>Near and far distances can become less distinguishable</li><li>Trees become probabilistic</li><li>All classes become ordinal</li></ul><p><strong>Answer:</strong> Near and far distances can become less distinguishable</p><p><strong>Explanation:</strong> Distance concentration makes local neighborhoods less informative as dimensionality grows, especially with irrelevant features.</p></li><li><p><strong>What distinguishes weighted KNN from ordinary majority voting?</strong></p><ul><li>Closer neighbors receive more influence</li><li>Every feature receives the same scale</li><li>The model grows a deeper tree</li></ul><p><strong>Answer:</strong> Closer neighbors receive more influence</p><p><strong>Explanation:</strong> Weighted KNN gives nearby observations larger votes because they may be more informative than distant neighbors.</p></li><li><p><strong>Why might a shallow decision tree struggle with a diagonal class boundary?</strong></p><ul><li>Its individual splits are axis-aligned</li><li>It cannot use numerical features</li><li>Gini impurity requires probabilities from logistic regression</li></ul><p><strong>Answer:</strong> Its individual splits are axis-aligned</p><p><strong>Explanation:</strong> A tree partitions one feature at a time, so representing a diagonal boundary may require several rectangular regions.</p></li><li><p><strong>Which node has the lower Gini impurity?</strong></p><ul><li>A node containing only one class</li><li>A node split evenly between two classes</li><li>They always have equal impurity</li></ul><p><strong>Answer:</strong> A node containing only one class</p><p><strong>Explanation:</strong> A pure node has Gini impurity zero, while an evenly mixed binary node has higher impurity.</p></li><li><p><strong>A deep tree has perfect training accuracy but much worse validation accuracy. What is the strongest diagnosis?</strong></p><ul><li>The tree is overfitting</li><li>The validation data proves the tree is pure</li><li>The model needs a lower logistic threshold</li></ul><p><strong>Answer:</strong> The tree is overfitting</p><p><strong>Explanation:</strong> A large training-validation gap is consistent with memorizing training-specific patterns that do not generalize.</p></li><li><p><strong>What does choosing beta greater than 1 do in an F-beta score?</strong></p><ul><li>Gives recall more weight</li><li>Gives precision more weight</li><li>Turns the score into accuracy</li></ul><p><strong>Answer:</strong> Gives recall more weight</p><p><strong>Explanation:</strong> The lecture defines beta above one as emphasizing recall and beta below one as emphasizing precision.</p></li><li><p><strong>What does ROC-AUC summarize?</strong></p><ul><li>Ranking behavior across thresholds</li><li>Accuracy at exactly 0.5</li><li>Only the false-negative count</li></ul><p><strong>Answer:</strong> Ranking behavior across thresholds</p><p><strong>Explanation:</strong> The ROC curve varies the threshold, and its area summarizes how well scores rank positives relative to negatives.</p></li><li><p><strong>Two models make the same number of wrong labels, but one is extremely confident when wrong. Which metric exposes that difference?</strong></p><ul><li>Log loss</li><li>Hard-label accuracy alone</li><li>Maximum depth</li></ul><p><strong>Answer:</strong> Log loss</p><p><strong>Explanation:</strong> Log loss penalizes a confident wrong probability more heavily, while hard-label accuracy records only that both predictions were wrong.</p></li><li><p><strong>False positives are very expensive. Which threshold change commonly reduces positive predictions?</strong></p><ul><li>Raise the positive threshold</li><li>Lower the positive threshold</li><li>Set every score to 0.5</li></ul><p><strong>Answer:</strong> Raise the positive threshold</p><p><strong>Explanation:</strong> A higher threshold demands stronger estimated evidence before predicting positive, often reducing both true and false positive predictions.</p></li><li><p><strong>A regulated decision needs a compact, readable model and usable probabilities. Which lecture model is a strong baseline to assess?</strong></p><ul><li>Logistic regression</li><li>Unconstrained deep decision tree</li><li>KNN with unscaled features</li></ul><p><strong>Answer:</strong> Logistic regression</p><p><strong>Explanation:</strong> Logistic regression offers smooth probability estimates and interpretable signed coefficients when a linear boundary is suitable, though validation and application-specific checks remain necessary.</p></li></ol></section></section><section><h3>Sources</h3><ul><li>lectures/lecture_05_classification_part_1/README.md</li><li>lectures/lecture_05_classification_part_1/lecture_notes.md</li><li>lectures/lecture_05_classification_part_1/links.yaml</li><li>lectures/lecture_05_classification_part_1/lecture_examples/README.md</li><li>lectures/lecture_05_classification_part_1/practical_session/README.md</li></ul></section></div>
+      </details>
+    </section>
+
+    <noscript>
+      <section class="panel" aria-label="JavaScript unavailable">
+        <p>Interactive controls are unavailable, but complete explanations, graph fallbacks,
+          questions, answers, and feedback remain in the static reference above.</p>
+      </section>
+    </noscript>
+  </main>
+
+  <footer class="page-footer">
+    <p class="source-list" id="source-list"></p>
+  </footer>
+
+  <script>
+(function exposeQuizStateMachine(root, factory) {
+  "use strict";
+
+  const api = factory();
+  if (typeof module !== "undefined" && module.exports) {
+    module.exports = api;
+  }
+  root.LearningExperienceQuiz = api;
+})(typeof globalThis === "undefined" ? this : globalThis, function createQuizStateMachine() {
+  "use strict";
+
+  function blankQuestionState() {
+    return {
+      attempts: 0,
+      firstAttemptCorrect: null,
+      complete: false,
+    };
+  }
+
+  function createQuizState(questionCount, settings = {}) {
+    return {
+      quizIndex: 0,
+      questionStates: Array.from({ length: questionCount }, blankQuestionState),
+      responses: [],
+      selection: [],
+      feedback: null,
+      showResults: false,
+      settings: { ...settings },
+    };
+  }
+
+  function currentQuestionState(state) {
+    return state.questionStates[state.quizIndex];
+  }
+
+  function normalizedAnswer(value) {
+    const values = Array.isArray(value) ? value : [value];
+    return values.map((item) => String(item).trim().toLocaleLowerCase()).sort();
+  }
+
+  function answersMatch(selected, answer) {
+    return JSON.stringify(normalizedAnswer(selected)) ===
+      JSON.stringify(normalizedAnswer(answer));
+  }
+
+  function selectAnswer(state, selected) {
+    if (currentQuestionState(state)?.complete) return state;
+    const values = Array.isArray(selected) ? selected : [selected];
+    return {
+      ...state,
+      selection: values.map((value) => String(value).trim()).filter(Boolean),
+      feedback: null,
+    };
+  }
+
+  function submitAnswer(state, question) {
+    const questionState = currentQuestionState(state);
+    if (!questionState || questionState.complete) return state;
+    if (!state.selection.length) {
+      return {
+        ...state,
+        feedback: {
+          correct: false,
+          message: "Choose an answer before checking.",
+          missing: true,
+        },
+      };
+    }
+
+    const correct = answersMatch(state.selection, question.answer);
+    const attempts = questionState.attempts + 1;
+    const updatedQuestionState = {
+      attempts,
+      firstAttemptCorrect:
+        questionState.firstAttemptCorrect === null
+          ? correct
+          : questionState.firstAttemptCorrect,
+      complete: correct,
+    };
+    const questionStates = state.questionStates.map((item, index) =>
+      index === state.quizIndex ? updatedQuestionState : item
+    );
+    const feedback = {
+      correct,
+      message: question.explanation,
+      missing: false,
+    };
+
+    if (!correct) {
+      return { ...state, questionStates, feedback };
+    }
+
+    return {
+      ...state,
+      questionStates,
+      feedback,
+      responses: [
+        ...state.responses,
+        {
+          id: question.id,
+          prompt: question.prompt,
+          selected: [...state.selection],
+          answer: question.answer,
+          explanation: question.explanation,
+          correct,
+          attempts,
+          firstAttemptCorrect: updatedQuestionState.firstAttemptCorrect,
+        },
+      ],
+    };
+  }
+
+  function canAdvance(state) {
+    return !state.showResults && Boolean(currentQuestionState(state)?.complete);
+  }
+
+  function completedCount(state) {
+    return state.questionStates.filter((questionState) => questionState.complete).length;
+  }
+
+  function nextQuestion(state) {
+    if (!canAdvance(state)) return state;
+    if (state.quizIndex >= state.questionStates.length - 1) {
+      return {
+        ...state,
+        selection: [],
+        feedback: null,
+        showResults: true,
+      };
+    }
+    return {
+      ...state,
+      quizIndex: state.quizIndex + 1,
+      selection: [],
+      feedback: null,
+    };
+  }
+
+  function summarize(state) {
+    return {
+      completed: completedCount(state),
+      firstAttemptCorrect: state.responses.filter(
+        (response) => response.firstAttemptCorrect
+      ).length,
+      totalAttempts: state.responses.reduce(
+        (total, response) => total + response.attempts,
+        0
+      ),
+    };
+  }
+
+  function withSettings(state, settings) {
+    return { ...state, settings: { ...settings } };
+  }
+
+  function retryQuiz(state) {
+    return createQuizState(state.questionStates.length, state.settings);
+  }
+
+  return {
+    answersMatch,
+    canAdvance,
+    completedCount,
+    createQuizState,
+    currentQuestionState,
+    nextQuestion,
+    retryQuiz,
+    selectAnswer,
+    submitAnswer,
+    summarize,
+    withSettings,
+  };
+});
+
+  </script>
+  <script>const CONTENT = {"meta":{"experience_id":"lecture-05-classification-part-1","title":"Classification Part 1: Interactive Review","sources":["lectures/lecture_05_classification_part_1/README.md","lectures/lecture_05_classification_part_1/lecture_notes.md","lectures/lecture_05_classification_part_1/links.yaml","lectures/lecture_05_classification_part_1/lecture_examples/README.md","lectures/lecture_05_classification_part_1/practical_session/README.md"]},"defaults":{"difficulty":"foundations","focus_mode":true,"color_blind":true,"break_prompts":true},"concepts":[{"id":"classification-problem-types","title":"Match the classifier to the target structure","explanation":"Classification predicts categorical targets or probabilities over categories. Binary tasks have two outcomes, multiclass tasks choose among more than two classes, multilabel tasks can assign several labels to one observation, and ordinal tasks use ordered classes whose gaps are not necessarily equal.","interpretation":"Identify whether one or several labels can apply and whether label order matters before choosing modeling and evaluation methods. An ordinal target preserves order without turning the levels into an ordinary continuous measurement.","common_mistakes":["Treating a multilabel task as multiclass even though several labels can be correct at once.","Treating ordered labels as equally spaced numerical values without justification."],"sources":["lectures/lecture_05_classification_part_1/lecture_notes.md","lectures/lecture_05_classification_part_1/README.md"]},{"id":"knn-distance-scaling","title":"KNN depends on meaningful distances","explanation":"K-Nearest Neighbors stores the training data and predicts from the majority class among the k nearest observations. The distance metric, feature scaling, dimensionality, and choice of k all change which observations count as neighbors.","interpretation":"Scale numerical features before distance-based comparison when their units differ, and select k with validation. Small k can follow local noise, while large k creates smoother neighborhoods that may blur a real boundary.","common_mistakes":["Letting a large-unit feature dominate distance solely because of its measurement scale.","Choosing k from training performance alone."],"sources":["lectures/lecture_05_classification_part_1/lecture_notes.md","lectures/lecture_05_classification_part_1/lecture_examples/README.md","lectures/lecture_05_classification_part_1/practical_session/README.md"]},{"id":"decision-tree-impurity","title":"Tree splits seek purer child nodes","explanation":"A decision tree recursively applies feature-threshold rules. Gini impurity and entropy measure how mixed the classes are in a node, and a useful split reduces impurity or uncertainty in its children.","interpretation":"Read a split as a local rule that partitions the current observations. Low impurity means one class dominates the node; it does not by itself prove that the rule will generalize to new data.","common_mistakes":["Assuming every impurity-reducing training split improves validation performance.","Reading Gini impurity as a feature importance score."],"sources":["lectures/lecture_05_classification_part_1/lecture_notes.md","lectures/lecture_05_classification_part_1/lecture_examples/README.md"]},{"id":"tree-overfitting-control","title":"Control tree complexity before it memorizes noise","explanation":"Deep trees can keep making greedy splits until small training patterns are memorized. Maximum depth, minimum samples per split or leaf, pruning, and cost-complexity control reduce effective tree complexity.","interpretation":"Compare training and validation behavior while changing a complexity control. A shallow tree may underfit, while an unconstrained tree can be accurate on training data yet fragile on unseen observations.","common_mistakes":["Choosing the deepest tree because it has the highest training accuracy.","Calling a very deep tree easy to interpret merely because every rule is technically visible."],"sources":["lectures/lecture_05_classification_part_1/lecture_notes.md","lectures/lecture_05_classification_part_1/practical_session/README.md"]},{"id":"logistic-probabilities-thresholds","title":"Separate probability estimation from the decision threshold","explanation":"Logistic regression applies the sigmoid function to a linear score, producing an estimated positive-class probability between zero and one. A threshold, often 0.5 by default, then converts that probability into a class decision.","interpretation":"Choose the threshold according to the cost of false positives and false negatives. Raising it usually produces fewer positive predictions; lowering it usually catches more positives but can also create more false alarms.","common_mistakes":["Treating 0.5 as the correct threshold for every application.","Interpreting a positive coefficient as a guaranteed causal effect."],"sources":["lectures/lecture_05_classification_part_1/lecture_notes.md","lectures/lecture_05_classification_part_1/lecture_examples/README.md","lectures/lecture_05_classification_part_1/practical_session/README.md"]},{"id":"confusion-matrix-outcomes","title":"Name each kind of classification outcome","explanation":"For a binary classifier, the confusion matrix counts true positives, false positives, true negatives, and false negatives. These four counts distinguish correct decisions from the two error types.","interpretation":"Define the positive class first, then ask which error matters in the application. False-positive rate divides false positives by all actual negatives, while false-negative rate divides false negatives by all actual positives.","common_mistakes":["Swapping false positives and false negatives by forgetting what the actual class was.","Comparing error counts without considering the number of actual positives or negatives."],"sources":["lectures/lecture_05_classification_part_1/lecture_notes.md","lectures/lecture_05_classification_part_1/practical_session/README.md"]},{"id":"precision-recall-fscore","title":"Choose metrics around the error cost","explanation":"Precision is TP divided by TP plus FP and asks how often positive predictions are correct. Recall is TP divided by TP plus FN and asks how many actual positives were found. F-beta combines precision and recall, with beta above one emphasizing recall and beta below one emphasizing precision.","interpretation":"Accuracy can hide failure on a rare class. Prefer precision when false positives are especially costly, recall when missing positives is especially costly, and an F-score when a stated balance between them is useful.","common_mistakes":["Reporting only accuracy for a strongly imbalanced target.","Assuming F1 reveals whether precision or recall is the weaker component."],"sources":["lectures/lecture_05_classification_part_1/lecture_notes.md","lectures/lecture_05_classification_part_1/practical_session/README.md"]},{"id":"roc-auc-log-loss","title":"Evaluate rankings and probabilities, not only hard labels","explanation":"The ROC curve plots true-positive rate against false-positive rate across thresholds, while ROC-AUC summarizes ranking quality. Log loss evaluates predicted probabilities directly and heavily penalizes confident wrong predictions.","interpretation":"Use ROC-AUC to examine threshold-spanning ranking behavior and log loss when probability quality matters. A score-distribution view can reveal class overlap that makes threshold selection difficult, even when one hard-label metric looks acceptable.","common_mistakes":["Reading AUC as accuracy at the default threshold.","Ignoring overconfident probability errors because the final class label happened to be the main reported output."],"sources":["lectures/lecture_05_classification_part_1/lecture_notes.md","lectures/lecture_05_classification_part_1/practical_session/README.md"]}],"visualizations":[{"id":"cls-score-distribution","type":"histogram","title":"Illustrative predicted-score distribution","explanation":"These fixed illustrative probability-like scores show how bin choice changes the visible shape of a score distribution. This control changes histogram resolution; it is not a decision-threshold control and does not report classifier performance by itself.","data":[0.04,0.07,0.09,0.12,0.16,0.19,0.23,0.27,0.31,0.36,0.42,0.48,0.54,0.59,0.64,0.69,0.73,0.77,0.81,0.85,0.89,0.92,0.95,0.97],"controls":{"bins":[4,6,8,12]},"fallback":"Illustrative probability-like scores, sorted: 0.04, 0.07, 0.09, 0.12, 0.16, 0.19, 0.23, 0.27, 0.31, 0.36, 0.42, 0.48, 0.54, 0.59, 0.64, 0.69, 0.73, 0.77, 0.81, 0.85, 0.89, 0.92, 0.95, 0.97. Different bin counts change the visible grouping, not the scores or a classification threshold."},{"id":"cls-feature-separation","type":"scatter","title":"Illustrative feature geometry and local separation","explanation":"These fixed illustrative feature coordinates form two broadly separated regions with some overlap. The optional trend line summarizes association between the two coordinates; it is not a class boundary. KNN neighborhoods and a linear classifier can respond differently to this geometry.","data":[{"x":1.0,"y":1.2,"class":"A"},{"x":1.3,"y":1.0,"class":"A"},{"x":1.6,"y":1.7,"class":"A"},{"x":1.9,"y":1.5,"class":"A"},{"x":2.2,"y":2.4,"class":"A"},{"x":2.5,"y":2.0,"class":"A"},{"x":2.7,"y":3.0,"class":"B"},{"x":3.0,"y":2.6,"class":"B"},{"x":3.3,"y":3.5,"class":"B"},{"x":3.7,"y":3.2,"class":"B"},{"x":4.0,"y":4.1,"class":"B"},{"x":4.4,"y":3.9,"class":"B"}],"controls":{"trend_line":true},"fallback":"Illustrative class A points: (1.0, 1.2), (1.3, 1.0), (1.6, 1.7), (1.9, 1.5), (2.2, 2.4), (2.5, 2.0). Illustrative class B points: (2.7, 3.0), (3.0, 2.6), (3.3, 3.5), (3.7, 3.2), (4.0, 4.1), (4.4, 3.9). The coordinates generally rise together and the class regions nearly meet around the middle."},{"id":"cls-margin-outliers","type":"boxplot","title":"Illustrative classification margins need context","explanation":"These fixed illustrative absolute margin-like values represent distances from a decision boundary. Wider fence settings change which large margins are flagged. A flagged value is unusual in this teaching sample, not evidence of a data error or a wrong prediction.","data":[0.05,0.08,0.1,0.11,0.12,0.14,0.15,0.16,0.18,0.2,0.22,0.25,0.28,0.45,0.75],"controls":{"fence_multipliers":[1,1.5,2]},"fallback":"Illustrative absolute margin-like values, sorted: 0.05, 0.08, 0.10, 0.11, 0.12, 0.14, 0.15, 0.16, 0.18, 0.20, 0.22, 0.25, 0.28, 0.45, 0.75. A 1 or 1.5 times IQR fence flags 0.45 and 0.75, while a 2 times IQR fence flags only 0.75. These are unusual margins, not automatically errors."}],"quizzes":{"foundations":[{"id":"cls-f-01","type":"single-choice","prompt":"Which task allows several labels to be assigned to one observation?","options":["Multilabel classification","Binary classification","Ordinary regression"],"answer":"Multilabel classification","explanation":"In multilabel classification, several labels can apply simultaneously to the same observation.","concept":"classification-problem-types"},{"id":"cls-f-02","type":"single-choice","prompt":"Why is feature scaling important for KNN?","options":["Large-unit features can dominate distance","It makes every class balanced","It removes the need to select k"],"answer":"Large-unit features can dominate distance","explanation":"KNN relies directly on distances, so a feature with a large numerical scale can overwhelm other features even when that dominance is not meaningful.","concept":"knn-distance-scaling"},{"id":"cls-f-03","type":"single-choice","prompt":"What usually happens as k becomes very large in KNN?","options":["The decision regions become smoother","The model uses only one neighbor","Distance stops mattering"],"answer":"The decision regions become smoother","explanation":"Larger neighborhoods average over more observations, increasing smoothing and potentially blurring local class boundaries.","concept":"knn-distance-scaling"},{"id":"cls-f-04","type":"single-choice","prompt":"What does low impurity mean in a decision-tree node?","options":["One class dominates the node","All features have equal importance","The tree cannot overfit"],"answer":"One class dominates the node","explanation":"Gini impurity and entropy are low when the class labels in the node are relatively homogeneous.","concept":"decision-tree-impurity"},{"id":"cls-f-05","type":"single-choice","prompt":"Which control directly limits how many levels a decision tree can grow?","options":["Maximum depth","Probability threshold","Number of KNN neighbors"],"answer":"Maximum depth","explanation":"Maximum depth restricts tree complexity and can reduce the tendency to memorize small training patterns.","concept":"tree-overfitting-control"},{"id":"cls-f-06","type":"single-choice","prompt":"What does the sigmoid function do in binary logistic regression?","options":["Maps a linear score into a value from 0 to 1","Chooses the nearest neighbors","Builds axis-aligned splits"],"answer":"Maps a linear score into a value from 0 to 1","explanation":"The sigmoid transforms the linear score into an estimated positive-class probability.","concept":"logistic-probabilities-thresholds"},{"id":"cls-f-07","type":"single-choice","prompt":"What normally happens when the positive-class decision threshold is lowered?","options":["More observations are predicted positive","No predictions change","Only true negatives increase"],"answer":"More observations are predicted positive","explanation":"A lower threshold makes it easier for an estimated probability to qualify as positive, which can increase both true and false positives.","concept":"logistic-probabilities-thresholds"},{"id":"cls-f-08","type":"single-choice","prompt":"Which confusion-matrix outcome is an actual positive predicted as negative?","options":["False negative","False positive","True negative"],"answer":"False negative","explanation":"The prediction missed an actual positive, so the outcome is a false negative.","concept":"confusion-matrix-outcomes"},{"id":"cls-f-09","type":"single-choice","prompt":"Which metric asks how often positive predictions are correct?","options":["Precision","Recall","False-negative rate"],"answer":"Precision","explanation":"Precision is TP divided by TP plus FP, so its denominator is all predicted positives.","concept":"precision-recall-fscore"},{"id":"cls-f-10","type":"single-choice","prompt":"Which metric directly penalizes confident wrong probability predictions?","options":["Log loss","Accuracy only","Tree depth"],"answer":"Log loss","explanation":"Log loss evaluates probabilities and imposes a large penalty when a wrong prediction is made with high confidence.","concept":"roc-auc-log-loss"}],"applied":[{"id":"cls-a-01","type":"single-choice","prompt":"A photo can be tagged both indoor and nature. Which target structure fits?","options":["Multilabel","Multiclass with exactly one class","Continuous regression"],"answer":"Multilabel","explanation":"The labels are not mutually exclusive, so more than one can be correct for the same photo.","concept":"classification-problem-types"},{"id":"cls-a-02","type":"single-choice","prompt":"A target has levels low, medium, and high. What must the analysis preserve?","options":["Their natural order","Equal numeric gaps between levels","No relationship among levels"],"answer":"Their natural order","explanation":"Ordinal classes have meaningful order, but the spacing between adjacent levels is not automatically equal.","concept":"classification-problem-types"},{"id":"cls-a-03","type":"single-choice","prompt":"A KNN model uses age in years and income in euros without scaling. What is the main risk?","options":["Income may dominate the distance calculation","The tree becomes too deep","The sigmoid stops returning probabilities"],"answer":"Income may dominate the distance calculation","explanation":"The larger numerical scale can drive nearest-neighbor distances even if that influence is not substantively justified.","concept":"knn-distance-scaling"},{"id":"cls-a-04","type":"single-choice","prompt":"How should k usually be selected for KNN?","options":["With validation or cross-validation","From training accuracy alone","Always set to 1"],"answer":"With validation or cross-validation","explanation":"Validation checks the bias-variance tradeoff on held-out data rather than rewarding a neighborhood that merely fits training noise.","concept":"knn-distance-scaling"},{"id":"cls-a-05","type":"single-choice","prompt":"A tree has tiny leaves that memorize rare training combinations. Which change directly addresses this?","options":["Increase minimum samples per leaf","Lower the logistic threshold","Use more histogram bins"],"answer":"Increase minimum samples per leaf","explanation":"Requiring more observations in each leaf prevents the tree from creating rules for extremely small training groups.","concept":"tree-overfitting-control"},{"id":"cls-a-06","type":"single-choice","prompt":"Missing a disease case is especially costly. Which threshold change commonly supports higher recall?","options":["Lower the positive threshold","Raise the positive threshold","Remove probability estimates"],"answer":"Lower the positive threshold","explanation":"Lowering the threshold usually predicts more observations as positive and can catch more actual positives, though false positives may also rise.","concept":"logistic-probabilities-thresholds"},{"id":"cls-a-07","type":"single-choice","prompt":"A classifier has 30 true positives and 10 false positives. What is its precision?","options":["0.75","0.60","0.30"],"answer":"0.75","explanation":"Precision is 30 divided by 30 plus 10, which equals 0.75.","concept":"precision-recall-fscore"},{"id":"cls-a-08","type":"single-choice","prompt":"A classifier has 30 true positives and 20 false negatives. What is its recall?","options":["0.60","0.75","0.40"],"answer":"0.60","explanation":"Recall is 30 divided by 30 plus 20, which equals 0.60.","concept":"precision-recall-fscore"},{"id":"cls-a-09","type":"single-choice","prompt":"Only 1 percent of cases are positive, and a model always predicts negative. Why is accuracy misleading?","options":["It hides complete failure on the positive class","It directly measures probability calibration","It gives equal detail about both error types"],"answer":"It hides complete failure on the positive class","explanation":"The model can be 99 percent accurate while its recall for the rare positive class is zero.","concept":"precision-recall-fscore"},{"id":"cls-a-10","type":"single-choice","prompt":"Which evaluation is most directly concerned with the quality of estimated probabilities?","options":["Log loss","Maximum tree depth","KNN fit time"],"answer":"Log loss","explanation":"Log loss uses the predicted probabilities themselves rather than only the final hard labels.","concept":"roc-auc-log-loss"}],"challenge":[{"id":"cls-c-01","type":"single-choice","prompt":"Why can KNN degrade in a very high-dimensional feature space?","options":["Near and far distances can become less distinguishable","Trees become probabilistic","All classes become ordinal"],"answer":"Near and far distances can become less distinguishable","explanation":"Distance concentration makes local neighborhoods less informative as dimensionality grows, especially with irrelevant features.","concept":"knn-distance-scaling"},{"id":"cls-c-02","type":"single-choice","prompt":"What distinguishes weighted KNN from ordinary majority voting?","options":["Closer neighbors receive more influence","Every feature receives the same scale","The model grows a deeper tree"],"answer":"Closer neighbors receive more influence","explanation":"Weighted KNN gives nearby observations larger votes because they may be more informative than distant neighbors.","concept":"knn-distance-scaling"},{"id":"cls-c-03","type":"single-choice","prompt":"Why might a shallow decision tree struggle with a diagonal class boundary?","options":["Its individual splits are axis-aligned","It cannot use numerical features","Gini impurity requires probabilities from logistic regression"],"answer":"Its individual splits are axis-aligned","explanation":"A tree partitions one feature at a time, so representing a diagonal boundary may require several rectangular regions.","concept":"decision-tree-impurity"},{"id":"cls-c-04","type":"single-choice","prompt":"Which node has the lower Gini impurity?","options":["A node containing only one class","A node split evenly between two classes","They always have equal impurity"],"answer":"A node containing only one class","explanation":"A pure node has Gini impurity zero, while an evenly mixed binary node has higher impurity.","concept":"decision-tree-impurity"},{"id":"cls-c-05","type":"single-choice","prompt":"A deep tree has perfect training accuracy but much worse validation accuracy. What is the strongest diagnosis?","options":["The tree is overfitting","The validation data proves the tree is pure","The model needs a lower logistic threshold"],"answer":"The tree is overfitting","explanation":"A large training-validation gap is consistent with memorizing training-specific patterns that do not generalize.","concept":"tree-overfitting-control"},{"id":"cls-c-06","type":"single-choice","prompt":"What does choosing beta greater than 1 do in an F-beta score?","options":["Gives recall more weight","Gives precision more weight","Turns the score into accuracy"],"answer":"Gives recall more weight","explanation":"The lecture defines beta above one as emphasizing recall and beta below one as emphasizing precision.","concept":"precision-recall-fscore"},{"id":"cls-c-07","type":"single-choice","prompt":"What does ROC-AUC summarize?","options":["Ranking behavior across thresholds","Accuracy at exactly 0.5","Only the false-negative count"],"answer":"Ranking behavior across thresholds","explanation":"The ROC curve varies the threshold, and its area summarizes how well scores rank positives relative to negatives.","concept":"roc-auc-log-loss"},{"id":"cls-c-08","type":"single-choice","prompt":"Two models make the same number of wrong labels, but one is extremely confident when wrong. Which metric exposes that difference?","options":["Log loss","Hard-label accuracy alone","Maximum depth"],"answer":"Log loss","explanation":"Log loss penalizes a confident wrong probability more heavily, while hard-label accuracy records only that both predictions were wrong.","concept":"roc-auc-log-loss"},{"id":"cls-c-09","type":"single-choice","prompt":"False positives are very expensive. Which threshold change commonly reduces positive predictions?","options":["Raise the positive threshold","Lower the positive threshold","Set every score to 0.5"],"answer":"Raise the positive threshold","explanation":"A higher threshold demands stronger estimated evidence before predicting positive, often reducing both true and false positive predictions.","concept":"logistic-probabilities-thresholds"},{"id":"cls-c-10","type":"single-choice","prompt":"A regulated decision needs a compact, readable model and usable probabilities. Which lecture model is a strong baseline to assess?","options":["Logistic regression","Unconstrained deep decision tree","KNN with unscaled features"],"answer":"Logistic regression","explanation":"Logistic regression offers smooth probability estimates and interpretable signed coefficients when a linear boundary is suitable, though validation and application-specific checks remain necessary.","concept":"logistic-probabilities-thresholds"}]},"break_prompts":["Take a nearest-neighbor break: your water bottle is probably close.","Prune one minute of screen time and stretch your decision branches.","No threshold tuning required: stand up when your comfort score exceeds 0.5.","Reset the confusion matrix by looking somewhere far away for twenty seconds."]};</script>
+  <script>
+    "use strict";
+
+    const safeStorage = {
+      get(key) {
+        try {
+          return window.localStorage.getItem(key);
+        } catch (_error) {
+          return null;
+        }
+      },
+      set(key, value) {
+        try {
+          window.localStorage.setItem(key, value);
+        } catch (_error) {
+          return false;
+        }
+        return true;
+      },
+    };
+
+    const storageKey = `learning-experience:${CONTENT.meta.experience_id}`;
+    const savedSettings = (() => {
+      const raw = safeStorage.get(storageKey);
+      if (!raw) return {};
+      try {
+        const parsed = JSON.parse(raw);
+        return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+      } catch (_error) {
+        return {};
+      }
+    })();
+
+    const validDifficulties = new Set(["foundations", "applied", "challenge"]);
+    const savedBoolean = (value, fallback) =>
+      typeof value === "boolean" ? value : fallback;
+
+    const state = {
+      difficulty: validDifficulties.has(savedSettings.difficulty)
+        ? savedSettings.difficulty
+        : CONTENT.defaults.difficulty,
+      focus: savedBoolean(savedSettings.focus, CONTENT.defaults.focus_mode),
+      colorBlind: savedBoolean(savedSettings.colorBlind, CONTENT.defaults.color_blind),
+      breakPrompts: savedBoolean(savedSettings.breakPrompts, CONTENT.defaults.break_prompts),
+      conceptIndex: 0,
+      visualizationIndex: 0,
+      quiz: null,
+    };
+
+    const byId = (id) => document.getElementById(id);
+    const escapeHtml = (value) => String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+
+    function learnerSettings() {
+      return {
+        difficulty: state.difficulty,
+        focus: state.focus,
+        colorBlind: state.colorBlind,
+        breakPrompts: state.breakPrompts,
+      };
+    }
+
+    function saveSettings() {
+      const settings = learnerSettings();
+      if (state.quiz) {
+        state.quiz = LearningExperienceQuiz.withSettings(state.quiz, settings);
+      }
+      safeStorage.set(storageKey, JSON.stringify(settings));
+    }
+
+    function updateProgress() {
+      const conceptPart = CONTENT.concepts.length
+        ? (state.conceptIndex + 1) / CONTENT.concepts.length
+        : 1;
+      const completedQuestions = state.quiz
+        ? LearningExperienceQuiz.completedCount(state.quiz)
+        : 0;
+      const quizPart = completedQuestions / 10;
+      const percentage = Math.round(((conceptPart + quizPart) / 2) * 100);
+      const progress = document.querySelector('[role="progressbar"]');
+      progress.setAttribute("aria-valuenow", String(percentage));
+      document.querySelector(".progress-value").style.width = `${percentage}%`;
+      byId("progress-text").textContent =
+        `Concept ${state.conceptIndex + 1} of ${CONTENT.concepts.length}; ` +
+        `quiz ${completedQuestions} of 10 answered.`;
+    }
+
+    function showBreakPrompt(index) {
+      const prompt = byId("break-prompt");
+      if (!state.breakPrompts || CONTENT.break_prompts.length === 0) {
+        prompt.hidden = true;
+        return;
+      }
+      prompt.textContent = CONTENT.break_prompts[index % CONTENT.break_prompts.length];
+      prompt.hidden = false;
+    }
+
+    function applySettings() {
+      document.documentElement.dataset.focusFriendly = String(state.focus);
+      document.documentElement.dataset.colorBlind = String(state.colorBlind);
+      document.querySelector('[data-setting="difficulty"]').value = state.difficulty;
+      document.querySelector('[data-setting="focus"]').checked = state.focus;
+      document.querySelector('[data-setting="color-blind"]').checked = state.colorBlind;
+      document.querySelector('[data-setting="break-prompts"]').checked = state.breakPrompts;
+      if (!state.breakPrompts) byId("break-prompt").hidden = true;
+      saveSettings();
+      renderConcepts();
+      renderVisualizations();
+    }
+
+    function renderConcepts() {
+      const container = byId("concept-list");
+      container.innerHTML = CONTENT.concepts.map((concept, index) => {
+        const hidden = state.focus && index !== state.conceptIndex ? " hidden" : "";
+        const mistakes = concept.common_mistakes
+          .map((mistake) => `<li>${escapeHtml(mistake)}</li>`).join("");
+        return `<article class="concept-card"${hidden}>
+          <p class="eyebrow">Concept ${index + 1}</p>
+          <h3>${escapeHtml(concept.title)}</h3>
+          <p>${escapeHtml(concept.explanation)}</p>
+          <p><strong>How to read it:</strong> ${escapeHtml(concept.interpretation)}</p>
+          <div class="mistakes optional-detail">
+            <strong>Common mistake</strong><ul>${mistakes}</ul>
+          </div>
+        </article>`;
+      }).join("");
+      byId("previous-concept").disabled = state.conceptIndex === 0;
+      byId("next-concept").disabled = state.conceptIndex >= CONTENT.concepts.length - 1;
+      updateProgress();
+    }
+
+    function numericData(visualization) {
+      return Array.isArray(visualization.data)
+        ? visualization.data.map(Number).filter(Number.isFinite)
+        : [];
+    }
+
+    function renderHistogram(visualization, target, summary, bins) {
+      const values = numericData(visualization);
+      const min = Math.min(...values);
+      const max = Math.max(...values);
+      const width = max === min ? 1 : (max - min) / bins;
+      const counts = Array.from({ length: bins }, () => 0);
+      values.forEach((value) => {
+        const index = Math.min(bins - 1, Math.floor((value - min) / width));
+        counts[index] += 1;
+      });
+      const peak = Math.max(1, ...counts);
+      target.innerHTML = `<svg viewBox="0 0 520 240" role="img"
+        aria-label="${escapeHtml(visualization.title)} histogram">
+        ${counts.map((count, index) => {
+          const height = (count / peak) * 160;
+          const x = 45 + index * (420 / bins);
+          return `<g><rect class="mark-primary" data-shape="bar" x="${x}" y="${190 - height}"
+            width="${Math.max(8, 380 / bins)}" height="${height}"></rect>
+          <text class="chart-label" x="${x}" y="214">${count}</text></g>`;
+        }).join("")}
+      </svg>`;
+      summary.textContent =
+        `${bins} bins. Counts from left to right: ${counts.join(", ")}.`;
+    }
+
+    function quantile(values, fraction) {
+      if (!values.length) return 0;
+      const sorted = [...values].sort((a, b) => a - b);
+      const position = (sorted.length - 1) * fraction;
+      const lower = Math.floor(position);
+      const upper = Math.ceil(position);
+      const weight = position - lower;
+      return sorted[lower] * (1 - weight) + sorted[upper] * weight;
+    }
+
+    function renderBoxplot(visualization, target, summary, multiplier) {
+      const values = numericData(visualization);
+      const min = Math.min(...values);
+      const max = Math.max(...values);
+      const q1 = quantile(values, 0.25);
+      const median = quantile(values, 0.5);
+      const q3 = quantile(values, 0.75);
+      const iqr = q3 - q1;
+      const lowerFence = q1 - multiplier * iqr;
+      const upperFence = q3 + multiplier * iqr;
+      const inliers = values.filter((value) => value >= lowerFence && value <= upperFence);
+      const whiskerMin = Math.min(...inliers);
+      const whiskerMax = Math.max(...inliers);
+      const outliers = values.filter((value) => value < lowerFence || value > upperFence);
+      const scale = (value) => 50 + ((value - min) / Math.max(1, max - min)) * 420;
+      target.innerHTML = `<svg viewBox="0 0 520 180" role="img"
+        aria-label="${escapeHtml(visualization.title)} box plot">
+        <line x1="${scale(whiskerMin)}" y1="90" x2="${scale(whiskerMax)}" y2="90"
+          stroke="currentColor" stroke-width="3"></line>
+        <rect class="mark-secondary" data-shape="box" x="${scale(q1)}" y="55"
+          width="${Math.max(2, scale(q3) - scale(q1))}" height="70"></rect>
+        <line x1="${scale(median)}" y1="50" x2="${scale(median)}" y2="130"
+          stroke="currentColor" stroke-width="5"></line>
+        ${outliers.map((value) => `<circle class="mark-primary" data-shape="outlier"
+          cx="${scale(value)}" cy="90" r="6"><title>Outlier ${value}</title></circle>`).join("")}
+        <text class="chart-label" x="50" y="155">min ${min}</text>
+        <text class="chart-label" x="205" y="155">median ${median.toFixed(1)}</text>
+        <text class="chart-label" x="420" y="155">max ${max}</text>
+      </svg>`;
+      summary.textContent =
+        `Median ${median.toFixed(1)}; IQR ${iqr.toFixed(1)}; ` +
+        `${outliers.length} values beyond ${multiplier} × IQR.`;
+    }
+
+    function renderScatter(visualization, target, summary, showTrend) {
+      const points = Array.isArray(visualization.data) ? visualization.data : [];
+      const xs = points.map((point) => Number(point.x)).filter(Number.isFinite);
+      const ys = points.map((point) => Number(point.y)).filter(Number.isFinite);
+      const minX = Math.min(...xs);
+      const maxX = Math.max(...xs);
+      const minY = Math.min(...ys);
+      const maxY = Math.max(...ys);
+      const xScale = (value) => 45 + ((value - minX) / Math.max(1, maxX - minX)) * 430;
+      const yScale = (value) => 195 - ((value - minY) / Math.max(1, maxY - minY)) * 155;
+      const meanX = xs.reduce((sum, value) => sum + value, 0) / xs.length;
+      const meanY = ys.reduce((sum, value) => sum + value, 0) / ys.length;
+      const numerator = points.reduce(
+        (sum, point) => sum + (Number(point.x) - meanX) * (Number(point.y) - meanY),
+        0,
+      );
+      const denominator = xs.reduce((sum, value) => sum + (value - meanX) ** 2, 0);
+      const slope = denominator === 0 ? 0 : numerator / denominator;
+      const intercept = meanY - slope * meanX;
+      const trend = showTrend
+        ? `<line x1="${xScale(minX)}" y1="${yScale(intercept + slope * minX)}"
+          x2="${xScale(maxX)}" y2="${yScale(intercept + slope * maxX)}"
+          stroke="currentColor" stroke-width="3" stroke-dasharray="8 6"></line>`
+        : "";
+      target.innerHTML = `<svg viewBox="0 0 520 240" role="img"
+        aria-label="${escapeHtml(visualization.title)} scatter plot">
+        ${trend}
+        ${points.map((point, index) => {
+          const shape = index % 2 === 0 ? "circle" : "square";
+          if (shape === "circle") {
+            return `<circle class="mark-primary" data-shape="circle"
+              cx="${xScale(Number(point.x))}" cy="${yScale(Number(point.y))}" r="7">
+              <title>x ${escapeHtml(point.x)}, y ${escapeHtml(point.y)}</title></circle>`;
+          }
+          return `<rect class="mark-secondary" data-shape="square"
+            x="${xScale(Number(point.x)) - 7}" y="${yScale(Number(point.y)) - 7}"
+            width="14" height="14"><title>x ${escapeHtml(point.x)},
+            y ${escapeHtml(point.y)}</title></rect>`;
+        }).join("")}
+        <text class="chart-label" x="220" y="228">x value</text>
+        <text class="chart-label" x="8" y="30">y value</text>
+      </svg>`;
+      const direction = slope > 0 ? "positive" : slope < 0 ? "negative" : "flat";
+      summary.textContent =
+        `${points.length} points; ${direction} linear trend. ` +
+        `${showTrend ? "Dashed trend line shown." : "Trend line hidden."}`;
+    }
+
+    function renderMissingness(visualization, target, summary, sortMode) {
+      const sourceRows = Array.isArray(visualization.data) ? visualization.data : [];
+      const rows = sortMode === "descending"
+        ? [...sourceRows].sort(
+          (left, right) =>
+            Number(right.missing) / Number(right.total) -
+            Number(left.missing) / Number(left.total),
+        )
+        : sourceRows;
+      target.innerHTML = `<svg viewBox="0 0 520 260" role="img"
+        aria-label="${escapeHtml(visualization.title)} missing-data chart">
+        ${rows.map((row, index) => {
+          const ratio = Number(row.total) ? Number(row.missing) / Number(row.total) : 0;
+          const width = Math.max(0, ratio * 330);
+          return `<g><text class="chart-label" x="12" y="${42 + index * 48}">
+            ${escapeHtml(row.label)}</text>
+            <rect class="mark-secondary" data-shape="bar" x="145" y="${24 + index * 48}"
+              width="${width}" height="24"></rect>
+            <text class="chart-label" x="${155 + width}" y="${42 + index * 48}">
+              ${Math.round(ratio * 100)}% (${escapeHtml(row.missing)}/${escapeHtml(row.total)})
+            </text></g>`;
+        }).join("")}
+      </svg>`;
+      summary.textContent = rows.map((row) =>
+        `${row.label}: ${Math.round((Number(row.missing) / Number(row.total)) * 100)}% missing`
+      ).join("; ");
+    }
+
+    function visualizationControl(visualization) {
+      if (visualization.type === "histogram") {
+        const choices = visualization.controls?.bins || [4, 6, 8];
+        return `<label>Number of bins
+          <select data-viz-control="${escapeHtml(visualization.id)}">
+            ${choices.map((value) => `<option value="${Number(value)}">${Number(value)}</option>`)
+              .join("")}
+          </select></label>`;
+      }
+      if (visualization.type === "boxplot") {
+        return `<label>Outlier fence
+          <select data-viz-control="${escapeHtml(visualization.id)}">
+            <option value="1">1 × IQR</option>
+            <option value="1.5" selected>1.5 × IQR</option>
+            <option value="2">2 × IQR</option>
+          </select></label>`;
+      }
+      if (visualization.type === "scatter") {
+        return `<label class="setting"><input type="checkbox"
+          data-viz-control="${escapeHtml(visualization.id)}">
+          <span>Show dashed trend line</span></label>`;
+      }
+      return `<label>Order
+        <select data-viz-control="${escapeHtml(visualization.id)}">
+          <option value="source">Source order</option>
+          <option value="descending">Most missing first</option>
+        </select></label>`;
+    }
+
+    function renderOneVisualization(visualization) {
+      const target = byId(`chart-${visualization.id}`);
+      const summary = byId(`summary-${visualization.id}`);
+      const control = document.querySelector(
+        `[data-viz-control="${CSS.escape(visualization.id)}"]`,
+      );
+      if (visualization.type === "histogram") {
+        renderHistogram(visualization, target, summary, Math.max(1, Number(control.value)));
+      } else if (visualization.type === "boxplot") {
+        renderBoxplot(visualization, target, summary, Number(control.value));
+      } else if (visualization.type === "scatter") {
+        renderScatter(visualization, target, summary, control.checked);
+      } else {
+        renderMissingness(visualization, target, summary, control.value);
+      }
+    }
+
+    function renderVisualizations() {
+      const container = byId("visualization-list");
+      container.innerHTML = CONTENT.visualizations.map((visualization, index) =>
+        `<article class="visualization-card" data-visualization="${escapeHtml(visualization.id)}"
+          data-active="${index === state.visualizationIndex}"
+          ${state.focus && index !== state.visualizationIndex ? "hidden" : ""}>
+          <h3>${escapeHtml(visualization.title)}</h3>
+          <p>${escapeHtml(visualization.explanation)}</p>
+          ${visualizationControl(visualization)}
+          <div class="chart-shell" id="chart-${escapeHtml(visualization.id)}"></div>
+          <p class="chart-summary" id="summary-${escapeHtml(visualization.id)}"
+            aria-live="polite"></p>
+          <p class="graph-fallback"><strong>Text fallback:</strong>
+            ${escapeHtml(visualization.fallback)}</p>
+        </article>`
+      ).join("");
+      CONTENT.visualizations.forEach((visualization) => {
+        const control = document.querySelector(
+          `[data-viz-control="${CSS.escape(visualization.id)}"]`,
+        );
+        control.addEventListener("change", () => renderOneVisualization(visualization));
+        renderOneVisualization(visualization);
+      });
+      byId("previous-visualization").disabled = state.visualizationIndex === 0;
+      byId("next-visualization").disabled =
+        state.visualizationIndex >= CONTENT.visualizations.length - 1;
+    }
+
+    function currentQuestions() {
+      return CONTENT.quizzes[state.difficulty];
+    }
+
+    function currentQuestionState() {
+      return LearningExperienceQuiz.currentQuestionState(state.quiz);
+    }
+
+    function clearQuizFeedback() {
+      const feedback = byId("quiz-feedback");
+      feedback.textContent = "";
+      feedback.hidden = true;
+      delete feedback.dataset.correct;
+    }
+
+    function disableQuestionInputs() {
+      byId("quiz-card").querySelectorAll("input, textarea").forEach((input) => {
+        input.disabled = true;
+      });
+    }
+
+    function renderQuiz(focusQuestion = false) {
+      const questions = currentQuestions();
+      const question = questions[state.quiz.quizIndex];
+      const questionState = currentQuestionState();
+      const inputType = question.type === "multiple-choice" ? "checkbox" : "radio";
+      const options = question.options.map((option) =>
+        `<label class="quiz-option">
+          <input type="${inputType}" name="quiz-answer" value="${escapeHtml(option)}">
+          <span>${escapeHtml(option)}</span>
+        </label>`
+      ).join("");
+      const responseControl = question.type === "interpretation" && !question.options.length
+        ? `<label for="interpretation-answer">Your interpretation</label>
+          <textarea id="interpretation-answer"></textarea>`
+        : `<fieldset class="quiz-options"><legend class="optional-detail">
+          Choose ${question.type === "multiple-choice" ? "all correct answers" : "one answer"}
+        </legend>${options}</fieldset>`;
+      byId("quiz-card").setAttribute("tabindex", "-1");
+      byId("quiz-card").innerHTML = `<p class="eyebrow">${escapeHtml(state.difficulty)}
+        · question ${state.quiz.quizIndex + 1} of 10</p>
+        <h3>${escapeHtml(question.prompt)}</h3>
+        ${responseControl}`;
+      clearQuizFeedback();
+      byId("submit-answer").hidden = questionState.complete;
+      byId("next-question").hidden = !LearningExperienceQuiz.canAdvance(state.quiz);
+      if (questionState.complete) disableQuestionInputs();
+      byId("quiz-card").querySelectorAll("input, textarea").forEach((input) => {
+        input.addEventListener(input.tagName === "TEXTAREA" ? "input" : "change", () => {
+          state.quiz = LearningExperienceQuiz.selectAnswer(state.quiz, selectedAnswer());
+          if (!currentQuestionState().complete) clearQuizFeedback();
+        });
+      });
+      updateProgress();
+      if (focusQuestion) byId("quiz-card").focus();
+    }
+
+    function selectedAnswer() {
+      const interpretation = byId("interpretation-answer");
+      return interpretation
+        ? [interpretation.value.trim()].filter(Boolean)
+        : [...document.querySelectorAll('[name="quiz-answer"]:checked')]
+          .map((input) => input.value);
+    }
+
+    function submitAnswer() {
+      if (currentQuestionState().complete) return;
+      const question = currentQuestions()[state.quiz.quizIndex];
+      state.quiz = LearningExperienceQuiz.selectAnswer(state.quiz, selectedAnswer());
+      state.quiz = LearningExperienceQuiz.submitAnswer(state.quiz, question);
+      const feedback = state.quiz.feedback;
+      if (feedback.missing) {
+        byId("quiz-feedback").textContent = feedback.message;
+        byId("quiz-feedback").dataset.correct = "false";
+        byId("quiz-feedback").hidden = false;
+        return;
+      }
+      const correct = feedback.correct;
+      byId("quiz-feedback").innerHTML = `<strong>${correct ? "Correct." : "Not yet."}</strong>
+        ${escapeHtml(feedback.message)}`;
+      byId("quiz-feedback").dataset.correct = String(correct);
+      byId("quiz-feedback").hidden = false;
+      if (!correct) {
+        byId("submit-answer").hidden = false;
+        byId("next-question").hidden = true;
+        return;
+      }
+      disableQuestionInputs();
+      byId("submit-answer").hidden = true;
+      byId("next-question").hidden = !LearningExperienceQuiz.canAdvance(state.quiz);
+      byId("next-question").focus();
+      byId("next-question").scrollIntoView({ block: "nearest" });
+      if (state.quiz.quizIndex === 4) showBreakPrompt(1);
+      updateProgress();
+    }
+
+    function showQuizResults() {
+      const summary = LearningExperienceQuiz.summarize(state.quiz);
+      byId("quiz-card").hidden = true;
+      byId("quiz-feedback").hidden = true;
+      byId("next-question").hidden = true;
+      byId("submit-answer").hidden = true;
+      byId("retry-quiz").hidden = false;
+      byId("quiz-results").innerHTML = `<h3>Your result: ${summary.completed}/10</h3>
+        <p>First try: ${summary.firstAttemptCorrect}/10</p>
+        <p>Total attempts: ${summary.totalAttempts}</p>
+        <ol>${state.quiz.responses.map((response) => `<li>
+          <p><strong>${escapeHtml(response.prompt)}</strong></p>
+          <p>Your answer: ${escapeHtml(response.selected.join(", "))}</p>
+          <p>Correct answer: ${escapeHtml(
+            Array.isArray(response.answer) ? response.answer.join(", ") : response.answer
+          )}</p>
+          <p>${escapeHtml(response.explanation)}</p>
+        </li>`).join("")}</ol>`;
+      byId("quiz-results").hidden = false;
+      byId("quiz-results").focus?.();
+      updateProgress();
+    }
+
+    function nextQuestion() {
+      if (!LearningExperienceQuiz.canAdvance(state.quiz)) return;
+      state.quiz = LearningExperienceQuiz.nextQuestion(state.quiz);
+      if (state.quiz.showResults) {
+        showQuizResults();
+        return;
+      }
+      renderQuiz(true);
+    }
+
+    function retryQuiz() {
+      state.quiz = LearningExperienceQuiz.retryQuiz(state.quiz);
+      byId("quiz-card").hidden = false;
+      byId("quiz-results").hidden = true;
+      byId("retry-quiz").hidden = true;
+      clearQuizFeedback();
+      byId("submit-answer").hidden = false;
+      byId("next-question").hidden = true;
+      renderQuiz(true);
+    }
+
+    document.querySelector('[data-setting="difficulty"]').addEventListener("change", (event) => {
+      if (state.quiz.questionStates.some((questionState) => questionState.attempts) &&
+          !confirm("Changing depth resets your current quiz. Continue?")) {
+        event.target.value = state.difficulty;
+        return;
+      }
+      state.difficulty = event.target.value;
+      retryQuiz();
+      saveSettings();
+    });
+    document.querySelector('[data-setting="focus"]').addEventListener("change", (event) => {
+      state.focus = event.target.checked;
+      applySettings();
+    });
+    document.querySelector('[data-setting="color-blind"]').addEventListener("change", (event) => {
+      state.colorBlind = event.target.checked;
+      applySettings();
+    });
+    document.querySelector('[data-setting="break-prompts"]').addEventListener("change", (event) => {
+      state.breakPrompts = event.target.checked;
+      applySettings();
+      if (state.breakPrompts) showBreakPrompt(0);
+    });
+
+    byId("previous-concept").addEventListener("click", () => {
+      state.conceptIndex = Math.max(0, state.conceptIndex - 1);
+      renderConcepts();
+    });
+    byId("next-concept").addEventListener("click", () => {
+      state.conceptIndex = Math.min(CONTENT.concepts.length - 1, state.conceptIndex + 1);
+      if (state.conceptIndex === 1) showBreakPrompt(0);
+      renderConcepts();
+      if (state.focus) {
+        const active = document.querySelector(".concept-card:not([hidden])");
+        if (document.activeElement !== active) active?.scrollIntoView({ block: "nearest" });
+      }
+    });
+    byId("previous-visualization").addEventListener("click", () => {
+      state.visualizationIndex = Math.max(0, state.visualizationIndex - 1);
+      renderVisualizations();
+    });
+    byId("next-visualization").addEventListener("click", () => {
+      state.visualizationIndex = Math.min(
+        CONTENT.visualizations.length - 1,
+        state.visualizationIndex + 1,
+      );
+      renderVisualizations();
+      if (state.focus) {
+        document.querySelector('.visualization-card[data-active="true"]')?.scrollIntoView({
+          block: "nearest",
+        });
+      }
+    });
+    byId("submit-answer").addEventListener("click", submitAnswer);
+    byId("next-question").addEventListener("click", nextQuestion);
+    byId("retry-quiz").addEventListener("click", retryQuiz);
+
+    byId("site-title").textContent = CONTENT.meta.title;
+    byId("site-subtitle").textContent =
+      CONTENT.meta.subtitle || "Learn, explore, then check your knowledge.";
+    byId("source-list").textContent = `Sources: ${CONTENT.meta.sources.join(" · ")}`;
+    state.quiz = LearningExperienceQuiz.createQuizState(
+      currentQuestions().length,
+      learnerSettings(),
+    );
+    applySettings();
+    renderQuiz();
+  </script>
+</body>
+</html>
