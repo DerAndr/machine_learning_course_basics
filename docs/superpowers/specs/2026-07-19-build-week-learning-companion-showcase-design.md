@@ -50,6 +50,10 @@ This produces three visibly different demonstrations while leaving enough time
 for integration, visual review, documentation, video preparation, and Devpost
 submission checks.
 
+The integration also makes the companions discoverable from the repository
+README and the rendered textbook, and explains how maintainers use the portable
+skill and ML-course adapter to create further materials.
+
 Do not add another lecture, a new visualization type, a new runtime dependency,
 or a new repository adapter for this submission.
 
@@ -66,6 +70,9 @@ The implementation may rely on the current repository architecture:
   reference artifact.
 - `tools/build_textbook_preview.py` discovers and copies committed
   `lecture_experiences/*/index.html` files into matching Pages demo routes.
+- The current preview does not link those routes from its homepage or sidebar,
+  so copied companions are effectively hidden unless a learner already knows
+  their URLs.
 - Existing tests cover the core, adapter, portability, EDA payload, generated
   artifact, quiz behavior, and publication convention.
 
@@ -182,19 +189,116 @@ The integration task may edit shared files and must:
    boundary;
 2. integrate both lecture contributions and resolve only genuine integration
    issues;
-3. add or update shared documentation so all three offline and Pages demos are
-   discoverable;
-4. verify that the preview build copies all three committed companions to their
+3. refactor the repository README into a cleaner course-first entry point with
+   clear learning routes and prominent fast-review links;
+4. explain general and ML-course-specific companion authoring in the
+   operational guide;
+5. make all matched companions discoverable through generated cards on the
+   textbook homepage and a dedicated fast-review group in every textbook
+   sidebar;
+6. verify that the preview build copies all three committed companions to their
    expected demo routes;
-5. run the focused learning-companion tests, full repository tests, strict
+7. run the focused learning-companion tests, full repository tests, strict
    source validation, offline validators, and preview build;
-6. inspect all three experiences on desktop and mobile, including settings,
+8. inspect all three experiences on desktop and mobile, including settings,
    visualizations, fallbacks, quiz retry, keyboard focus, reduced motion, and
    storage-disabled behavior; and
-7. leave a concise evidence record for submission preparation.
+9. leave a concise evidence record for submission preparation.
 
 The integration task must not redesign the portable core merely to make the two
 new payloads easier to author.
+
+## Textbook Discovery Design
+
+The textbook preview must discover companions from existing canonical inputs
+rather than hardcoding three lecture names in the renderer.
+
+At build time:
+
+1. enumerate `lecture_experiences/*/index.html`;
+2. use the directory name as the stable lecture slug;
+3. require a matching
+   `lecture_experiences/content/<lecture_slug>.json`;
+4. read `meta.experience_id` and `meta.title` from that payload;
+5. construct the matching output route
+   `demos/<lecture_slug>/index.html`; and
+6. sort companion descriptors deterministically by slug.
+
+Only complete JSON/HTML pairs appear in discovery navigation. If a committed
+HTML artifact has no matching payload, or a matched payload is malformed or
+lacks required metadata, the preview build must fail with a clear path-specific
+message rather than silently hiding the companion.
+
+The rendered textbook homepage must contain a **Fast interactive reviews**
+section after the introductory OKF content. It explains that companions are
+short, focused, offline-capable practice experiences that complement the deeper
+textbook. Each generated card shows the payload title, identifies the artifact
+as a fast interactive review, and links to its copied demo route.
+
+Every rendered textbook page must include a distinct **Fast reviews** group in
+the sidebar below normal OKF textbook navigation. Links must be calculated
+relative to the current output page so they work from both the root homepage and
+deeply nested concept pages.
+
+Reuse the existing visual language for relationship cards where possible.
+Add only the CSS selectors needed to separate the fast-review navigation group,
+preserve visible focus and hover states, and keep the combined sidebar usable on
+mobile. Do not add client-side fetching or another JavaScript runtime.
+
+Update `okf/index.md` with durable explanatory text about the distinction
+between the interactive textbook and fast interactive reviews. The generated
+links remain renderer-owned because their routes derive from committed
+companion artifacts; `okf/index.md` must remain useful when read directly on
+GitHub.
+
+## Repository README Design
+
+Keep the ML course, not the hackathon, as the public repository's primary
+identity. Refactor the README around these sections:
+
+1. **What this repository offers.** One short explanation of the course and its
+   student-facing source materials.
+2. **Choose how to learn.** Four explicit entry points:
+   interactive textbook, fast interactive reviews, full lecture materials, and
+   hands-on notebooks.
+3. **Fast interactive reviews.** Prominent live and offline links for EDA,
+   Regression, and Classification Part 1, plus a one-paragraph explanation of
+   their focused explanation-exploration-quiz-feedback loop.
+4. **Course map.** Preserve the complete lecture table.
+5. **Create interactive learning materials.** Explain when to use the portable
+   skill versus the ML-course adapter and link to the operational guide.
+6. **Local setup, contributing, repository map, and licensing.** Retain
+   essential commands and authoritative links while removing duplicated or
+   malformed prose already covered by detailed guides.
+
+Do not turn the README into a Build Week landing page. Submission-specific
+claims, deadlines, and judging language remain outside the durable student
+README.
+
+## Skill Usage and Authoring Guidance
+
+Use `docs/interactive-lecture-learning-assistant.md` as the long-form
+operational guide. Extend it with:
+
+- a **Choose the right skill** comparison:
+  - `interactive-learning-experience-builder` for a grounded one-off experience
+    in any repository or knowledge base;
+  - `ml-course-interactive-learning-assistant` together with the portable core
+    when creating a review for a lecture in this repository;
+- the existing exact default prompts from each skill's `agents/openai.yaml`;
+- one concrete general-purpose invocation example;
+- one concrete ML-course invocation example using an existing lecture slug;
+- the complete authoring flow:
+  sources, context profile, experience specification, grounded JSON payload,
+  generation, offline validation, browser review, and optional publication;
+- the ownership rule that the core contains reusable workflow/runtime behavior,
+  the adapter contains stable repository policy, and individual experiences
+  contain topic-specific payloads and generated artifacts; and
+- a short verification checklist covering source policy, deterministic
+  regeneration, static fallbacks, quiz behavior, accessibility, and publishing.
+
+Keep the root README summary concise and link to this guide rather than
+duplicating its commands and policy details.
 
 ## Submission Preparation Phase
 
@@ -236,10 +340,17 @@ The showcase is ready for submission when:
 - all three generated artifacts pass the offline validator;
 - regeneration is byte-for-byte deterministic for every committed artifact;
 - every experience contains three banks of exactly ten grounded questions;
-- no task modified `okf/`, private material, or unrelated user work;
+- the parallel lecture tasks did not modify `okf/`, and integration changed
+  only `okf/index.md` to explain the discovery surface;
+- no task used private material or modified unrelated user work;
 - focused and full test suites pass in the integrated branch;
 - the preview build publishes all three routes from the canonical committed
   HTML files;
+- the rendered textbook homepage contains cards for all three companions;
+- every rendered textbook sidebar contains working relative fast-review links;
+- the repository README clearly distinguishes the textbook, fast reviews,
+  lecture materials, and notebooks;
+- the operational guide explains both skills and the complete authoring flow;
 - desktop and mobile visual review finds no blocking accessibility or
   interaction defect;
 - judge-facing setup and testing instructions work from a clean checkout;
