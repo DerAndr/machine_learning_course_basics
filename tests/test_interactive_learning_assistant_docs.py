@@ -25,6 +25,7 @@ DEMOS = {
 SKILL_PATH = ".agents/skills/ml-course-interactive-learning-assistant/SKILL.md"
 CORE_SKILL_PATH = ".agents/skills/interactive-learning-experience-builder/SKILL.md"
 ARCHITECTURE_PATH = "docs/learning-companions-architecture.md"
+SUBMISSION_PREPARATION_PATH = "docs/build-week-submission-preparation.md"
 ARCHITECTURE_LINKS = {
     "README.md": "[Learning companions architecture](docs/learning-companions-architecture.md)",
     "AGENTS.md": "[Learning companions architecture](docs/learning-companions-architecture.md)",
@@ -58,12 +59,15 @@ def test_learning_assistant_documentation_is_discoverable() -> None:
         "## Fast interactive reviews",
         "## Course map",
         "## Create interactive learning materials",
+        "## How Codex and GPT-5.6 were used",
         "## Local setup",
         "## Contributing and reference",
         "## Repository map",
         "## License",
     ):
         assert heading in readme
+    assert "docs/build-week-submission-preparation.md" in readme
+    assert "human" in readme.lower()
 
     general_prompt = (
         "Use $interactive-learning-experience-builder to create a grounded, "
@@ -95,6 +99,41 @@ def test_learning_assistant_documentation_is_discoverable() -> None:
     assert "whole-quiz Retry" in guide_text
     assert "lecture_experiences/content/" in agents
     assert "validate_learning_experience.py" in agents
+
+
+def test_build_week_submission_preparation_is_actionable() -> None:
+    path = Path(SUBMISSION_PREPARATION_PATH)
+    assert path.is_file()
+
+    text = path.read_text(encoding="utf-8")
+    for heading in (
+        "# Build Week Submission Preparation",
+        "## Narrative spine",
+        "## Devpost field worksheet",
+        "## Judge test flow",
+        "## Demo video flow",
+        "## Screenshot plan",
+        "## Final submission checklist",
+    ):
+        assert heading in text
+
+    for required_item in (
+        "Education",
+        "/feedback",
+        "public YouTube",
+        "under three minutes",
+        "Codex",
+        "GPT-5.6",
+        "https://github.com/DerAndr/machine_learning_course_basics",
+    ):
+        assert required_item in text
+
+    for demo in DEMOS.values():
+        assert demo["live"] in text
+        assert demo["offline"] in text
+
+    assert "rewrite" in text.lower()
+    assert "own voice" in text.lower()
 
 
 def test_learning_companions_architecture_contract() -> None:

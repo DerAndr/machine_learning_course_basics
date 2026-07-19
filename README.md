@@ -77,6 +77,30 @@ for copy-ready prompts and the full authoring flow, or read the
 [Learning companions architecture](docs/learning-companions-architecture.md)
 for responsibility boundaries.
 
+## How Codex and GPT-5.6 were used
+
+This course repository existed before Build Week. During the event it was
+meaningfully extended from a collection of learning resources into a reusable
+learning-companion workflow and a three-topic interactive showcase.
+
+- **Codex** was used to navigate the repository, turn the teaching problem into
+  a scoped architecture, implement the portable skill and ML-course adapter,
+  integrate the generated reviews, and run automated and browser-based
+  verification.
+- **GPT-5.6** supported architecture synthesis, source-grounded transformation
+  of lecture materials, quiz and feedback design, and review of the
+  implementation and documentation.
+- **Human decisions remained central:** the teacher defined the learner and
+  attention problem, selected authoritative sources, approved the
+  core-versus-adapter boundary, chose accessibility and public-safety rules,
+  and reviewed the resulting learning experience.
+
+Judges and contributors can follow the
+[operational guide](docs/interactive-lecture-learning-assistant.md), inspect
+the [integration evidence](docs/build-week-integration-evidence.md), and use
+the [submission and testing worksheet](docs/build-week-submission-preparation.md)
+for a concise end-to-end test path.
+
 ## Local setup
 
 Use `uv` as the environment manager:
