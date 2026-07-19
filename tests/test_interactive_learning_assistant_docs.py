@@ -75,12 +75,10 @@ def test_student_learning_companion_quickstart_is_actionable() -> None:
             "(docs/student-learning-companion-quickstart.md)"
         ),
         "docs/student-quickstart.md": (
-            "[student learning-companion quickstart]"
-            "(student-learning-companion-quickstart.md)"
+            "[student learning-companion quickstart](student-learning-companion-quickstart.md)"
         ),
         "docs/interactive-lecture-learning-assistant.md": (
-            "[student learning-companion quickstart]"
-            "(student-learning-companion-quickstart.md)"
+            "[student learning-companion quickstart](student-learning-companion-quickstart.md)"
         ),
     }
     for document_path, link in links.items():
