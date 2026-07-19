@@ -32,6 +32,11 @@ The practical covers:
 
 The practical session is intentionally separate from `lecture_examples/`.
 
+## Interactive Review
+
+- [Open the live Classification Part 1 review](https://derandr.github.io/machine_learning_course_basics/demos/lecture_05_classification_part_1/)
+- Offline file: [`lecture_experiences/lecture_05_classification_part_1/index.html`](../../lecture_experiences/lecture_05_classification_part_1/index.html)
+
 ---
 
 [← Previous](../lecture_04_regression/README.md) | [All Lectures](../README.md) | [Next →](../lecture_06_classification_part_2/README.md)

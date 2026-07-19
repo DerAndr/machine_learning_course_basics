@@ -3,17 +3,38 @@
 [![License: MIT](https://img.shields.io/badge/Code-MIT-blue.svg)](LICENSE)
 [![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/Content-CC%20BY--NC--SA%204.0-lightgrey.svg)](LICENSE-CONTENT)
 
-Lecture notes, slide decks, and example notebooks for an introductory machine learning course.
+An introductory machine learning course with connected textbook pages, focused
+interactive reviews, lecture notes and slides, and hands-on notebooks.
 
-The repository is organized lecture by lecture and is meant to work both as:
+## Choose how to learn
 
-- a course library for students who want to read notes and browse examples
-- a local notebook workspace for students who want to run materials with `uv`
+| Route | Best for | Open |
+|---|---|---|
+| Interactive textbook | Connected explanations, learning paths, and browser labs | [Open the textbook](https://derandr.github.io/machine_learning_course_basics/) |
+| Fast interactive reviews | Short explanation → exploration → quiz → feedback practice | [Choose a review](#fast-interactive-reviews) |
+| Full lecture materials | Notes, slides, examples, and topic references | [Browse all lectures](lectures/README.md) |
+| Hands-on notebooks | Guided examples and 90-minute practical sessions | [Choose from the course map](#course-map) |
 
-## At a Glance
+## Fast interactive reviews
+
+These self-contained learning companions are quick, accessible reviews that
+work online or directly from a cloned repository. They complement the textbook
+and full lectures.
+
+| Topic | Live | Offline |
+|---|---|---|
+| Exploratory Data Analysis | [Open live review](https://derandr.github.io/machine_learning_course_basics/demos/lecture_01_eda/) | [`lecture_experiences/lecture_01_eda/index.html`](lecture_experiences/lecture_01_eda/index.html) |
+| Regression | [Open live review](https://derandr.github.io/machine_learning_course_basics/demos/lecture_04_regression/) | [`lecture_experiences/lecture_04_regression/index.html`](lecture_experiences/lecture_04_regression/index.html) |
+| Classification Part 1 | [Open live review](https://derandr.github.io/machine_learning_course_basics/demos/lecture_05_classification_part_1/) | [`lecture_experiences/lecture_05_classification_part_1/index.html`](lecture_experiences/lecture_05_classification_part_1/index.html) |
+
+Each review includes three difficulty levels, interactive visual explanations,
+immediate quiz feedback, keyboard support, reduced-motion behavior, accessible
+fallbacks, and optional focus-friendly controls.
+
+## Course map
 
 | # | Lecture | Notes | Practical |
-|---|--------|-------|-----------|
+|---|---|---|---|
 | 01 | [Exploratory Data Analysis](lectures/lecture_01_eda/README.md) | [notes](lectures/lecture_01_eda/lecture_notes.md) | [practical](lectures/lecture_01_eda/practical_session/README.md) |
 | 02 | [Data Preparation Part 1](lectures/lecture_02_data_preparation_part_1/README.md) | [notes](lectures/lecture_02_data_preparation_part_1/lecture_notes.md) | [practical](lectures/lecture_02_data_preparation_part_1/practical_session/README.md) |
 | 03 | [Data Preparation Part 2](lectures/lecture_03_data_preparation_part_2/README.md) | [notes](lectures/lecture_03_data_preparation_part_2/lecture_notes.md) | [practical](lectures/lecture_03_data_preparation_part_2/practical_session/README.md) |
@@ -32,207 +53,70 @@ The repository is organized lecture by lecture and is meant to work both as:
 | 16 | [Natural Language Processing](lectures/lecture_16_nlp_overview/README.md) | [notes](lectures/lecture_16_nlp_overview/lecture_notes.md) | [practical](lectures/lecture_16_nlp_overview/practical_session/README.md) |
 | 17 | [Recommender Systems](lectures/lecture_17_recsys/README.md) | [notes](lectures/lecture_17_recsys/lecture_notes.md) | [practical](lectures/lecture_17_recsys/practical_session/README.md) |
 | 18 | [LLM Overview](lectures/lecture_18_llm_overview/README.md) | [notes](lectures/lecture_18_llm_overview/lecture_notes.md) | [practical](lectures/lecture_18_llm_overview/practical_session/README.md) |
-| 19 | [Course Overview](lectures/lecture_19_course_overview/README.md) | [notes](lectures/lecture_19_course_overview/lecture_notes.md) | - |
+| 19 | [Course Overview](lectures/lecture_19_course_overview/README.md) | [notes](lectures/lecture_19_course_overview/lecture_notes.md) | — |
 
-Lectures 01-14 are fully packaged with slide decks (`slides/lecture.pdf`) and example notebooks (`lecture_examples/`). Lectures 15-19 are practical-first drafts and the final overview.
+Lectures 01–14 are fully packaged with slide decks and example notebooks.
+Lectures 15–19 are practical-first drafts and the final course overview. The
+repository also includes a [mini-project on NYC Airbnb price prediction](mini_projects/airbnb_nyc/README.md)
+and [example midterm questions](docs/midterm_examples.md).
 
-## Interactive Textbook
+## Create interactive learning materials
 
-The interactive textbook preview is published on GitHub Pages:
+Use the skill that matches the source context:
 
-<https://derandr.github.io/machine_learning_course_basics/>
+| Goal | Skills |
+|---|---|
+| Create an experience from a general repository or knowledge base | `$interactive-learning-experience-builder` |
+| Create a review for this ML course | `$ml-course-interactive-learning-assistant` with `$interactive-learning-experience-builder` |
 
-The textbook is built from the Open Knowledge Format bundle in `okf/`. The same source powers:
+The general skill owns the reusable content contract, deterministic generator,
+and offline validator. The course skill adds this repository's source,
+public-safety, output, and publishing rules. Follow the
+[operational learning-companion guide](docs/interactive-lecture-learning-assistant.md)
+for copy-ready prompts and the full authoring flow, or read the
+[Learning companions architecture](docs/learning-companions-architecture.md)
+for responsibility boundaries.
 
-- readable concept pages for students;
-- learning paths and browser-based labs;
-- `okf-manifest.json` for agents and tools;
-- generated textbook pages under `site/_build/` during preview builds.
+## Local setup
 
-The current pilot focuses on Classification Part 1: classification, metrics, threshold choice, one learning path, and one browser-only threshold lab.
+Use `uv` as the environment manager:
 
-### Interactive lecture reviews
-
-Standalone lecture reviews complement the OKF textbook with focused,
-offline-capable explanations, graphs, accessibility controls, and knowledge
-checks.
-
-- [Live EDA interactive review](https://derandr.github.io/machine_learning_course_basics/demos/lecture_01_eda/)
-- [Offline EDA review](lecture_experiences/lecture_01_eda/index.html)
-- [Learning companions architecture](docs/learning-companions-architecture.md)
-- [Operational generation and publishing guide](docs/interactive-lecture-learning-assistant.md)
-
-The portable core at
-`.agents/skills/interactive-learning-experience-builder/` owns the content
-contract and offline generator. The ML-course skill is a thin adapter for
-course sources and publishing rules; see the guide for the context profile,
-optional adapter creation, and canonical/global skill synchronization.
-
-## Assignments & Exams
-
-- **[Mini-Project: NYC Airbnb Price Prediction](mini_projects/airbnb_nyc/README.md)**
-- **[Midterm Exam: Example Questions](docs/midterm_examples.md)**
-## Start Here
-
-If you are a student:
-
-1. Open lectures/README.md
-2. Choose a lecture directory
-3. Read lecture_notes.md
-4. Open slides/lecture.pdf when the lecture has a packaged slide deck
-5. Run notebooks from lecture_examples/ if needed
-
-For local setup, start with:
-
-`ash
+```bash
 uv sync
 uv run python tools/check_notebook_environment.py
 uv run jupyter lab
-`
-
-Student-oriented setup instructions live in docs/student-quickstart.md. For heavy deep learning workloads, read docs/deep-learning-colab-guide.md.
-
-To improve the interactive textbook, start with docs/contributing-to-textbook.md.
-
-## Repository Contents
-
-- `lectures/README.md` for top-level lecture navigation
-- `lectures/<lecture_slug>/README.md` for lecture-specific navigation
-- `lectures/<lecture_slug>/lecture_notes.md` for student revision and recap
-- `lectures/<lecture_slug>/links.yaml` for compact lecture metadata
-- `lectures/<lecture_slug>/slides/lecture.pdf` for the canonical lecture deck
-- `lectures/<lecture_slug>/lecture_examples/` for example notebooks and paired scripts
-- `lectures/<lecture_slug>/practical_session/` for separate classroom practicals
-- `lectures/<lecture_slug>/plan/` for draft planning notes when a practical-first lecture is still being packaged
-- `okf/` for concise textbook concepts, learning paths, labs, and metadata
-- `docs/okf-authoring-guide.md` for OKF authoring rules
-- `docs/contributing-to-textbook.md` for student, maintainer, and agent contribution workflow
-- `docs/student-quickstart.md` for local setup instructions
-- `docs/deep-learning-colab-guide.md` for running heavy deep learning models locally or in Colab
-- `site/assets/` and `site/data/` for committed browser-lab assets and public-safe data
-- `site/_build/` for generated textbook preview output; this directory is not committed
-
-## Current Scope
-
-- The course covers 14 fully packaged lectures, plus practical-first drafts for Lecture 15: Computer Vision, Lecture 16: Natural Language Processing, Lecture 17: Recommender Systems, and Lecture 18: LLM Overview.
-- Every packaged lecture and practical-first draft includes a practical_session/ with student-facing materials.
-- Raw imports, migration history, and source collection remain outside the public course layer.
-- The interactive textbook layer is a public-safe pilot built from `okf/` and published through GitHub Pages.
-
-## Directory Layout
-
-```text
-.
-├── okf/
-│   ├── index.md
-│   ├── supervised-learning/
-│   ├── learning-paths/
-│   ├── labs/
-│   └── contributing/
-├── lectures/
-│   ├── README.md
-│   ├── lecture_01_eda/
-│   │   ├── README.md
-│   │   ├── lecture_notes.md
-│   │   ├── links.yaml
-│   │   ├── slides/
-│   │   │   └── lecture.pdf
-│   │   ├── lecture_examples/
-│   │   │   ├── README.md
-│   │   │   ├── example_01.ipynb
-│   │   │   ├── example_01.py
-│   │   │   └── ...
-│   │   └── practical_session/
-│   │       ├── README.md
-│   │       ├── <name>_practical_student_90min.ipynb
-│   │       ├── <name>_practical_student_90min.py
-│       └── ...
-│   └── ...
-├── docs/
-│   ├── publishing-model.md
-│   └── repository-overview.md
-├── tools/
-│   └── convert_quiz_dumps.py
-├── site/
-│   ├── assets/
-│   ├── data/
-│   └── _build/
 ```
 
-## Local Setup
+See the [student quickstart](docs/student-quickstart.md) for platform details
+and optional dependency groups.
 
-Use `uv` as the single environment manager for this repository.
+## Contributing and reference
 
-1. `uv sync`
-2. `uv run python tools/check_notebook_environment.py`
-3. `uv run jupyter lab`
+- [Student and maintainer textbook workflow](docs/contributing-to-textbook.md)
+- [OKF authoring guide](docs/okf-authoring-guide.md)
+- [Interactive learning-companion operations](docs/interactive-lecture-learning-assistant.md)
+- [Learning companions architecture](docs/learning-companions-architecture.md)
+- [Deep-learning and Colab guide](docs/deep-learning-colab-guide.md)
+- [Agent repository guide](AGENTS.md)
 
-There is no separate `requirements.txt` on purpose.
+## Repository map
 
-- `pyproject.toml` is the source of truth for dependencies.
-- `uv.lock` is the reproducible lockfile.
-- The default environment installs the shared baseline used across the course.
-- Heavy or lecture-specific packages can be added only when needed:
-  - `uv sync --group ensembles` for Lecture 07 extras such as `catboost`, `lightgbm`, and `xgboost`
-  - `uv sync --group time_series` for Lecture 08 extras such as `prophet`
-  - `uv sync --group hpo_automl` for Lecture 10 extras such as `h2o`, `optuna`, `hyperopt`, and `scikit-optimize`
-  - `uv sync --group neural_networks` for Lecture 12 extras such as `torch` and `torchinfo`
-  - `uv sync --group nlp` for Lecture 16 extras such as `transformers`, `sentence-transformers`, `datasets`, and `gensim`
-  - `uv sync --group llm` for Lecture 18 extras such as `accelerate`, `peft`, `outlines`, and current `transformers`
-  - `uv sync --group xai_piml` for the optional PiML example in Lecture 11 on compatible Python versions
-  - `uv sync --group ml_in_production` for Lecture 14 extras such as `evidently` and `mlflow`
+- `lectures/` — lecture notes, slides, examples, practicals, and metadata
+- `lecture_experiences/` — grounded payloads and canonical standalone reviews
+- `okf/` — durable textbook concepts, learning paths, labs, and metadata
+- `site/assets/` and `site/data/` — browser assets and public-safe lab data
+- `tools/` — validation, rendering, environment, and maintenance commands
+- `tests/` — course, textbook, skill, and learning-companion regression checks
+- `docs/` — setup, contribution, architecture, and authoring guidance
+- `src/mlcourse/` — shared Python helpers
 
-## Working With Lecture Examples
-
-- Each lecture example notebook in `lecture_examples/` has a paired `.py` file.
-- The `.py` files are generated companions for local reading, diffing, and lightweight execution.
-- If a notebook contains Colab-only install cells such as `!pip install ...`, those cells can usually be skipped locally after `uv sync`.
-- When a lecture uses optional heavy dependencies, install the matching group first and then re-run the environment check:
-  - `uv run python tools/check_notebook_environment.py --group ensembles`
-  - `uv run python tools/check_notebook_environment.py --group time_series`
-  - `uv run python tools/check_notebook_environment.py --group hpo_automl`
-  - `uv run python tools/check_notebook_environment.py --group neural_networks`
-  - `uv run python tools/check_notebook_environment.py --group nlp`
-  - `uv run python tools/check_notebook_environment.py --group llm`
-  - `uv run python tools/check_notebook_environment.py --group ml_in_production`
-- To regenerate the `.py` companions and example READMEs after changing notebooks, run:
-  - `uv run python tools/sync_lecture_examples.py`
-
-## How to Read the Repository
-
-For humans:
-
-1. README.md
-2. [Interactive textbook](https://derandr.github.io/machine_learning_course_basics/)
-3. lectures/README.md
-4. lectures/<lecture_slug>/README.md
-5. lectures/<lecture_slug>/lecture_notes.md
-6. lectures/<lecture_slug>/links.yaml
-7. lectures/<lecture_slug>/slides/lecture.pdf
-8. lectures/<lecture_slug>/lecture_examples/README.md
-9. lectures/<lecture_slug>/lecture_examples/example_XX.ipynb
-10. lectures/<lecture_slug>/lecture_examples/example_XX.py
-11. lectures/<lecture_slug>/practical_session/README.md
-
-For agents:
-
-1. AGENTS.md
-2. .agents/skills/ml-course-student-navigator/SKILL.md for helping students navigate materials and environment setup
-3. .agents/skills/ml-course-textbook-contributor/SKILL.md for textbook work
-4. docs/contributing-to-textbook.md
-5. docs/okf-authoring-guide.md
-6. okf/index.md
-7. lectures/README.md
-8. lectures/index.yaml
-9. lectures/<lecture_slug>/README.md
-10. lectures/<lecture_slug>/lecture_notes.md
-11. lectures/<lecture_slug>/links.yaml
-12. lectures/<lecture_slug>/lecture_examples/README.md
-13. lectures/<lecture_slug>/practical_session/README.md
+Generated textbook output lives under `site/_build/` and is not committed.
 
 ## License
 
 Unless stated otherwise:
 
-- Source code in src/, 	ests/, 	ools/, and standalone .py files is licensed under the [MIT License](LICENSE).
-- Lecture notes, slide decks, PDFs, images, notebooks, and other course content are licensed under [CC BY-NC-SA 4.0](LICENSE-CONTENT).
+- Source code in `src/`, `tests/`, `tools/`, and standalone `.py` files is
+  licensed under the [MIT License](LICENSE).
+- Lecture notes, slide decks, PDFs, images, notebooks, and other course content
+  are licensed under [CC BY-NC-SA 4.0](LICENSE-CONTENT).

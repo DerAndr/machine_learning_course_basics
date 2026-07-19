@@ -30,6 +30,11 @@ The practical covers:
 
 The practical session is intentionally separate from `lecture_examples/`.
 
+## Interactive Review
+
+- [Open the live Regression review](https://derandr.github.io/machine_learning_course_basics/demos/lecture_04_regression/)
+- Offline file: [`lecture_experiences/lecture_04_regression/index.html`](../../lecture_experiences/lecture_04_regression/index.html)
+
 ---
 
 [← Previous](../lecture_03_data_preparation_part_2/README.md) | [All Lectures](../README.md) | [Next →](../lecture_05_classification_part_1/README.md)

@@ -30,6 +30,17 @@ class Page:
     okf_path: str
 
 
+@dataclass(frozen=True)
+class LearningExperience:
+    """One committed standalone learning companion."""
+
+    slug: str
+    experience_id: str
+    title: str
+    artifact: Path
+    output: Path
+
+
 def _is_url(target: str) -> bool:
     return urlsplit(target).scheme in {"http", "https", "mailto"}
 
@@ -249,6 +260,31 @@ def _relationship_cards_html(
     return "".join(sections)
 
 
+def _learning_experience_cards_html(
+    page: Page,
+    experiences: list[LearningExperience],
+) -> str:
+    if page.okf_path != "/index.md" or not experiences:
+        return ""
+    cards = []
+    for experience in experiences:
+        href = _relative_href(page.output, experience.output)
+        cards.append(
+            '<a class="relationship-card" '
+            f'href="{html.escape(href, quote=True)}">'
+            "<span>Fast interactive review</span>"
+            f"<strong>{html.escape(experience.title)}</strong>"
+            "<small>Explore key ideas, answer questions, and get immediate feedback.</small>"
+            "</a>"
+        )
+    return (
+        '<section class="learning-experience-section">'
+        "<h2>Open a fast review</h2>"
+        f'<div class="relationship-grid">{"".join(cards)}</div>'
+        "</section>"
+    )
+
+
 def _manifest_entry(page: Page, output: Path) -> dict[str, object]:
     skills = _string_list(page.metadata.get("learning_objectives"))
     return {
@@ -403,25 +439,46 @@ def _interactive_lab_html(page: Page, output: Path, data_path: Path) -> str:
     return ""
 
 
-def _navigation_html(pages: list[Page], current: Page) -> str:
+def _navigation_html(
+    pages: list[Page],
+    current: Page,
+    experiences: list[LearningExperience],
+) -> str:
     links = []
     for page in pages:
         href = _relative_href(current.output, page.output)
         label = html.escape(page.title)
         marker = ' aria-current="page"' if page.output == current.output else ""
         links.append(f'<li><a href="{html.escape(href, quote=True)}"{marker}>{label}</a></li>')
+    experience_links = []
+    for experience in experiences:
+        href = _relative_href(current.output, experience.output)
+        experience_links.append(
+            f'<li><a href="{html.escape(href, quote=True)}">'
+            f"{html.escape(experience.title)}</a></li>"
+        )
     return (
-        '<nav class="sidebar" aria-label="Textbook pages"><h2>Pages</h2><ul>'
+        '<nav class="sidebar" aria-label="Textbook and fast reviews">'
+        '<section class="sidebar-section"><h2>Textbook pages</h2><ul>'
         + "".join(links)
-        + "</ul></nav>"
+        + "</ul></section>"
+        '<section class="sidebar-section learning-experience-nav">'
+        "<h2>Fast reviews</h2><ul>" + "".join(experience_links) + "</ul></section></nav>"
     )
 
 
-def _render_page(page: Page, pages: list[Page], output: Path, data_path: Path) -> str:
+def _render_page(
+    page: Page,
+    pages: list[Page],
+    experiences: list[LearningExperience],
+    output: Path,
+    data_path: Path,
+) -> str:
     css_href = _relative_href(page.output, output / "assets" / "textbook.css")
     js_href = _relative_href(page.output, output / "assets" / "threshold-lab.js")
     home_href = _relative_href(page.output, output / "index.html")
     body = _markdown_to_html(page.body)
+    experience_cards = _learning_experience_cards_html(page, experiences)
     badges = _metadata_badges_html(page)
     skills = _skills_html(page)
     relationships = _relationship_cards_html(page, pages, output)
@@ -450,10 +507,11 @@ def _render_page(page: Page, pages: list[Page], output: Path, data_path: Path) -
     <a class="manifest-link" href="{html.escape(manifest_href, quote=True)}">Agent manifest</a>
   </header>
   <div class="layout">
-    {_navigation_html(pages, page)}
+    {_navigation_html(pages, page, experiences)}
     <main>
       {badges}
       {body}
+      {experience_cards}
       {skills}
       {relationships}
       {lab}
@@ -464,6 +522,53 @@ def _render_page(page: Page, pages: list[Page], output: Path, data_path: Path) -
 </body>
 </html>
 """
+
+
+def _load_learning_experiences(
+    experiences: Path,
+    build_dir: Path,
+) -> list[LearningExperience]:
+    """Load verified payload/artifact pairs for textbook discovery."""
+    if not experiences.is_dir():
+        return []
+
+    loaded = []
+    for artifact in sorted(experiences.glob("*/index.html")):
+        slug = artifact.parent.name
+        payload_path = experiences / "content" / f"{slug}.json"
+        if not payload_path.is_file():
+            raise SystemExit(
+                f"{artifact}: learning experience {slug!r} requires a matching "
+                f"payload at {payload_path}."
+            )
+        try:
+            payload = json.loads(payload_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            raise SystemExit(
+                f"{payload_path}: invalid JSON ({exc.msg} at line {exc.lineno}, "
+                f"column {exc.colno})."
+            ) from exc
+        if not isinstance(payload, dict):
+            raise SystemExit(f"{payload_path}: payload must be a JSON object.")
+        meta = payload.get("meta")
+        if not isinstance(meta, dict):
+            raise SystemExit(f"{payload_path}: meta must be a JSON object.")
+        experience_id = meta.get("experience_id")
+        if not isinstance(experience_id, str) or not experience_id.strip():
+            raise SystemExit(f"{payload_path}: meta.experience_id must be a non-empty string.")
+        title = meta.get("title")
+        if not isinstance(title, str) or not title.strip():
+            raise SystemExit(f"{payload_path}: meta.title must be a non-empty string.")
+        loaded.append(
+            LearningExperience(
+                slug=slug,
+                experience_id=experience_id.strip(),
+                title=title.strip(),
+                artifact=artifact,
+                output=build_dir / "demos" / slug / "index.html",
+            )
+        )
+    return loaded
 
 
 def _copy_lecture_experiences(experiences: Path, build_dir: Path) -> None:
@@ -498,6 +603,10 @@ def build_textbook_preview(
         shutil.rmtree(build_dir)
     build_dir.mkdir(parents=True)
 
+    learning_experiences = _load_learning_experiences(
+        experiences,
+        build_dir.resolve(),
+    )
     shutil.copytree(site / "assets", build_dir / "assets")
     shutil.copytree(site / "data", build_dir / "data")
     _copy_lecture_experiences(experiences, build_dir)
@@ -508,7 +617,14 @@ def build_textbook_preview(
     for page in pages:
         page.output.parent.mkdir(parents=True, exist_ok=True)
         page.output.write_text(
-            _render_page(page, pages, build_dir.resolve(), data_path), encoding="utf-8"
+            _render_page(
+                page,
+                pages,
+                learning_experiences,
+                build_dir.resolve(),
+                data_path,
+            ),
+            encoding="utf-8",
         )
 
     return build_dir

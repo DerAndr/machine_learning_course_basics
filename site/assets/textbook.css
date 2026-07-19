@@ -83,6 +83,21 @@ a {
   font-weight: 700;
 }
 
+.sidebar-section + .sidebar-section {
+  margin-top: 1.25rem;
+}
+
+.learning-experience-nav {
+  border-top: 1px solid var(--line);
+  padding-top: 1.25rem;
+}
+
+.sidebar a:focus-visible,
+.relationship-card:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
 main {
   background: var(--paper);
   border: 1px solid var(--line);
@@ -110,6 +125,7 @@ main h2 {
 .lab-fallback,
 .skills,
 .relationship-section,
+.learning-experience-section,
 .source-materials {
   border: 1px solid var(--line);
   border-radius: 1rem;

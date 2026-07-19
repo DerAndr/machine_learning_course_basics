@@ -1,7 +1,27 @@
 from pathlib import Path
 
-LIVE_URL = "https://derandr.github.io/machine_learning_course_basics/demos/lecture_01_eda/"
-OFFLINE_PATH = "lecture_experiences/lecture_01_eda/index.html"
+DEMOS = {
+    "lecture_01_eda": {
+        "live": ("https://derandr.github.io/machine_learning_course_basics/demos/lecture_01_eda/"),
+        "offline": "lecture_experiences/lecture_01_eda/index.html",
+        "lecture_readme": "lectures/lecture_01_eda/README.md",
+    },
+    "lecture_04_regression": {
+        "live": (
+            "https://derandr.github.io/machine_learning_course_basics/demos/lecture_04_regression/"
+        ),
+        "offline": "lecture_experiences/lecture_04_regression/index.html",
+        "lecture_readme": "lectures/lecture_04_regression/README.md",
+    },
+    "lecture_05_classification_part_1": {
+        "live": (
+            "https://derandr.github.io/machine_learning_course_basics/"
+            "demos/lecture_05_classification_part_1/"
+        ),
+        "offline": ("lecture_experiences/lecture_05_classification_part_1/index.html"),
+        "lecture_readme": ("lectures/lecture_05_classification_part_1/README.md"),
+    },
+}
 SKILL_PATH = ".agents/skills/ml-course-interactive-learning-assistant/SKILL.md"
 CORE_SKILL_PATH = ".agents/skills/interactive-learning-experience-builder/SKILL.md"
 ARCHITECTURE_PATH = "docs/learning-companions-architecture.md"
@@ -20,16 +40,55 @@ ARCHITECTURE_LINKS = {
 def test_learning_assistant_documentation_is_discoverable() -> None:
     readme = Path("README.md").read_text(encoding="utf-8")
     guide = Path("docs/interactive-lecture-learning-assistant.md")
-    lecture = Path("lectures/lecture_01_eda/README.md").read_text(encoding="utf-8")
     agents = Path("AGENTS.md").read_text(encoding="utf-8")
 
     assert guide.is_file()
     guide_text = guide.read_text(encoding="utf-8")
-    assert LIVE_URL in readme
-    assert LIVE_URL in guide_text
-    assert OFFLINE_PATH in readme
-    assert OFFLINE_PATH in guide_text
-    assert OFFLINE_PATH in lecture
+    for demo in DEMOS.values():
+        assert demo["live"] in readme
+        assert demo["offline"] in readme
+        assert demo["live"] in guide_text
+        assert demo["offline"] in guide_text
+        lecture_text = Path(demo["lecture_readme"]).read_text(encoding="utf-8")
+        assert demo["live"] in lecture_text
+        assert demo["offline"] in lecture_text
+
+    for heading in (
+        "## Choose how to learn",
+        "## Fast interactive reviews",
+        "## Course map",
+        "## Create interactive learning materials",
+        "## Local setup",
+        "## Contributing and reference",
+        "## Repository map",
+        "## License",
+    ):
+        assert heading in readme
+
+    general_prompt = (
+        "Use $interactive-learning-experience-builder to create a grounded, "
+        "offline interactive learning experience from this repository's "
+        "knowledge sources."
+    )
+    course_prompt = (
+        "Use $ml-course-interactive-learning-assistant with "
+        "$interactive-learning-experience-builder to create a grounded, "
+        "accessible, self-contained review for a selected ML-course lecture."
+    )
+    for heading in (
+        "## Choose the right skill",
+        "## General-purpose workflow",
+        "## ML-course workflow",
+        "## Authoring and verification flow",
+    ):
+        assert heading in guide_text
+    assert general_prompt in guide_text
+    assert course_prompt in guide_text
+
+    okf_index = Path("okf/index.md").read_text(encoding="utf-8")
+    assert "## Fast interactive reviews" in okf_index
+    assert "complement" in okf_index.lower()
+    assert "demos/" not in okf_index
     assert SKILL_PATH in guide_text
     assert CORE_SKILL_PATH in guide_text
     assert "context profile" in guide_text
