@@ -72,8 +72,11 @@ Use the skill that matches the source context:
 The general skill owns the reusable content contract, deterministic generator,
 and offline validator. The course skill adds this repository's source,
 public-safety, output, and publishing rules. Follow the
+[student prompt and installation quickstart](docs/student-learning-companion-quickstart.md)
+to use the skills locally or add the generic skill to your personal Codex. Use
+the
 [operational learning-companion guide](docs/interactive-lecture-learning-assistant.md)
-for copy-ready prompts and the full authoring flow, or read the
+for the full authoring flow, or read the
 [Learning companions architecture](docs/learning-companions-architecture.md)
 for responsibility boundaries.
 
@@ -117,6 +120,7 @@ and optional dependency groups.
 ## Contributing and reference
 
 - [Student and maintainer textbook workflow](docs/contributing-to-textbook.md)
+- [Student learning-companion prompts and setup](docs/student-learning-companion-quickstart.md)
 - [OKF authoring guide](docs/okf-authoring-guide.md)
 - [Interactive learning-companion operations](docs/interactive-lecture-learning-assistant.md)
 - [Learning companions architecture](docs/learning-companions-architecture.md)

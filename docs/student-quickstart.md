@@ -239,15 +239,24 @@ uv run python tools/validate_okf.py okf/ --strict-warnings
 uv run python tools/build_textbook_preview.py
 ```
 
-## 7. AI Agent Assistance
+## 7. Codex assistance
 
-As a student, you can leverage your local AI agent (Claude, Gemini, etc.) to help you navigate this course repository. 
+Codex can help you choose materials, study through short questions, or generate
+a focused interactive review from approved course sources.
 
-To use it effectively, your agent can load the `ml-course-student-navigator` skill located at `.agents/skills/ml-course-student-navigator/SKILL.md`.
+Open Codex at the repository root so it can discover the repository skills
+under `.agents/skills/`. Start with the
+[student learning-companion quickstart](student-learning-companion-quickstart.md)
+for copy-ready prompts, examples for this course and other repositories, and
+instructions for adding the generic skill to your personal Codex.
+
+For course navigation, invoke `$ml-course-student-navigator`, located at
+`.agents/skills/ml-course-student-navigator/SKILL.md`.
 
 **What the agent CAN do for you:**
 - Help you locate specific lectures, notes, or slides based on topics you want to learn.
 - Guide you through the interactive textbook (`okf/`) for conceptual questions.
+- Create a short grounded review using the learning-companion skills.
 - Troubleshoot local environment setup and `uv` dependencies.
 - Explain the difference between `lecture_examples/` and `practical_session/` notebooks.
 

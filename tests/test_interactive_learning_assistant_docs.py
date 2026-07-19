@@ -26,6 +26,7 @@ SKILL_PATH = ".agents/skills/ml-course-interactive-learning-assistant/SKILL.md"
 CORE_SKILL_PATH = ".agents/skills/interactive-learning-experience-builder/SKILL.md"
 ARCHITECTURE_PATH = "docs/learning-companions-architecture.md"
 SUBMISSION_PREPARATION_PATH = "docs/build-week-submission-preparation.md"
+STUDENT_COMPANION_QUICKSTART_PATH = "docs/student-learning-companion-quickstart.md"
 ARCHITECTURE_LINKS = {
     "README.md": "[Learning companions architecture](docs/learning-companions-architecture.md)",
     "AGENTS.md": "[Learning companions architecture](docs/learning-companions-architecture.md)",
@@ -36,6 +37,54 @@ ARCHITECTURE_LINKS = {
         "[Learning Companions Architecture](learning-companions-architecture.md)"
     ),
 }
+
+
+def test_student_learning_companion_quickstart_is_actionable() -> None:
+    path = Path(STUDENT_COMPANION_QUICKSTART_PATH)
+    assert path.is_file()
+
+    text = path.read_text(encoding="utf-8")
+    for heading in (
+        "# Student Learning Companion Quickstart",
+        "## Pick the shortest path",
+        "## Use the skills from this repository",
+        "## Course-specific prompt examples",
+        "## Use the generic skill in another repository",
+        "## Add the generic skill to your personal Codex",
+        "## Troubleshooting",
+    ):
+        assert heading in text
+
+    for required_item in (
+        "$interactive-learning-experience-builder",
+        "$ml-course-interactive-learning-assistant",
+        "$HOME/.agents/skills",
+        "/skills",
+        "lecture_04_regression",
+        "Trusted sources",
+        "Excluded material",
+        "Copy-Item",
+        "cp -R",
+        "https://learn.chatgpt.com/docs/build-skills",
+    ):
+        assert required_item in text
+
+    links = {
+        "README.md": (
+            "[student prompt and installation quickstart]"
+            "(docs/student-learning-companion-quickstart.md)"
+        ),
+        "docs/student-quickstart.md": (
+            "[student learning-companion quickstart]"
+            "(student-learning-companion-quickstart.md)"
+        ),
+        "docs/interactive-lecture-learning-assistant.md": (
+            "[student learning-companion quickstart]"
+            "(student-learning-companion-quickstart.md)"
+        ),
+    }
+    for document_path, link in links.items():
+        assert link in Path(document_path).read_text(encoding="utf-8")
 
 
 def test_learning_assistant_documentation_is_discoverable() -> None:

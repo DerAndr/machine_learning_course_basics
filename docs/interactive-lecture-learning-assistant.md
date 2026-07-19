@@ -4,6 +4,9 @@ This is the operational guide for creating, validating, and publishing
 learning companions. For the conceptual layers, ownership boundaries, and
 portability model, read
 [Learning Companions Architecture](learning-companions-architecture.md).
+Students who want copy-ready prompts and local Codex setup should start with
+the
+[student learning-companion quickstart](student-learning-companion-quickstart.md).
 
 A learning companion is a small, self-contained review with grounded
 explanations, meaningful visual controls, accessibility settings, optional
