@@ -365,6 +365,11 @@ def test_build_week_evidence_records_completed_local_semantic_acceptance() -> No
         "or errors."
     )
     assert canonical_browser_evidence in evidence
+    assert (
+        "Separate browser checks completed control-state retention, both palette "
+        "modes, and no horizontal overflow at 390px." in evidence
+    )
+    assert "must be reconfirmed during final task 9" not in evidence.lower()
 
 
 def test_textbook_skill_requires_mobile_quiz_contract() -> None:

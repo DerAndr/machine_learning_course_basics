@@ -43,7 +43,7 @@ downstream artifact was regenerated.
 | Deterministic regeneration | Deterministic regeneration: completed on 2026-07-20. All three payloads regenerated into temporary files with byte-identical SHA-256 hashes to their committed artifacts. |
 | Automated | Local full suite: completed (222 passed, 1 skipped). Ruff format/check, the three Node behavior suites (13 tests), strict OKF validation, and the preview build are recorded below. |
 | Validators and preview build | Validators and preview build: completed on 2026-07-20 for all three companions, strict OKF validation, and the textbook preview. |
-| Browser | Browser acceptance: completed on 2026-07-20 in storage-disabled, sandboxed frames for all three companions. Scripts were allowed, but origin and `localStorage` were unavailable; each frame rendered its heading and default UI, and the browser console recorded zero warnings or errors. |
+| Browser | Browser acceptance: completed on 2026-07-20 in storage-disabled, sandboxed frames for all three companions. Scripts were allowed, but origin and `localStorage` were unavailable; each frame rendered its heading and default UI, and the browser console recorded zero warnings or errors. Separate browser checks completed control-state retention, both palette modes, and no horizontal overflow at 390px. |
 | GitHub Actions | Pending for this branch. The earlier public baseline at `50bd20f` completed Actions successfully; that historical result does not verify this revision. |
 | GitHub Pages | Pending for this branch. All three earlier public routes returned HTTP 200 at `50bd20f`; the semantic outputs must be checked again after publication. |
 
@@ -57,10 +57,11 @@ downstream artifact was regenerated.
 Each imported commit owns exactly one grounded JSON payload, one generated
 standalone HTML artifact, and one topic-specific deterministic test.
 
-The semantic revision is represented by the local commit sequence
-`b4cd3fe`–`9bbb319`: pure visualization models, semantic schemas and renderers,
-Classification and Regression payloads, authoring guidance, regenerated EDA,
-and CI coverage. This document is the next local change in that sequence.
+The semantic revision and subsequent local hardening include pure visualization
+models, semantic schemas and renderers, Classification and Regression payloads,
+authoring guidance, regenerated EDA, CI coverage, validation refinements, and
+public evidence updates. The complete local history is available through
+`git log --oneline`.
 
 ## Artifact inventory
 
@@ -73,7 +74,7 @@ and CI coverage. This document is the next local change in that sequence.
 The canonical artifacts are the committed
 `lecture_experiences/<slug>/index.html` files. Preview publication copies them
 byte-for-byte. These hashes describe the current local semantic revision and
-must be reconfirmed during final Task 9 deterministic regeneration.
+have been verified by the completed deterministic regeneration check.
 
 ## Source-policy verification
 
@@ -127,7 +128,9 @@ Run on 2026-07-20 for the final local publication pass:
 - Browser acceptance completed in storage-disabled, sandboxed frames for EDA,
   Regression, and Classification. Scripts were allowed, but origin and
   `localStorage` were unavailable; each rendered its heading and default UI,
-  and the browser console recorded zero warnings or errors.
+  and the browser console recorded zero warnings or errors. Separate browser
+  checks completed control-state retention, both palette modes, and no
+  horizontal overflow at 390px.
 
 These are completed local checks. GitHub Actions and GitHub Pages remain
 explicitly pending until this branch is published.
