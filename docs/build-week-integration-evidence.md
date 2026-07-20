@@ -44,8 +44,8 @@ downstream artifact was regenerated.
 | Automated | Local full suite: completed (222 passed, 1 skipped). Ruff format/check, the three Node behavior suites (13 tests), strict OKF validation, and the preview build are recorded below. |
 | Validators and preview build | Validators and preview build: completed on 2026-07-20 for all three companions, strict OKF validation, and the textbook preview. |
 | Browser | Browser acceptance: completed on 2026-07-20 in storage-disabled, sandboxed frames for all three companions. Scripts were allowed, but origin and `localStorage` were unavailable; each frame rendered its heading and default UI, and the browser console recorded zero warnings or errors. Separate browser checks completed control-state retention, both palette modes, and no horizontal overflow at 390px. |
-| GitHub Actions | Pending for this branch. The earlier public baseline at `50bd20f` completed Actions successfully; that historical result does not verify this revision. |
-| GitHub Pages | Pending for this branch. All three earlier public routes returned HTTP 200 at `50bd20f`; the semantic outputs must be checked again after publication. |
+| GitHub Actions | Succeeded on public `main` at `a9fd6d9ec61f5c05981734846d858572413f5f92`: [Validate OKF run 29729743749](https://github.com/DerAndr/machine_learning_course_basics/actions/runs/29729743749) and [Build Textbook Preview run 29729739505](https://github.com/DerAndr/machine_learning_course_basics/actions/runs/29729739505). |
+| GitHub Pages | Succeeded from Build Textbook Preview run `29729739505` at the published SHA. The root and all three companion routes returned HTTP 200 with the markers recorded below. |
 
 ## Integrated commits
 
@@ -132,8 +132,9 @@ Run on 2026-07-20 for the final local publication pass:
   checks completed control-state retention, both palette modes, and no
   horizontal overflow at 390px.
 
-These are completed local checks. GitHub Actions and GitHub Pages remain
-explicitly pending until this branch is published.
+These completed local checks were followed by successful public GitHub Actions
+and GitHub Pages deployment at
+`a9fd6d9ec61f5c05981734846d858572413f5f92`.
 
 ## Deterministic regeneration status
 
@@ -190,20 +191,23 @@ claim.
 - Root, operational, and matching lecture READMEs include live and offline
   routes for all three companions.
 
-## Published route expectations
+## Verified public deployment
 
-After the semantic revision is published and the existing Pages workflow
-succeeds, verify these routes:
+On 2026-07-20, the public repository `main` at
+`a9fd6d9ec61f5c05981734846d858572413f5f92` completed
+[Validate OKF run 29729743749](https://github.com/DerAndr/machine_learning_course_basics/actions/runs/29729743749)
+and [Build Textbook Preview run 29729739505](https://github.com/DerAndr/machine_learning_course_basics/actions/runs/29729739505).
+The following live checks all returned HTTP 200:
 
-- `https://derandr.github.io/machine_learning_course_basics/demos/lecture_01_eda/`
-- `https://derandr.github.io/machine_learning_course_basics/demos/lecture_04_regression/`
-- `https://derandr.github.io/machine_learning_course_basics/demos/lecture_05_classification_part_1/`
-
-These are route expectations, not evidence of the post-merge deployment.
+| Route | Confirmed marker |
+|---|---|
+| `https://derandr.github.io/machine_learning_course_basics/` | `Fast interactive reviews` |
+| `https://derandr.github.io/machine_learning_course_basics/demos/lecture_01_eda/` | `Palette` |
+| `https://derandr.github.io/machine_learning_course_basics/demos/lecture_04_regression/` | `Ridge` |
+| `https://derandr.github.io/machine_learning_course_basics/demos/lecture_05_classification_part_1/` | `Decision threshold` |
 
 ## Remaining human-led submission work
 
-- Verify deployed Pages after merge to main.
 - Select primary /feedback session ID.
 - Capture final screenshots.
 - Record/upload public <3min video.

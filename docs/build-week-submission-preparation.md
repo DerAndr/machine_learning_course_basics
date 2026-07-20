@@ -4,9 +4,13 @@ This is a working worksheet, not final submission copy. Rewrite the public
 description and tagline in your own voice before submitting. Keep only claims
 you personally understand and can demonstrate.
 
-The semantic companion revision is currently local. Do not describe its
-browser, Actions, or Pages checks as complete until the final verification and
-publication pass records that evidence.
+The semantic companion revision is published on public `upstream/main` at
+`a9fd6d9ec61f5c05981734846d858572413f5f92`. On 2026-07-20,
+[Validate OKF run 29729743749](https://github.com/DerAndr/machine_learning_course_basics/actions/runs/29729743749)
+and [Build Textbook Preview run 29729739505](https://github.com/DerAndr/machine_learning_course_basics/actions/runs/29729739505)
+succeeded; the root and all three companion routes returned HTTP 200. The
+remaining Devpost, video, screenshot, and submitter-authored work below is
+still incomplete.
 
 ## Narrative spine
 
@@ -197,7 +201,7 @@ three minutes with continuous spoken explanation.
 | 1:32–1:58 | Regression regularization and metric-sensitivity explorers | Compare Ridge/Lasso shrinkage and show why one large error affects RMSE more than MAE. |
 | 1:58–2:18 | Palette toggle, then integration-evidence feedback section | Explain that learner review exposed repeated generic charts, ignored class meaning, and a perceptually weak palette; show the portable-core fix rather than hiding the defect. |
 | 2:18–2:32 | Textbook homepage with EDA/Regression/Classification | Demonstrate regeneration, repeatability, and discovery. |
-| 2:32–2:40 | Final verified test/Pages evidence, then the three companions | Show the final Task 9 evidence only after it exists, then close with the broader use: quickly learning from any trusted repository or knowledge base. |
+| 2:32–2:40 | Published SHA, successful Actions/Pages evidence, then the three companions | Show the verified public SHA and deployment evidence, then close with the broader use: quickly learning from any trusted repository or knowledge base. |
 
 Required spoken points:
 
@@ -212,7 +216,7 @@ Required spoken points:
 
 ## Screenshot plan
 
-Prepare five clean images after the Pages deployment is verified:
+Prepare five clean images from the verified public Pages routes:
 
 1. **Discovery:** textbook homepage with all three review cards and the sidebar.
 2. **Classification semantics:** threshold/confusion outcomes beside the
@@ -245,11 +249,10 @@ feedback → diagnosis → reusable fix → verified-output loop.
 
 ### Repository and deployment
 
-- [ ] Add the Codex/GPT-5.6 disclosure to the public README.
-- [ ] Merge `codex/build-week-showcase` into `basics`.
-- [ ] Push the reviewed result to `upstream/main`.
-- [ ] Verify the Pages workflow and all three live demo routes.
-- [ ] Confirm the public repository includes relevant licenses.
+- [x] Add the Codex/GPT-5.6 disclosure to the public README.
+- [x] Publish the reviewed result to public `upstream/main` at `a9fd6d9ec61f5c05981734846d858572413f5f92`.
+- [x] Verify the Pages workflow and all three live demo routes.
+- [x] Confirm the public repository includes relevant licenses.
 
 ### Devpost project
 

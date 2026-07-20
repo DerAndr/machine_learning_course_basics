@@ -225,6 +225,15 @@ def test_build_week_submission_preparation_is_actionable() -> None:
 
     assert "rewrite" in text.lower()
     assert "own voice" in text.lower()
+    for published_checklist_item in (
+        "- [x] Add the Codex/GPT-5.6 disclosure to the public README.",
+        "- [x] Publish the reviewed result to public `upstream/main` at",
+        "- [x] Verify the Pages workflow and all three live demo routes.",
+        "- [x] Confirm the public repository includes relevant licenses.",
+    ):
+        assert published_checklist_item in text
+    assert "semantic companion revision is currently local" not in text.lower()
+    assert "merge `codex/build-week-showcase` into `basics`" not in text.lower()
 
 
 def test_build_week_submission_setup_matches_supported_python_runtime() -> None:
@@ -355,8 +364,19 @@ def test_build_week_evidence_records_completed_local_semantic_acceptance() -> No
     ):
         assert completed_check in evidence
 
-    assert "GitHub Actions | Pending for this branch." in evidence
-    assert "GitHub Pages | Pending for this branch." in evidence
+    for published_evidence in (
+        "a9fd6d9ec61f5c05981734846d858572413f5f92",
+        "29729743749",
+        "29729739505",
+        "HTTP 200",
+        "Fast interactive reviews",
+        "Palette",
+        "Ridge",
+        "Decision threshold",
+    ):
+        assert published_evidence in evidence
+    assert "Pending for this branch" not in evidence
+    assert "remain explicitly pending" not in evidence
     canonical_browser_evidence = (
         "Browser acceptance: completed on 2026-07-20 in storage-disabled, "
         "sandboxed frames for all three companions. Scripts were allowed, but "
