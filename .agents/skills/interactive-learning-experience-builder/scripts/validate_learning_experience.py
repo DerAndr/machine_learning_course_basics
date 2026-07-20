@@ -60,6 +60,10 @@ VISUALIZATION_MODELS_DEFINITION = re.compile(
     r"(?:\b(?:globalThis|root|window)\s*\.\s*LearningVisualizationModels\s*="
     r"|\b(?:const|let|var)\s+LearningVisualizationModels\s*=)"
 )
+JAVASCRIPT_COMMENTS_AND_STRINGS = re.compile(
+    r"//[^\r\n]*|/\*.*?\*/|'(?:\\.|[^'\\])*'|\"(?:\\.|[^\"\\])*\"",
+    re.DOTALL,
+)
 STICKY_PROGRESS_STYLE = re.compile(
     r"\.progress-panel\s*\{[^}]*\bposition\s*:\s*sticky\b",
     re.IGNORECASE | re.DOTALL,
@@ -214,6 +218,12 @@ def _is_content_data_script(script: str) -> bool:
     return isinstance(payload, dict)
 
 
+def _has_embedded_visualization_models(script: str) -> bool:
+    """Require a model assignment in executable JavaScript, not a comment or string."""
+    executable_source = JAVASCRIPT_COMMENTS_AND_STRINGS.sub("", script)
+    return bool(VISUALIZATION_MODELS_DEFINITION.search(executable_source))
+
+
 def validate_html(path: Path) -> list[str]:
     """Return every offline, settings, and accessibility contract violation."""
     try:
@@ -263,7 +273,7 @@ def validate_html(path: Path) -> list[str]:
         errors.append("missing live palette status")
         if not parser.palette_statuses:
             errors.append("missing palette-status element")
-    if not any(VISUALIZATION_MODELS_DEFINITION.search(script) for script in executable_scripts):
+    if not any(_has_embedded_visualization_models(script) for script in executable_scripts):
         errors.append("missing embedded visualization models")
     if "__VISUALIZATION_MODELS__" in html:
         errors.append("unreplaced visualization model marker")

@@ -709,6 +709,23 @@ def test_palette_modes_use_visibly_different_graph_tokens() -> None:
     assert "Palette: color-blind-safe" in template
 
 
+def test_semantic_renderers_use_payload_labels_and_non_color_cues() -> None:
+    template = TEMPLATE.read_text(encoding="utf-8")
+
+    for hook in (
+        "visualization.labels.positive",
+        "visualization.labels.negative",
+        "True series",
+        "predicted as",
+        "Positive residual",
+        "Negative residual",
+        "coefficientFeatureStyle",
+        "feature-label",
+        "stroke-dasharray",
+    ):
+        assert hook in template
+
+
 def test_interactive_template_preserves_non_color_and_focus_friendly_cues() -> None:
     template_path = (
         ROOT
@@ -865,6 +882,29 @@ def test_validate_html_does_not_mistake_model_usage_for_embedded_models(
         _valid_html().replace(
             "globalThis.LearningVisualizationModels = {};",
             "LearningVisualizationModels.thresholdSummary([], 0.5);",
+        ),
+        encoding="utf-8",
+    )
+
+    assert "missing embedded visualization models" in validate_html(path)
+
+
+@pytest.mark.parametrize(
+    "model_text",
+    [
+        "// globalThis.LearningVisualizationModels = {};",
+        'const note = "globalThis.LearningVisualizationModels = {};";',
+    ],
+)
+def test_validate_html_rejects_comment_or_string_model_assignment(
+    tmp_path: Path,
+    model_text: str,
+) -> None:
+    path = tmp_path / "index.html"
+    path.write_text(
+        _valid_html().replace(
+            "globalThis.LearningVisualizationModels = {};",
+            model_text,
         ),
         encoding="utf-8",
     )

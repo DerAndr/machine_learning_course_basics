@@ -360,6 +360,17 @@
       stroke-width: 3;
     }
 
+    .feature-label {
+      fill: var(--ink);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .coefficient-legend {
+      color: var(--muted);
+      margin: 0.75rem 0 0;
+    }
+
     .model-ridge {
       stroke: var(--graph-primary);
     }
@@ -911,13 +922,15 @@ __QUIZ_STATE_MACHINE__
         threshold,
       );
       const formatMetric = (value) => value === null ? "not defined" : value.toFixed(2);
+      const positive = escapeHtml(String(visualization.labels.positive));
+      const negative = escapeHtml(String(visualization.labels.negative));
       target.innerHTML = `<div class="threshold-layout">
         <svg viewBox="0 0 520 250" role="img"
           aria-label="${escapeHtml(visualization.title)} confusion matrix">
-          <text class="chart-label" x="240" y="24">Predicted negative</text>
-          <text class="chart-label" x="385" y="24">Predicted positive</text>
-          <text class="chart-label" x="12" y="95">Actual negative</text>
-          <text class="chart-label" x="12" y="190">Actual positive</text>
+          <text class="chart-label" x="240" y="24">Predicted ${negative}</text>
+          <text class="chart-label" x="385" y="24">Predicted ${positive}</text>
+          <text class="chart-label" x="12" y="95">Actual ${negative}</text>
+          <text class="chart-label" x="12" y="190">Actual ${positive}</text>
           <g class="confusion-cell outcome-tn">
             <rect x="190" y="45" width="135" height="80"></rect>
             <text x="245" y="88">TN ${result.tn}</text>
@@ -973,8 +986,9 @@ __QUIZ_STATE_MACHINE__
         const series = String(point.series);
         const style = styles[series];
         const seriesLabel = visualization.labels.series[series];
-        const title = `${seriesLabel}: ${visualization.labels.x_axis} ${point.x}, ` +
-          `${visualization.labels.y_axis} ${point.y}`;
+        const predictedLabel = visualization.labels.series[point.predictedSeries];
+        const title = `True series ${seriesLabel}: ${visualization.labels.x_axis} ${point.x}, ` +
+          `${visualization.labels.y_axis} ${point.y}; predicted as ${predictedLabel}`;
         if (style.shape === "square") {
           return `<rect class="mark-series-${style.colorRole}" data-shape="${style.shape}"
             x="${xScale(Number(point.x)) - 7}" y="${yScale(Number(point.y)) - 7}"
@@ -1059,6 +1073,9 @@ __QUIZ_STATE_MACHINE__
           aria-label="${escapeHtml(visualization.title)} residual against fitted panel">
           <line class="zero-line" x1="65" y1="${residualScale(0)}"
             x2="475" y2="${residualScale(0)}"></line>
+          <text class="chart-label" x="70" y="${residualScale(0) - 8}">Positive residual</text>
+          <text class="chart-label" x="70" y="${residualScale(0) + 18}">Negative residual</text>
+          <text class="chart-label" x="425" y="${residualScale(0) - 8}">Zero residual</text>
           ${points.map((point) => `<circle class="mark-series-primary" data-shape="circle"
             cx="${fittedScale(point.fitted)}" cy="${residualScale(point.residual)}" r="6">
             <title>Fitted ${point.fitted.toFixed(2)}, residual
@@ -1072,6 +1089,16 @@ __QUIZ_STATE_MACHINE__
       summary.textContent =
         `${scenario.label}. Illustrative residuals range from ` +
         `${Math.min(...residuals).toFixed(2)} to ${Math.max(...residuals).toFixed(2)}.`;
+    }
+
+    function coefficientFeatureStyle(featureIndex) {
+      const styles = [
+        { dashArray: "", marker: "●" },
+        { dashArray: "10 4", marker: "■" },
+        { dashArray: "2 4", marker: "▲" },
+        { dashArray: "14 3 2 3", marker: "◆" },
+      ];
+      return styles[featureIndex % styles.length];
     }
 
     function renderCoefficientPath(visualization, target, summary, selectedIndex) {
@@ -1090,13 +1117,19 @@ __QUIZ_STATE_MACHINE__
       const paths = data.series.flatMap((series, featureIndex) =>
         ["ridge", "lasso"].map((model) => {
           const values = series[model];
+          const featureStyle = coefficientFeatureStyle(featureIndex);
           const points = values.map(
             (value, step) => `${xScale(step)},${yScale(value)}`,
           ).join(" ");
-          const featurePattern = featureIndex % 2 === 0 ? "" : ' stroke-width="5"';
-          return `<polyline class="coefficient-line model-${model}"${featurePattern}
-            points="${points}"><title>${escapeHtml(series.feature)} ${model}
-            coefficient path</title></polyline>`;
+          const label = model === "ridge"
+            ? `<text class="feature-label" x="${xScale(data.penalties.length - 1) - 4}"
+                y="${yScale(values[values.length - 1]) - 7}" text-anchor="end">
+                ${featureStyle.marker} ${escapeHtml(series.feature)}</text>`
+            : "";
+          return `<polyline class="coefficient-line model-${model}" data-feature-pattern="${featureIndex}"
+            stroke-dasharray="${featureStyle.dashArray}" points="${points}">
+            <title>${escapeHtml(series.feature)} ${model} coefficient path; feature cue ${featureStyle.marker}</title>
+            </polyline>${label}`;
         }),
       ).join("");
       const markers = snapshot.rows.map((row) => {
@@ -1128,6 +1161,9 @@ __QUIZ_STATE_MACHINE__
           <text class="chart-label" x="195" y="228">Penalty strength</text>
           <text class="chart-label" x="8" y="24">Coefficient</text>
         </svg>
+        <p class="coefficient-legend">Feature cues: ${data.series.map((series, featureIndex) =>
+          `${coefficientFeatureStyle(featureIndex).marker} ${escapeHtml(series.feature)}`
+        ).join("; ")}. Ridge uses circles; Lasso uses squares or an exact-zero cross.</p>
         <table class="visualization-table">
           <caption>Coefficients at penalty ${snapshot.penalty}</caption>
           <thead><tr><th>Feature</th><th>Ridge</th><th>Lasso</th></tr></thead>
