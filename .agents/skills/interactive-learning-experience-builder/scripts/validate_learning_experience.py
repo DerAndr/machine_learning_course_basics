@@ -56,26 +56,15 @@ CONTENT_DATA_SCRIPT = re.compile(
     r"^\s*const\s+CONTENT\s*=\s*(\{.*\})\s*;\s*$",
     re.DOTALL,
 )
-VISUALIZATION_MODELS_SIGNATURE = (
-    re.compile(r"\bfunction\s+visualizationModelsFactory\s*\(\s*root\s*,\s*factory\s*\)"),
-    re.compile(r"\bconst\s+api\s*=\s*factory\s*\(\s*\)\s*;"),
-    re.compile(r"\broot\s*\.\s*LearningVisualizationModels\s*=\s*api\s*;"),
-    re.compile(r"\bfunction\s+thresholdSummary\s*\("),
-    re.compile(r"\bfunction\s+boundarySummary\s*\("),
-    re.compile(r"\bfunction\s+residualPoints\s*\("),
-    re.compile(r"\bfunction\s+coefficientSnapshot\s*\("),
-    re.compile(r"\bfunction\s+errorMetricSummary\s*\("),
-    re.compile(r"\bfunction\s+seriesStyles\s*\("),
-    re.compile(
-        r"\breturn\s*\{\s*boundarySummary\s*,\s*coefficientSnapshot\s*,\s*"
-        r"errorMetricSummary\s*,\s*residualPoints\s*,\s*seriesStyles\s*,\s*"
-        r"thresholdSummary\s*,?\s*\}",
-        re.DOTALL,
-    ),
-)
 JAVASCRIPT_COMMENTS_AND_STRINGS = re.compile(
     r"//[^\r\n]*|/\*.*?\*/|'(?:\\.|[^'\\])*'|\"(?:\\.|[^\"\\])*\"|`(?:\\.|[^`\\])*`",
     re.DOTALL,
+)
+VISUALIZATION_MODEL_ASSIGNMENT = re.compile(
+    r"\b(?:globalThis|root|window)\s*\.\s*LearningVisualizationModels\s*="
+)
+TRUSTED_VISUALIZATION_MODELS_PATH = (
+    Path(__file__).resolve().parents[1] / "assets" / "visualization-models.js"
 )
 STICKY_PROGRESS_STYLE = re.compile(
     r"\.progress-panel\s*\{[^}]*\bposition\s*:\s*sticky\b",
@@ -231,10 +220,21 @@ def _is_content_data_script(script: str) -> bool:
     return isinstance(payload, dict)
 
 
-def _has_embedded_visualization_models(script: str) -> bool:
-    """Require the trusted visualization-model factory and exported API shape."""
+def _trusted_visualization_models() -> str | None:
+    try:
+        return TRUSTED_VISUALIZATION_MODELS_PATH.read_text(encoding="utf-8").strip()
+    except OSError:
+        return None
+
+
+def _has_embedded_visualization_models(script: str, trusted_models: str) -> bool:
+    """Require an exact copy of the portable trusted visualization-model asset."""
+    return script.strip() == trusted_models
+
+
+def _looks_like_visualization_model_assignment(script: str) -> bool:
     executable_source = JAVASCRIPT_COMMENTS_AND_STRINGS.sub("", script)
-    return all(pattern.search(executable_source) for pattern in VISUALIZATION_MODELS_SIGNATURE)
+    return bool(VISUALIZATION_MODEL_ASSIGNMENT.search(executable_source))
 
 
 def validate_html(path: Path) -> list[str]:
@@ -286,8 +286,16 @@ def validate_html(path: Path) -> list[str]:
         errors.append("missing live palette status")
         if not parser.palette_statuses:
             errors.append("missing palette-status element")
-    if not any(_has_embedded_visualization_models(script) for script in executable_scripts):
-        errors.append("missing embedded visualization models")
+    trusted_models = _trusted_visualization_models()
+    if trusted_models is None:
+        errors.append("cannot load trusted portable visualization-model asset")
+    elif not any(
+        _has_embedded_visualization_models(script, trusted_models) for script in executable_scripts
+    ):
+        if any(_looks_like_visualization_model_assignment(script) for script in executable_scripts):
+            errors.append("embedded visualization models do not match the trusted portable asset")
+        else:
+            errors.append("missing embedded visualization models")
     if "__VISUALIZATION_MODELS__" in html:
         errors.append("unreplaced visualization model marker")
     if not parser.has_main:

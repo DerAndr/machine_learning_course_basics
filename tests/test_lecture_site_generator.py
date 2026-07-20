@@ -953,6 +953,21 @@ def test_validate_html_accepts_trusted_visualization_model_asset(tmp_path: Path)
     assert validate_html(path) == []
 
 
+def test_validate_html_rejects_modified_visualization_model_asset(tmp_path: Path) -> None:
+    path = tmp_path / "index.html"
+    path.write_text(
+        _valid_html().replace(
+            "return denominator === 0 ? null : numerator / denominator;",
+            "return 0;",
+        ),
+        encoding="utf-8",
+    )
+
+    assert "embedded visualization models do not match the trusted portable asset" in validate_html(
+        path
+    )
+
+
 def test_validate_html_does_not_mistake_model_usage_for_embedded_models(
     tmp_path: Path,
 ) -> None:
@@ -1003,7 +1018,26 @@ def test_validate_html_rejects_regex_literal_model_assignment(tmp_path: Path) ->
         encoding="utf-8",
     )
 
-    assert "missing embedded visualization models" in validate_html(path)
+    assert "embedded visualization models do not match the trusted portable asset" in validate_html(
+        path
+    )
+
+
+def test_validate_html_rejects_regex_literal_that_mimics_model_assignment(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "index.html"
+    path.write_text(
+        _valid_html().replace(
+            "root.LearningVisualizationModels = api;",
+            "const fake = /root.LearningVisualizationModels = api;/;",
+        ),
+        encoding="utf-8",
+    )
+
+    assert "embedded visualization models do not match the trusted portable asset" in validate_html(
+        path
+    )
 
 
 def test_validate_html_rejects_unreplaced_visualization_model_marker(tmp_path: Path) -> None:
