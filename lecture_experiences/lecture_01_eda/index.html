@@ -937,6 +937,7 @@
       breakPrompts: savedBoolean(savedSettings.breakPrompts, CONTENT.defaults.break_prompts),
       conceptIndex: 0,
       visualizationIndex: 0,
+      visualizationControlValues: {},
       quiz: null,
     };
 
@@ -1498,6 +1499,24 @@
         `${units} squared; RMSE ${result.rmse.toFixed(2)} ${units}.`;
     }
 
+    function readVisualizationControlValue(control) {
+      return control.type === "checkbox" ? control.checked : control.value;
+    }
+
+    function restoreVisualizationControlValue(visualization, control) {
+      if (!Object.hasOwn(state.visualizationControlValues, visualization.id)) {
+        state.visualizationControlValues[visualization.id] =
+          readVisualizationControlValue(control);
+        return;
+      }
+      const value = state.visualizationControlValues[visualization.id];
+      if (control.type === "checkbox") {
+        control.checked = Boolean(value);
+      } else {
+        control.value = String(value);
+      }
+    }
+
     function visualizationControl(visualization) {
       if (visualization.type === "binary-threshold") {
         const controls = visualization.controls;
@@ -1623,8 +1642,13 @@
         const control = document.querySelector(
           `[data-viz-control="${CSS.escape(visualization.id)}"]`,
         );
+        restoreVisualizationControlValue(visualization, control);
         const eventType = control.matches('input[type="range"]') ? "input" : "change";
-        control.addEventListener(eventType, () => renderOneVisualization(visualization));
+        control.addEventListener(eventType, () => {
+          state.visualizationControlValues[visualization.id] =
+            readVisualizationControlValue(control);
+          renderOneVisualization(visualization);
+        });
         renderOneVisualization(visualization);
       });
       byId("previous-visualization").disabled = state.visualizationIndex === 0;
