@@ -232,16 +232,25 @@ def test_build_week_submission_preparation_is_actionable() -> None:
         "- [x] Confirm the public repository includes relevant licenses.",
     ):
         assert published_checklist_item in text
-    for human_only_item in (
+    human_only_items = (
         "- [ ] Choose the project name personally.",
         "- [ ] Rewrite the tagline and description in your own voice.",
+        "- [ ] Select submitter type and country of residence.",
+        "- [ ] Select **Education**.",
+        "- [ ] Add the repository and optional live test URL.",
+        "- [ ] Add installation and judge-testing instructions for the reusable skill.",
+        "- [ ] Add all team members and confirm they accepted, if applicable.",
         "- [ ] Run `/feedback` in the primary Codex build task and save its Session ID.",
         "- [ ] Capture final screenshots after deployment.",
         "- [ ] Record and upload the public YouTube video under three minutes.",
+        "- [ ] Confirm the audio names both Codex and GPT-5.6 and explains their use.",
+        "- [ ] Re-run the judge test flow from a clean checkout.",
         "- [ ] Review the current official rules and announcements.",
         "- [ ] Submit before July 21, 2026 at 5:00 PM Pacific Time.",
-    ):
-        assert human_only_item in text
+    )
+    assert text.count("- [ ]") == len(human_only_items)
+    for human_only_item in human_only_items:
+        assert text.count(human_only_item) == 1
     assert "semantic companion revision is currently local" not in text.lower()
     assert "merge `codex/build-week-showcase` into `basics`" not in text.lower()
 
