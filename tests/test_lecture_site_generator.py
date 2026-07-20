@@ -443,6 +443,70 @@ def test_validate_payload_rejects_broken_semantic_schema(
     assert any(visualization_type in error for error in errors)
 
 
+@pytest.mark.parametrize(
+    ("visualization_type", "field_path", "malformed_value", "error_fragment"),
+    [
+        ("binary-threshold", ("data", 0, "actual"), [], ".data does not match"),
+        ("binary-threshold", ("data", 0, "actual"), {}, ".data does not match"),
+        ("labeled-scatter", ("labels", "positive_series"), [], ".labels does not match"),
+        ("labeled-scatter", ("labels", "positive_series"), {}, ".labels does not match"),
+        ("labeled-scatter", ("controls", "initial"), [], ".controls does not match"),
+        ("labeled-scatter", ("controls", "initial"), {}, ".controls does not match"),
+        ("residual-diagnostics", ("controls", "initial"), [], ".controls does not match"),
+        ("residual-diagnostics", ("controls", "initial"), {}, ".controls does not match"),
+    ],
+)
+def test_validate_payload_reports_semantic_membership_fields_for_unhashable_values(
+    payload: dict[str, object],
+    visualization_type: str,
+    field_path: tuple[object, ...],
+    malformed_value: object,
+    error_fragment: str,
+) -> None:
+    visualization = copy.deepcopy(SEMANTIC_VISUALIZATIONS[visualization_type])
+    target: object = visualization
+    for key in field_path[:-1]:
+        target = target[key]  # type: ignore[index]
+    target[field_path[-1]] = malformed_value  # type: ignore[index]
+    payload["visualizations"] = [visualization]
+
+    errors = validate_payload(payload)
+
+    assert any(error_fragment in error for error in errors)
+
+
+@pytest.mark.parametrize("malformed_type", [[], {}])
+def test_validate_payload_reports_unhashable_visualization_type(
+    payload: dict[str, object], malformed_type: object
+) -> None:
+    visualizations = payload["visualizations"]
+    assert isinstance(visualizations, list)
+    visualization = visualizations[0]
+    assert isinstance(visualization, dict)
+    visualization["type"] = malformed_type
+
+    errors = validate_payload(payload)
+
+    assert any("visualizations[0].type" in error for error in errors)
+
+
+@pytest.mark.parametrize("malformed_type", [[], {}])
+def test_validate_payload_reports_unhashable_question_type(
+    payload: dict[str, object], malformed_type: object
+) -> None:
+    quizzes = payload["quizzes"]
+    assert isinstance(quizzes, dict)
+    questions = quizzes["foundations"]
+    assert isinstance(questions, list)
+    question = questions[0]
+    assert isinstance(question, dict)
+    question["type"] = malformed_type
+
+    errors = validate_payload(payload)
+
+    assert any("quizzes.foundations[0].type is unsupported" in error for error in errors)
+
+
 def test_validate_payload_rejects_choice_question_without_options(
     payload: dict[str, object],
 ) -> None:

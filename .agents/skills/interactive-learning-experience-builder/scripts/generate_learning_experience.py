@@ -58,6 +58,8 @@ def _is_finite_number(value: object) -> bool:
 def _has_valid_visualization_data(visualization_type: object, data: object) -> bool:
     if not isinstance(data, list) or not data:
         return False
+    if not isinstance(visualization_type, str):
+        return False
     if visualization_type in {"histogram", "boxplot"}:
         return all(_is_finite_number(value) for value in data)
     if visualization_type == "scatter":
@@ -116,7 +118,7 @@ def _validate_binary_threshold(visualization: dict[str, object], location: str) 
                 not _is_finite_number(record.get("score"))
                 or not 0 <= record["score"] <= 1
                 or isinstance(record.get("actual"), bool)
-                or record.get("actual") not in {0, 1}
+                or record.get("actual") not in (0, 1)
             ):
                 records_are_valid = False
                 break
@@ -205,7 +207,8 @@ def _validate_labeled_scatter(visualization: dict[str, object], location: str) -
         labels_are_valid = (
             len(point_series) == 2
             and point_series == supported_series
-            and labels.get("positive_series") in supported_series
+            and _is_non_empty_string(labels.get("positive_series"))
+            and labels["positive_series"] in supported_series
         )
     if not data_are_valid or not labels_are_valid:
         errors.append(
@@ -241,7 +244,8 @@ def _validate_labeled_scatter(visualization: dict[str, object], location: str) -
         controls_are_valid = (
             controls_are_valid
             and len(boundary_ids) == len(set(boundary_ids))
-            and controls.get("initial") in set(boundary_ids)
+            and _is_non_empty_string(controls.get("initial"))
+            and controls["initial"] in set(boundary_ids)
         )
     if not controls_are_valid:
         errors.append(
@@ -302,7 +306,11 @@ def _validate_residual_diagnostics(visualization: dict[str, object], location: s
         )
 
     controls = visualization.get("controls")
-    if not (isinstance(controls, dict) and controls.get("initial") in set(scenario_ids)):
+    if not (
+        isinstance(controls, dict)
+        and _is_non_empty_string(controls.get("initial"))
+        and controls["initial"] in set(scenario_ids)
+    ):
         errors.append(
             f"{location}.controls does not match the residual-diagnostics schema: "
             "initial must identify a scenario"
@@ -437,8 +445,9 @@ def validate_visualization(visualization: dict[str, object], location: str) -> l
         "coefficient-path": _validate_coefficient_path,
         "error-metrics": _validate_error_metrics,
     }
-    if visualization_type in validators:
-        return validators[visualization_type](visualization, location)
+    validator = validators.get(visualization_type) if isinstance(visualization_type, str) else None
+    if validator is not None:
+        return validator(visualization, location)
     errors: list[str] = []
     if not _has_valid_visualization_data(visualization_type, visualization.get("data")):
         errors.append(f"{location}.data does not match the {visualization_type} schema")
@@ -570,7 +579,10 @@ def validate_payload(payload: dict[str, object], repository_root: Path | None = 
                 errors.append(f"{location} must be an object")
                 continue
             visualization_type = visualization.get("type")
-            if visualization_type not in VISUALIZATION_TYPES:
+            if (
+                not isinstance(visualization_type, str)
+                or visualization_type not in VISUALIZATION_TYPES
+            ):
                 errors.append(
                     f"{location}.type {visualization_type!r} is unsupported; "
                     f"use one of {', '.join(sorted(VISUALIZATION_TYPES))}"
@@ -611,7 +623,8 @@ def validate_payload(payload: dict[str, object], repository_root: Path | None = 
                     errors.append(f"{location}.id {question_id!r} is not unique")
                 else:
                     question_ids.add(question_id)
-                if question.get("type") not in QUESTION_TYPES:
+                question_type = question.get("type")
+                if not isinstance(question_type, str) or question_type not in QUESTION_TYPES:
                     errors.append(f"{location}.type is unsupported")
                 for field in ("prompt", "explanation", "concept"):
                     if not _is_non_empty_string(question.get(field)):
@@ -624,18 +637,22 @@ def validate_payload(payload: dict[str, object], repository_root: Path | None = 
                     errors.append(f"{location}.options must be an array")
                 elif not options_are_readable:
                     errors.append(f"{location}.options must contain readable strings")
-                elif question.get("type") in {"single-choice", "multiple-choice"} and not options:
+                elif (
+                    isinstance(question_type, str)
+                    and question_type in {"single-choice", "multiple-choice"}
+                    and not options
+                ):
                     errors.append(f"{location}.options must contain choices for this question type")
                 answer = question.get("answer")
                 if _is_missing(answer):
                     errors.append(f"{location}.answer is required")
-                elif question.get("type") == "single-choice" and (
+                elif question_type == "single-choice" and (
                     not isinstance(answer, str)
                     or not isinstance(options, list)
                     or answer not in options
                 ):
                     errors.append(f"{location}.answer must be one available option")
-                elif question.get("type") == "multiple-choice" and (
+                elif question_type == "multiple-choice" and (
                     not isinstance(answer, list)
                     or not answer
                     or not all(_is_non_empty_string(item) for item in answer)
@@ -643,15 +660,15 @@ def validate_payload(payload: dict[str, object], repository_root: Path | None = 
                     errors.append(
                         f"{location}.answer must be a non-empty subset of available options"
                     )
-                elif question.get("type") == "multiple-choice" and len(answer) != len(set(answer)):
+                elif question_type == "multiple-choice" and len(answer) != len(set(answer)):
                     errors.append(f"{location}.answer choices must be unique")
-                elif question.get("type") == "multiple-choice" and (
+                elif question_type == "multiple-choice" and (
                     not options_are_readable or not set(answer).issubset(set(options))
                 ):
                     errors.append(
                         f"{location}.answer must be a non-empty subset of available options"
                     )
-                elif question.get("type") == "interpretation":
+                elif question_type == "interpretation":
                     if not _is_non_empty_string(answer):
                         errors.append(f"{location}.answer must be a readable interpretation")
                     elif options_are_readable and options and answer not in options:
