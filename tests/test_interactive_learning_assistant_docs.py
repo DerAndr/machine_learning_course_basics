@@ -357,12 +357,14 @@ def test_build_week_evidence_records_completed_local_semantic_acceptance() -> No
 
     assert "GitHub Actions | Pending for this branch." in evidence
     assert "GitHub Pages | Pending for this branch." in evidence
-    for browser_evidence in (
-        "storage-disabled",
-        "sandboxed",
-        "zero warnings or errors",
-    ):
-        assert browser_evidence in evidence.lower()
+    canonical_browser_evidence = (
+        "Browser acceptance: completed on 2026-07-20 in storage-disabled, "
+        "sandboxed frames for all three companions. Scripts were allowed, but "
+        "origin and `localStorage` were unavailable; each frame rendered its "
+        "heading and default UI, and the browser console recorded zero warnings "
+        "or errors."
+    )
+    assert canonical_browser_evidence in evidence
 
 
 def test_textbook_skill_requires_mobile_quiz_contract() -> None:
