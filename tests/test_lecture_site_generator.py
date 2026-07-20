@@ -16,6 +16,14 @@ TEMPLATE = (
     / "assets"
     / "learning-experience-template.html"
 )
+VISUALIZATION_MODELS = (
+    ROOT
+    / ".agents"
+    / "skills"
+    / "interactive-learning-experience-builder"
+    / "assets"
+    / "visualization-models.js"
+).read_text(encoding="utf-8")
 
 
 def _load_script(name: str) -> ModuleType:
@@ -902,10 +910,10 @@ def _valid_html() -> str:
     <section class="graph-fallback">The same lesson is available as text.</section>
   </main>
   <noscript><section id="static-content">Static learning content.</section></noscript>
-  <script>globalThis.LearningVisualizationModels = {};</script>
+  <script>{VISUALIZATION_MODELS}</script>
 </body>
 </html>
-"""
+""".replace("{VISUALIZATION_MODELS}", VISUALIZATION_MODELS)
 
 
 def test_validate_html_requires_palette_status(tmp_path: Path) -> None:
@@ -929,7 +937,7 @@ def test_validate_html_requires_embedded_visualization_models(tmp_path: Path) ->
     path = tmp_path / "index.html"
     path.write_text(
         _valid_html().replace(
-            "<script>globalThis.LearningVisualizationModels = {};</script>",
+            f"<script>{VISUALIZATION_MODELS}</script>",
             "",
         ),
         encoding="utf-8",
@@ -938,13 +946,20 @@ def test_validate_html_requires_embedded_visualization_models(tmp_path: Path) ->
     assert "missing embedded visualization models" in validate_html(path)
 
 
+def test_validate_html_accepts_trusted_visualization_model_asset(tmp_path: Path) -> None:
+    path = tmp_path / "index.html"
+    path.write_text(_valid_html(), encoding="utf-8")
+
+    assert validate_html(path) == []
+
+
 def test_validate_html_does_not_mistake_model_usage_for_embedded_models(
     tmp_path: Path,
 ) -> None:
     path = tmp_path / "index.html"
     path.write_text(
         _valid_html().replace(
-            "globalThis.LearningVisualizationModels = {};",
+            "root.LearningVisualizationModels = api;",
             "LearningVisualizationModels.thresholdSummary([], 0.5);",
         ),
         encoding="utf-8",
@@ -956,9 +971,10 @@ def test_validate_html_does_not_mistake_model_usage_for_embedded_models(
 @pytest.mark.parametrize(
     "model_text",
     [
-        "// globalThis.LearningVisualizationModels = {};",
-        'const note = "globalThis.LearningVisualizationModels = {};";',
-        "const note = `globalThis.LearningVisualizationModels = {};`;",
+        "// root.LearningVisualizationModels = api;",
+        'const note = "root.LearningVisualizationModels = api;";',
+        "const note = `root.LearningVisualizationModels = api;`;",
+        "const note = `escaped \\` root.LearningVisualizationModels = api;`;",
     ],
 )
 def test_validate_html_rejects_comment_or_string_model_assignment(
@@ -968,8 +984,21 @@ def test_validate_html_rejects_comment_or_string_model_assignment(
     path = tmp_path / "index.html"
     path.write_text(
         _valid_html().replace(
-            "globalThis.LearningVisualizationModels = {};",
+            "root.LearningVisualizationModels = api;",
             model_text,
+        ),
+        encoding="utf-8",
+    )
+
+    assert "missing embedded visualization models" in validate_html(path)
+
+
+def test_validate_html_rejects_regex_literal_model_assignment(tmp_path: Path) -> None:
+    path = tmp_path / "index.html"
+    path.write_text(
+        _valid_html().replace(
+            f"<script>{VISUALIZATION_MODELS}</script>",
+            "<script>const fake = /root.LearningVisualizationModels =/;</script>",
         ),
         encoding="utf-8",
     )
@@ -981,7 +1010,7 @@ def test_validate_html_rejects_unreplaced_visualization_model_marker(tmp_path: P
     path = tmp_path / "index.html"
     path.write_text(
         _valid_html().replace(
-            "globalThis.LearningVisualizationModels = {};",
+            "root.LearningVisualizationModels = api;",
             "__VISUALIZATION_MODELS__",
         ),
         encoding="utf-8",

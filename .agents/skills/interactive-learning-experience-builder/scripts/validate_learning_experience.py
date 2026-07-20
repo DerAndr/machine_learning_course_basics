@@ -56,9 +56,22 @@ CONTENT_DATA_SCRIPT = re.compile(
     r"^\s*const\s+CONTENT\s*=\s*(\{.*\})\s*;\s*$",
     re.DOTALL,
 )
-VISUALIZATION_MODELS_DEFINITION = re.compile(
-    r"(?:\b(?:globalThis|root|window)\s*\.\s*LearningVisualizationModels\s*="
-    r"|\b(?:const|let|var)\s+LearningVisualizationModels\s*=)"
+VISUALIZATION_MODELS_SIGNATURE = (
+    re.compile(r"\bfunction\s+visualizationModelsFactory\s*\(\s*root\s*,\s*factory\s*\)"),
+    re.compile(r"\bconst\s+api\s*=\s*factory\s*\(\s*\)\s*;"),
+    re.compile(r"\broot\s*\.\s*LearningVisualizationModels\s*=\s*api\s*;"),
+    re.compile(r"\bfunction\s+thresholdSummary\s*\("),
+    re.compile(r"\bfunction\s+boundarySummary\s*\("),
+    re.compile(r"\bfunction\s+residualPoints\s*\("),
+    re.compile(r"\bfunction\s+coefficientSnapshot\s*\("),
+    re.compile(r"\bfunction\s+errorMetricSummary\s*\("),
+    re.compile(r"\bfunction\s+seriesStyles\s*\("),
+    re.compile(
+        r"\breturn\s*\{\s*boundarySummary\s*,\s*coefficientSnapshot\s*,\s*"
+        r"errorMetricSummary\s*,\s*residualPoints\s*,\s*seriesStyles\s*,\s*"
+        r"thresholdSummary\s*,?\s*\}",
+        re.DOTALL,
+    ),
 )
 JAVASCRIPT_COMMENTS_AND_STRINGS = re.compile(
     r"//[^\r\n]*|/\*.*?\*/|'(?:\\.|[^'\\])*'|\"(?:\\.|[^\"\\])*\"|`(?:\\.|[^`\\])*`",
@@ -219,9 +232,9 @@ def _is_content_data_script(script: str) -> bool:
 
 
 def _has_embedded_visualization_models(script: str) -> bool:
-    """Require a model assignment in executable JavaScript, not a comment or string."""
+    """Require the trusted visualization-model factory and exported API shape."""
     executable_source = JAVASCRIPT_COMMENTS_AND_STRINGS.sub("", script)
-    return bool(VISUALIZATION_MODELS_DEFINITION.search(executable_source))
+    return all(pattern.search(executable_source) for pattern in VISUALIZATION_MODELS_SIGNATURE)
 
 
 def validate_html(path: Path) -> list[str]:
