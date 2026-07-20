@@ -357,6 +357,12 @@ def test_build_week_evidence_records_completed_local_semantic_acceptance() -> No
 
     assert "GitHub Actions | Pending for this branch." in evidence
     assert "GitHub Pages | Pending for this branch." in evidence
+    for browser_evidence in (
+        "storage-disabled",
+        "sandboxed",
+        "zero warnings or errors",
+    ):
+        assert browser_evidence in evidence.lower()
 
 
 def test_textbook_skill_requires_mobile_quiz_contract() -> None:

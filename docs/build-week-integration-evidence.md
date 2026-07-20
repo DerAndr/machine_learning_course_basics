@@ -43,7 +43,7 @@ downstream artifact was regenerated.
 | Deterministic regeneration | Deterministic regeneration: completed on 2026-07-20. All three payloads regenerated into temporary files with byte-identical SHA-256 hashes to their committed artifacts. |
 | Automated | Local full suite: completed (222 passed, 1 skipped). Ruff format/check, the three Node behavior suites (13 tests), strict OKF validation, and the preview build are recorded below. |
 | Validators and preview build | Validators and preview build: completed on 2026-07-20 for all three companions, strict OKF validation, and the textbook preview. |
-| Browser | Browser acceptance: completed for the semantic revision across desktop and narrow/mobile layouts, including semantic controls, both palettes, visible focus, and static fallbacks. |
+| Browser | Browser acceptance: completed on 2026-07-20 in storage-disabled, sandboxed frames for all three companions. Scripts were allowed, but origin and `localStorage` were unavailable; each frame rendered its heading and default UI, and the browser console recorded zero warnings or errors. |
 | GitHub Actions | Pending for this branch. The earlier public baseline at `50bd20f` completed Actions successfully; that historical result does not verify this revision. |
 | GitHub Pages | Pending for this branch. All three earlier public routes returned HTTP 200 at `50bd20f`; the semantic outputs must be checked again after publication. |
 
@@ -124,9 +124,10 @@ Run on 2026-07-20 for the final local publication pass:
 - The local full Python suite passed **222 tests with 1 optional skip**.
 - Both CI workflow files parsed as YAML; Ruff format and lint, strict OKF
   validation, the textbook preview build, and `git diff --check` passed.
-- Browser acceptance completed on desktop and narrow/mobile layouts. It
-  exercised each semantic control, both palette modes, keyboard-visible focus,
-  reduced motion, focus mode, and static fallbacks.
+- Browser acceptance completed in storage-disabled, sandboxed frames for EDA,
+  Regression, and Classification. Scripts were allowed, but origin and
+  `localStorage` were unavailable; each rendered its heading and default UI,
+  and the browser console recorded zero warnings or errors.
 
 These are completed local checks. GitHub Actions and GitHub Pages remain
 explicitly pending until this branch is published.
