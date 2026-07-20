@@ -88,6 +88,47 @@ def test_core_skill_is_domain_neutral() -> None:
     assert "adapter" in text.lower()
 
 
+def test_core_skill_requires_semantic_visualizations_and_perceptible_palettes() -> None:
+    skill_text = (CORE / "SKILL.md").read_text(encoding="utf-8")
+    contract_text = (CORE / "references" / "content-contract.md").read_text(
+        encoding="utf-8"
+    )
+
+    for phrase in (
+        "topic-relevant interpretation",
+        "Do not discard semantic payload fields",
+        "meaningful axis, series, scenario, and control labels",
+        "visibly different graph marks",
+        "binary-threshold",
+        "labeled-scatter",
+        "residual-diagnostics",
+        "coefficient-path",
+        "error-metrics",
+    ):
+        assert phrase in skill_text or phrase in contract_text
+
+
+def test_content_contract_lists_all_supported_visualization_selection_shapes() -> None:
+    contract_text = (CORE / "references" / "content-contract.md").read_text(
+        encoding="utf-8"
+    )
+
+    for phrase in (
+        "| Type | Learning purpose | Required data shape | Control shape |",
+        "`histogram`",
+        "`boxplot`",
+        "`scatter`",
+        "`missingness`",
+        "`binary-threshold`",
+        "`labeled-scatter`",
+        "`residual-diagnostics`",
+        "`coefficient-path`",
+        "`error-metrics`",
+        "## Semantic visualization validation boundaries",
+    ):
+        assert phrase in contract_text
+
+
 def test_core_skill_contract_files_are_present() -> None:
     for path in (
         CORE / "SKILL.md",

@@ -61,6 +61,19 @@ def test_adapter_preserves_course_constraints() -> None:
         assert required in text
 
 
+def test_adapter_requires_objective_matched_semantic_visualizations() -> None:
+    text = SKILL_PATH.read_text(encoding="utf-8")
+
+    for phrase in (
+        "named lecture objective",
+        "repeated generic chart set",
+        "semantic visualization type",
+        "exercise every visualization control",
+        "both palette modes",
+    ):
+        assert phrase in text
+
+
 def test_adapter_preserves_learning_experience_parity() -> None:
     text = SKILL_PATH.read_text(encoding="utf-8")
     normalized_text = " ".join(text.split())

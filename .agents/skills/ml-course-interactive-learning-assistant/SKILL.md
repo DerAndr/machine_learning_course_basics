@@ -51,6 +51,11 @@ even though the portable core can support them in unrelated repositories.
 2. Create the short experience specification required by
    `interactive-learning-experience-builder`, then ground the payload using the
    course source order above.
+   For every visualization, name the lecture objective it teaches and record it
+   as a named lecture objective in the experience specification. Do not repeat a
+   generic chart set across lectures; reject a repeated generic chart set when a
+   supported semantic visualization type better represents the objective. Before
+   publishing, exercise every visualization control and both palette modes.
 3. Include the three `foundations`, `applied`, and `challenge` quiz banks with
    exactly 10 questions each. Embed break prompts even when their initial display
    setting is off.

@@ -50,6 +50,10 @@ accessibility, payload validation, and offline behavior in this core skill.
 - Do not add network-capable browser code or external runtime resources.
 - Give every visualization a readable fallback that communicates the same
   essential lesson without JavaScript or color alone.
+- Give at least one visualization a control that changes a topic-relevant interpretation, not only its presentation.
+- Do not discard semantic payload fields such as class, series, scenario, outcome, coefficient, or unit labels.
+- Use meaningful axis, series, scenario, and control labels.
+- Verify that standard and color-blind-safe modes produce visibly different graph marks while preserving non-color cues.
 - Provide three quiz banks—`foundations`, `applied`, and `challenge`—with
   exactly 10 grounded questions each.
 - Embed break-prompt content even when its initial display setting is off.
