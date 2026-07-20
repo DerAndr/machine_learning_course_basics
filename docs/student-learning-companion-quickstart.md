@@ -68,13 +68,17 @@ Create a 15-minute interactive review from lecture_04_regression.
 Learner and goal: a university student revising before an exam.
 Focus: residuals, regularization, feature scaling, and choosing a regression
 metric.
+Topic-specific interaction: include a control that changes one
+topic-relevant interpretation, such as the residual pattern, Ridge/Lasso
+strength, or MAE/RMSE sensitivity.
 Accessibility defaults: focus-friendly mode on, color-blind-safe mode on,
 reduced motion respected, and break prompts off.
 Source rule: use only public course sources allowed by the ML-course adapter.
 
 First show me the context profile and source plan. Then create the grounded
 content payload and offline HTML, run the repository validator, and tell me the
-exact local file to open. Do not publish anything.
+exact local file to open. Exercise every interaction and test the
+color-blind-safe setting before reporting completion. Do not publish anything.
 ```
 
 ### Get a personal explanation without generating a page
@@ -108,12 +112,15 @@ identifiers].
 Excluded material: [private, draft, unrelated, or unsafe sources].
 Duration and level: [for example, 15 minutes at beginner level].
 Accessibility defaults: [focus, color, motion, and break preferences].
+Topic-specific interaction: [one control that must change an interpretation
+that matters for this topic, not only the chart appearance].
 Output path: [where the standalone HTML should be written].
 Available validation command: [command, or say none].
 
 First show the context profile and source plan. Ask before changing the source
 scope. Then create the grounded payload, generate the offline experience, run
-available validation, and report the output path.
+available validation, exercise the topic-specific interaction, test the
+color-blind-safe setting, and report the output path.
 ```
 
 For example, in a software project:
@@ -129,14 +136,19 @@ Trusted sources: README.md, CONTRIBUTING.md, and docs/review-process.md.
 Excluded material: secrets, private issue links, generated files, and source
 files outside those named paths.
 Accessibility defaults: reduced motion and color-blind-safe cues.
+Topic-specific interaction: let the learner choose a pull-request scenario and
+show how that choice changes the recommended safety checks.
 Output path: learning_experiences/first-contribution/index.html.
 
 Show the context profile first. Then generate and validate a self-contained
-offline page. Do not publish or open a pull request.
+offline page. Test every interaction in both palette modes. Do not publish or
+open a pull request.
 ```
 
-Keep the scope to one topic and name the source files explicitly. This reduces
-token use and makes grounding easier to verify.
+Keep the scope to one topic and name each trusted source explicitly. This
+reduces token use and makes grounding easier to verify. A useful interaction
+must change the learner's interpretation of the topic; a generic animation or
+color change is not enough.
 
 ## Add the generic skill to your personal Codex
 

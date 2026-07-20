@@ -35,11 +35,11 @@ policy and lecture-specific content. It has eight layers, in this order:
    `interactive-learning-experience-builder` owns the general workflow and can
    be paired with an optional thin repository adapter for stable local rules.
 4. **Content layer.** A grounded JSON payload expresses the experience
-   specification as concepts, explanations, controls, visualizations, quiz
-   content, feedback, and provenance.
-5. **Runtime layer.** A deterministic generator combines the payload with the
-   HTML template, quiz state machine, accessibility behavior, and static
-   fallbacks.
+   specification as concepts, explanations, semantic visualization payloads,
+   controls, quiz content, feedback, and provenance.
+5. **Runtime layer.** A deterministic generator combines the payload with pure
+   visualization model calculations, the HTML template, quiz state machine,
+   accessibility behavior, and static fallbacks.
 6. **Artifact layer.** Generation produces one self-contained HTML learning
    companion that opens through `file://` without an account, server, CDN,
    external font, or runtime network dependency.
@@ -56,7 +56,7 @@ flowchart LR
     K["Knowledge sources"] --> C["Context discovery<br/>and experience specification"]
     C --> S["Portable core skill<br/>+ optional repository adapter"]
     S --> P["Grounded JSON payload"]
-    P --> G["Deterministic generator<br/>template + quiz state machine"]
+    P --> G["Deterministic generator<br/>models + template + quiz state machine"]
     G --> A["Self-contained offline<br/>learning companion"]
     A --> V["Validation, tests,<br/>and mobile browser checks"]
     V -->|pass| D["Local use and<br/>optional publication"]
@@ -91,6 +91,27 @@ runtime. The experience specification and payload vary by audience and topic;
 the generated companion is their reproducible, learner-facing result.
 A repository adapter owns only stable local rules.
 
+### Semantic visualization boundary
+
+Topic meaning crosses the runtime boundary explicitly:
+
+```text
+semantic payload
+→ Python schema validation
+→ embedded visualization-models.js calculations
+→ template-owned SVG and DOM
+→ live summary and static fallback
+```
+
+Each semantic visualization payload carries the labels and values needed for
+its learning objective. The Python generator validates that schema and embeds
+`assets/visualization-models.js`. A pure visualization model calculates
+threshold counts, class assignments, residuals, coefficient paths, or error
+metrics without touching the DOM. The template alone owns SVG and DOM
+rendering, live summaries, palette presentation, and the matching readable
+fallback. This division makes the calculations executable in Node tests while
+keeping the generated artifact self-contained.
+
 ## Portability model
 
 There are two supported adoption paths:
@@ -123,7 +144,10 @@ The ML course is one concrete mapping of the portable architecture:
 - The course source allowlist restricts a companion to canonical public sources
   for its selected lecture and permitted `okf/` material.
 - `lecture_experiences/content/<lecture_slug>.json` is the grounded JSON
-  payload for that lecture.
+  payload for that lecture, including any semantic visualization payload.
+- `.agents/skills/interactive-learning-experience-builder/assets/visualization-models.js`
+  contains the portable, pure visualization model calculations used by every
+  generated companion.
 - `lecture_experiences/<lecture_slug>/index.html` is the canonical offline
   HTML artifact.
 - The preview build derives

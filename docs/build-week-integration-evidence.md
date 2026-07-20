@@ -4,6 +4,47 @@ This record captures repository evidence for the three-learning-companion
 showcase. It does not claim that the branch has been merged, deployed, or
 submitted.
 
+## 2026-07-20 learner-facing iteration
+
+A visual review from the learner's point of view exposed three issues:
+
+1. Regression and Classification repeated the same generic chart grammar, so
+   distinct topics could feel like the same activity.
+2. **Ignored class semantics.** Classification labels existed in the JSON, but
+   the renderer assigned visual marks by point order.
+3. The palette setting changed computed colors, but the standard and
+   color-blind-safe blue/orange pairs were perceptually weak as two distinct
+   modes.
+
+The root cause was shared behavior. The **shared portable core** was fixed
+instead of hand-editing three pages. It now validates semantic visualization
+payloads, embeds pure calculations from
+`visualization-models.js`, renders redundant non-color cues, and uses visibly
+different purple/teal and blue/vermillion palettes. The ML-course adapter maps
+each interaction to a lecture objective. EDA, Regression, and Classification
+were then regenerated through the same deterministic pipeline.
+
+The resulting companions now make their subject differences explicit:
+
+- EDA retains its binning, IQR, association, and missingness explorations.
+- Regression adds residual diagnostics, Ridge/Lasso regularization, and
+  MAE/RMSE metric sensitivity.
+- Classification adds threshold-dependent confusion outcomes and class-aware
+  decision boundaries.
+
+This is feedback made visible as a learner-facing iteration: review revealed a
+repeated interaction pattern, the portable abstraction was improved, and every
+downstream artifact was regenerated.
+
+### Evidence status for this iteration
+
+| Check | Current evidence |
+|---|---|
+| Automated | Local focused Python, Node, schema, validator, and deterministic-generation checks passed through Tasks 1–7; Task 8 documentation checks are recorded below. |
+| Browser | The semantic revision still requires the final desktop/mobile control and both-palette acceptance pass in Task 9. |
+| GitHub Actions | Pending for this branch. The earlier public baseline at `50bd20f` completed Actions successfully; that historical result does not verify this revision. |
+| GitHub Pages | Pending for this branch. All three earlier public routes returned HTTP 200 at `50bd20f`; the semantic outputs must be checked again after publication. |
+
 ## Integrated commits
 
 - `68c3b2b` — cherry-pick of `dd03784`, Regression companion
@@ -14,17 +55,23 @@ submitted.
 Each imported commit owns exactly one grounded JSON payload, one generated
 standalone HTML artifact, and one topic-specific deterministic test.
 
+The semantic revision is represented by the local commit sequence
+`b4cd3fe`–`9bbb319`: pure visualization models, semantic schemas and renderers,
+Classification and Regression payloads, authoring guidance, regenerated EDA,
+and CI coverage. This document is the next local change in that sequence.
+
 ## Artifact inventory
 
 | Slug | Title | Quiz inventory | SHA-256 |
 |---|---|---:|---|
-| `lecture_01_eda` | Exploratory Data Analysis: Interactive Review | 10 Foundations + 10 Applied + 10 Challenge | `1DE157D38E43E105BA3222D6D7370DD898A04E3F7F3C37ED80062B3F27CFCF1E` |
-| `lecture_04_regression` | Regression: Interactive Review | 10 Foundations + 10 Applied + 10 Challenge | `FD14552AA19530DFC1F88DF04F3EEAD1B8CA352F561454DE1C0951EA9BCF8631` |
-| `lecture_05_classification_part_1` | Classification Part 1: Interactive Review | 10 Foundations + 10 Applied + 10 Challenge | `7BC8B13BE5F860E8B167EBBD963C3981E70BB0F400F18B9C7BB61686FB91349E` |
+| `lecture_01_eda` | Exploratory Data Analysis: Interactive Review | 10 Foundations + 10 Applied + 10 Challenge | `B4B5E063EA25EDE63AE224CC2CBA4C9DA4B05ACF619ADEAA55F82E41FA385EE7` |
+| `lecture_04_regression` | Regression: Interactive Review | 10 Foundations + 10 Applied + 10 Challenge | `127EE8C1E4944D9ADA23D815FBC8CF0900A67CC4A46A863BBE96B15F12EE2A0E` |
+| `lecture_05_classification_part_1` | Classification Part 1: Interactive Review | 10 Foundations + 10 Applied + 10 Challenge | `35019B11E13CE7D0CD8A9C032942E6CA9AF8DC0FD8496EF777B87C95BE84E6F4` |
 
 The canonical artifacts are the committed
 `lecture_experiences/<slug>/index.html` files. Preview publication copies them
-byte-for-byte.
+byte-for-byte. These hashes describe the current local semantic revision and
+must be reconfirmed during final Task 9 deterministic regeneration.
 
 ## Source-policy verification
 
@@ -40,7 +87,7 @@ byte-for-byte.
   homepage copy was added.
 - Both imported artifacts passed the offline validator before shared edits.
 
-## Automated test evidence
+## Historical integration test evidence
 
 Run on 2026-07-19 from the integration worktree:
 
@@ -59,14 +106,35 @@ correct nested relative links, matching payload/artifact discovery,
 path-specific malformed-payload errors, byte-identical demo copies, guide
 prompts, README structure, and lecture-level links.
 
-## Deterministic regeneration
+## Local semantic-revision evidence
 
-All three payloads were regenerated with the course wrapper and portable core
-template into a separate verification directory. Each generated file matched
-the committed artifact byte-for-byte, producing the SHA-256 values in the
-artifact inventory.
+Run on 2026-07-20 before the final publication pass:
 
-## Desktop visual review
+- The portable visualization model suite passed **10 Node tests**.
+- Focused Classification generator and payload checks passed **132 tests**;
+  its generated artifact reported `VALID`.
+- Focused Regression generator and payload checks passed **132 tests**; its
+  generated artifact reported `VALID`.
+- Core and adapter contract checks passed **34 tests with 1 optional skip**;
+  both skills passed their quick validators.
+- Cross-topic EDA, Regression, Classification, and textbook preview checks
+  passed **6 tests**; the combined quiz and visualization Node suite passed
+  **10 tests**.
+- Both CI workflow files parsed as YAML, and focused Ruff checks and
+  `git diff --check` passed.
+
+These are completed local checks, not a claim about final full-suite, browser,
+Actions, or Pages results. Task 9 owns those final checks.
+
+## Deterministic regeneration status
+
+Each semantic payload has been generated through the course wrapper, and the
+topic tests assert deterministic output against its committed artifact. The
+artifact inventory records the current local bytes. Task 9 will regenerate all
+three into a separate verification directory and compare them together before
+any publication claim is made.
+
+## Historical desktop visual review
 
 - The textbook homepage shows three fast-review cards and a separate
   three-link sidebar group.
@@ -78,7 +146,7 @@ artifact inventory.
 - The browser console recorded no errors while reviewing the textbook and
   companion routes.
 
-## Mobile visual review
+## Historical mobile visual review
 
 - The textbook homepage and deep page collapse to one column with a static
   sidebar at the mobile breakpoint.
@@ -114,8 +182,8 @@ artifact inventory.
 
 ## Published route expectations
 
-After this branch is merged to `main` and the existing Pages workflow succeeds,
-the expected routes are:
+After the semantic revision is published and the existing Pages workflow
+succeeds, verify these routes:
 
 - `https://derandr.github.io/machine_learning_course_basics/demos/lecture_01_eda/`
 - `https://derandr.github.io/machine_learning_course_basics/demos/lecture_04_regression/`

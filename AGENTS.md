@@ -97,9 +97,11 @@ To create or revise an interactive lecture review:
 5. `lecture_experiences/<lecture_slug>/index.html` — generated offline review
 6. `docs/interactive-lecture-learning-assistant.md` — operational guide for generating, validating, and publishing learning companions
 7. `.agents/skills/ml-course-interactive-learning-assistant/scripts/generate_course_learning_experience.py` — course-policy generation wrapper
-8. `.agents/skills/interactive-learning-experience-builder/assets/quiz-state-machine.js` — executable quiz behavior shared by generated pages and Node tests
-9. `.agents/skills/interactive-learning-experience-builder/scripts/generate_learning_experience.py` — deterministic portable generator
-10. `.agents/skills/interactive-learning-experience-builder/scripts/validate_learning_experience.py` — offline/accessibility validator
+8. `.agents/skills/interactive-learning-experience-builder/assets/visualization-models.js` — pure calculations for semantic visualization payloads, shared by generated pages and Node tests
+9. `.agents/skills/interactive-learning-experience-builder/assets/quiz-state-machine.js` — executable quiz behavior shared by generated pages and Node tests
+10. `.agents/skills/interactive-learning-experience-builder/scripts/generate_learning_experience.py` — deterministic portable generator
+11. `.agents/skills/interactive-learning-experience-builder/scripts/validate_learning_experience.py` — offline/accessibility validator
+12. `tests/visualization_models.test.js` — deterministic threshold, boundary, residual, regularization, and metric-model checks
 
 Create a context profile before authoring: learner and goal, named sources,
 excluded/private material, requested accessibility defaults, output path, and
@@ -207,7 +209,14 @@ For a standalone lecture review, also run:
 
 ```bash
 uv run python .agents/skills/interactive-learning-experience-builder/scripts/validate_learning_experience.py lecture_experiences/lecture_01_eda/index.html
+node --test tests/quiz_state_machine.test.js tests/visualization_models.test.js
 ```
+
+In a browser, exercise every semantic visualization control, inspect both
+palette modes, and confirm that the standard purple/teal and color-blind-safe
+blue/vermillion graph marks visibly differ. Verify that class labels, shape or
+pattern cues, live summaries, and static fallbacks preserve meaning without
+color alone at desktop and mobile widths.
 
 After merging to `main`, verify GitHub Actions and the deployed GitHub Pages URL.
 

@@ -4,6 +4,10 @@ This is a working worksheet, not final submission copy. Rewrite the public
 description and tagline in your own voice before submitting. Keep only claims
 you personally understand and can demonstrate.
 
+The semantic companion revision is currently local. Do not describe its
+browser, Actions, or Pages checks as complete until the final verification and
+publication pass records that evidence.
+
 ## Narrative spine
 
 The strongest story is a progression, not a feature list:
@@ -21,11 +25,11 @@ The strongest story is a progression, not a feature list:
 4. **A connected textbook improved structure, not attention.** Skills and a
    GitHub Pages learning book made the course easier to navigate, but students
    still rarely chose the book for quick review.
-5. **The new insight was to generate short learning loops.** The project now
-   provides a generic skill that turns repositories and knowledge bases into
-   short, source-grounded learning companions. A thin repository-specific
-   skill extends the generic workflow with local source, safety, and publishing
-   rules.
+5. **The new insight was to generate short, semantic learning loops.** The
+   project now provides a generic skill that turns repositories and knowledge
+   bases into source-grounded companions whose controls change a
+   topic-relevant interpretation. A thin repository-specific skill extends the
+   generic workflow with local source, safety, and publishing rules.
 6. **The ML course is proof, not the limit.** EDA, Regression, and
    Classification companions demonstrate explanation → exploration → quiz →
    immediate feedback. The same architecture can help anyone quickly learn the
@@ -66,9 +70,10 @@ voice:
 1. **Inspiration:** teaching classical ML; long YouTube lectures; limited
    adoption of notes and the textbook; students successfully using agents for
    navigation and summaries.
-2. **What it does:** turns named repository sources into short interactive
-   reviews with explanations, visual controls, three quiz levels, immediate
-   feedback, accessibility settings, and offline fallbacks.
+2. **What it does:** turns named repository sources into short semantic
+   interactive companions with explanations, topic-specific controls, three
+   quiz levels, immediate feedback, accessibility settings, and offline
+   fallbacks.
 3. **How it works:** a portable core skill owns the content contract,
    deterministic generator, quiz state machine, and validator; a thin
    ML-course adapter owns repository source and publishing policy; each topic
@@ -81,9 +86,10 @@ voice:
 6. **Challenges:** keeping generated questions grounded and unambiguous;
    preserving offline portability; preventing adapters from duplicating the
    core; making interaction accessible; proving generation is deterministic.
-7. **Accomplishments:** one reusable workflow, one course adapter, three
-   working companions, textbook discovery, 30 questions per topic, offline
-   validation, and automated plus desktop/mobile verification.
+7. **Accomplishments:** one reusable workflow, one course adapter, and three
+   companions whose interactions fit their topics: EDA explorations,
+   Classification threshold/boundary reasoning, and Regression residual,
+   regularization, and metric reasoning.
 8. **What comes next:** test the workflow with other courses and knowledge
    bases, gather learner feedback, and improve the short learning loop without
    weakening source provenance.
@@ -120,15 +126,21 @@ Target time: two minutes.
 1. Open the textbook homepage.
 2. Confirm three cards under **Open a fast review** and three links under
    **Fast reviews** in the sidebar.
-3. Open Regression.
-4. Change a visualization control and confirm the nearby fallback still
-   explains the same lesson.
-5. Answer one quiz question incorrectly, read the feedback, change the answer,
+3. Open Classification. Move the threshold and explain how the confusion
+   matrix, precision, and recall change; then switch the decision boundary and
+   confirm Class A/Class B labels and non-color cues remain meaningful.
+4. Open Regression. Change the residual pattern, compare Ridge and Lasso
+   regularization paths, and increase the adjustable error to show MAE/RMSE
+   metric sensitivity.
+5. Toggle the palette setting in both companions. Confirm the graph marks
+   visibly change and that shape, pattern, labels, and position still carry the
+   meaning.
+6. Answer one quiz question incorrectly, read the feedback, change the answer,
    answer correctly, and move to the next question.
-6. Switch to Challenge depth or toggle focus-friendly and color-blind-safe
+7. Switch to Challenge depth or toggle focus-friendly and color-blind-safe
    settings.
-7. Briefly open EDA and Classification to confirm the same reusable structure
-   with different grounded content.
+8. Briefly open EDA to confirm that the shared portable shell supports a
+   different, topic-specific exploration set.
 
 ### Offline path
 
@@ -178,12 +190,13 @@ three minutes with continuous spoken explanation.
 | Time | Screen | Spoken purpose |
 |---|---|---|
 | 0:00–0:20 | Brief view of the course repository or old lecture list | Explain the progression from long lectures, to notes, to agent navigation, and the unmet attention problem. |
-| 0:20–0:40 | Small architecture view: sources → generic skill → optional adapter → short companion | State the reusable idea and why source grounding and repository policy are separate. |
-| 0:40–1:05 | Show one lecture source, its JSON payload, and the generation/validation command | Explain how Codex and GPT-5.6 helped transform trusted sources while deterministic tooling keeps the result reviewable. |
-| 1:05–1:50 | Regression companion | Show one concept, one graph control and fallback, then wrong answer → feedback → corrected answer → next question. |
-| 1:50–2:10 | Textbook homepage and the EDA/Classification cards | Demonstrate repeatability and discovery rather than teaching every topic. |
-| 2:10–2:28 | Test output or integration evidence | Show source-policy checks, 30 questions per topic, offline validation, deterministic regeneration, and mobile review. |
-| 2:28–2:40 | Return to the three companions | Close with the broader use: quickly learning from any trusted repository or knowledge base. |
+| 0:20–0:42 | Architecture: public source knowledge → generic core skill → ML-course adapter → semantic payload → short companion | Foreground the reusable core, then show how the adapter adds repository policy without owning the renderer. |
+| 0:42–1:02 | One trusted lecture source beside its payload and generation/validation command | Explain how Codex and GPT-5.6 helped transform named sources while deterministic tooling keeps the result reviewable. |
+| 1:02–1:32 | Classification threshold and decision-boundary explorers | Move both controls and narrate the changed confusion outcome and class-aware boundary. |
+| 1:32–1:58 | Regression regularization and metric-sensitivity explorers | Compare Ridge/Lasso shrinkage and show why one large error affects RMSE more than MAE. |
+| 1:58–2:18 | Palette toggle, then integration-evidence feedback section | Explain that learner review exposed repeated generic charts, ignored class meaning, and a perceptually weak palette; show the portable-core fix rather than hiding the defect. |
+| 2:18–2:32 | Textbook homepage with EDA/Regression/Classification | Demonstrate regeneration, repeatability, and discovery. |
+| 2:32–2:40 | Final verified test/Pages evidence, then the three companions | Show the final Task 9 evidence only after it exists, then close with the broader use: quickly learning from any trusted repository or knowledge base. |
 
 Required spoken points:
 
@@ -192,22 +205,40 @@ Required spoken points:
   review;
 - how GPT-5.6 contributed to architecture and grounded learning-content work;
 - which decisions remained human;
-- why this is a reusable system rather than three handcrafted pages.
+- why this is a reusable system rather than three handcrafted pages;
+- how learner-facing feedback led to an upstream portable-core improvement and
+  regenerated outputs.
 
 ## Screenshot plan
 
-Prepare four clean images after the Pages deployment is verified:
+Prepare five clean images after the Pages deployment is verified:
 
 1. **Discovery:** textbook homepage with all three review cards and the sidebar.
-2. **Learning loop:** one companion showing a concise concept beside an
-   interactive visualization and text fallback.
-3. **Feedback:** the quiz immediately explaining an incorrect answer, followed
+2. **Classification semantics:** threshold/confusion outcomes beside the
+   class-aware decision boundary.
+3. **Regression semantics:** regularization paths beside metric sensitivity;
+   capture Ridge/Lasso and MAE/RMSE labels.
+4. **Feedback:** the quiz immediately explaining an incorrect answer, followed
    by the correct state.
-4. **Trust and repeatability:** source/payload/generator/validator flow or a
-   concise terminal view showing deterministic tests and `VALID` results.
+5. **Trust and repeatability:** public source → generic core → course adapter →
+   payload → generator/validator flow, or final deterministic and `VALID`
+   evidence.
 
-Use short captions that explain why each screen matters; do not submit four
+Use short captions that explain why each screen matters; do not submit five
 screens that all show the same page layout.
+
+## Feedback story
+
+Present the iteration as evidence that the workflow is inspectable and
+improvable. A learner-facing review showed that Regression and Classification
+looked too similar, that Classification class semantics were not reaching the
+marks, and that the two palette modes were perceptually weak. Because the
+generator is shared, the correction was made once in the portable core:
+semantic schemas and pure models were added, labels were preserved, redundant
+non-color cues were rendered, and both palettes became visibly distinct. The
+course adapter and payloads were updated, then all three companions were
+regenerated. This is stronger than hiding a defect: it demonstrates a real
+feedback → diagnosis → reusable fix → verified-output loop.
 
 ## Final submission checklist
 

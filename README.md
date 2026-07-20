@@ -27,9 +27,18 @@ and full lectures.
 | Regression | [Open live review](https://derandr.github.io/machine_learning_course_basics/demos/lecture_04_regression/) | [`lecture_experiences/lecture_04_regression/index.html`](lecture_experiences/lecture_04_regression/index.html) |
 | Classification Part 1 | [Open live review](https://derandr.github.io/machine_learning_course_basics/demos/lecture_05_classification_part_1/) | [`lecture_experiences/lecture_05_classification_part_1/index.html`](lecture_experiences/lecture_05_classification_part_1/index.html) |
 
-Each review includes three difficulty levels, interactive visual explanations,
-immediate quiz feedback, keyboard support, reduced-motion behavior, accessible
-fallbacks, and optional focus-friendly controls.
+The reviews share one portable learning loop but use interactions chosen for
+the topic:
+
+- **EDA:** binning, IQR fences, association, and missingness.
+- **Regression:** residual diagnostics, Ridge and Lasso shrinkage, and
+  MAE and RMSE sensitivity.
+- **Classification:** threshold and confusion matrix outcomes plus a
+  class-aware decision boundary.
+
+Each review also includes three quiz levels, immediate feedback, keyboard
+support, reduced-motion behavior, accessible fallbacks, and focus-friendly and
+color-blind-safe controls.
 
 ## Course map
 

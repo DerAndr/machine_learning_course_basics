@@ -89,11 +89,24 @@ uv run python .agents/skills/interactive-learning-experience-builder/scripts/val
   "lecture_experiences/$lectureSlug/index.html"
 ```
 
+Before generation, name the lecture learning objective served by each
+visualization. Prefer a semantic type whose control changes a
+topic-relevant interpretation—for example, threshold outcomes, a decision
+boundary, a residual pattern, regularization strength, or metric sensitivity.
+Preserve semantic labels such as class names through payload validation,
+generation, model calculation, live summary, and static fallback.
+
 Generation must be deterministic: regenerate into a temporary location and
 compare its bytes with the committed artifact. Then review the page in a
 browser at desktop and narrow mobile widths, including keyboard navigation,
 visible focus, reduced motion, color-blind-safe cues, focus mode, static
 fallbacks, and unavailable storage.
+
+Exercise every visualization control across its meaningful range. Inspect
+both palette modes and verify that graph marks change perceptibly while shape,
+pattern, text, or position continues to communicate the same distinction
+without color. Confirm that the live summary and static fallback express the
+same lesson, and that the browser console remains clean.
 
 Quiz behavior is part of the contract. A wrong answer remains on the current
 question and keeps Check answer available. A correct answer completes the

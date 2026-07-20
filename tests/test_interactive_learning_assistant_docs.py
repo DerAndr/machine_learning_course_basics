@@ -37,6 +37,49 @@ ARCHITECTURE_LINKS = {
         "[Learning Companions Architecture](learning-companions-architecture.md)"
     ),
 }
+SEMANTIC_COMPANION_TERMS = {
+    "README.md": (
+        "threshold and confusion matrix",
+        "decision boundary",
+        "residual diagnostics",
+        "Ridge and Lasso",
+        "MAE and RMSE",
+    ),
+    "docs/learning-companions-architecture.md": (
+        "visualization-models.js",
+        "semantic visualization payload",
+        "pure visualization model",
+    ),
+    "docs/interactive-lecture-learning-assistant.md": (
+        "topic-relevant interpretation",
+        "both palette modes",
+        "exercise every visualization control",
+    ),
+    "docs/student-learning-companion-quickstart.md": (
+        "topic-specific interaction",
+        "trusted source",
+        "color-blind-safe",
+    ),
+    "docs/build-week-integration-evidence.md": (
+        "ignored class semantics",
+        "perceptually weak",
+        "shared portable core",
+    ),
+    "docs/build-week-submission-preparation.md": (
+        "feedback",
+        "threshold",
+        "regularization",
+        "metric sensitivity",
+        "palette",
+    ),
+}
+
+
+def test_semantic_companion_story_is_consistent_across_public_docs() -> None:
+    for path, phrases in SEMANTIC_COMPANION_TERMS.items():
+        text = Path(path).read_text(encoding="utf-8")
+        for phrase in phrases:
+            assert phrase.lower() in text.lower(), f"{path} must explain {phrase!r}"
 
 
 def test_student_learning_companion_quickstart_is_actionable() -> None:
