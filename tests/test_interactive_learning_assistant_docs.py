@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 
 DEMOS = {
@@ -296,6 +297,66 @@ def test_pages_deployment_is_limited_to_student_repository() -> None:
     workflow = Path(".github/workflows/build-textbook-preview.yml").read_text(encoding="utf-8")
 
     assert "github.repository == 'DerAndr/machine_learning_course_basics'" in workflow
+
+
+def test_learning_companion_ci_covers_documentation_and_browser_contracts() -> None:
+    required_documentation = (
+        "docs/interactive-lecture-learning-assistant.md",
+        "docs/contributing-to-textbook.md",
+        "docs/okf-authoring-guide.md",
+        "docs/learning-companions-architecture.md",
+        "docs/student-quickstart.md",
+        "docs/student-learning-companion-quickstart.md",
+        "docs/build-week-integration-evidence.md",
+        "docs/build-week-submission-preparation.md",
+    )
+    required_ruff_check_targets = (
+        "tests/test_eda_lecture_experience.py",
+        "tests/test_regression_lecture_experience.py",
+        "tests/test_classification_part_1_lecture_experience.py",
+    )
+    required_node_tests = (
+        "tests/quiz_state_machine.test.js",
+        "tests/visualization_models.test.js",
+        "tests/visualization_control_state.test.js",
+    )
+
+    workflow_triggers = {
+        Path(".github/workflows/build-textbook-preview.yml"): ("push",),
+        Path(".github/workflows/validate-okf.yml"): ("push", "pull_request"),
+    }
+    for workflow_path, triggers in workflow_triggers.items():
+        workflow = workflow_path.read_text(encoding="utf-8")
+        for trigger in triggers:
+            trigger_start = workflow.index(f"  {trigger}:\n")
+            paths_start = workflow.index("    paths:\n", trigger_start)
+            next_trigger_match = re.search(
+                r"\n  [a-z_]+:", workflow[paths_start + len("    paths:\n") :]
+            )
+            assert next_trigger_match is not None
+            next_trigger = paths_start + len("    paths:\n") + next_trigger_match.start()
+            paths_block = workflow[paths_start:next_trigger]
+            for document_path in required_documentation:
+                assert document_path in paths_block
+        for test_path in required_ruff_check_targets:
+            assert workflow.count(test_path) >= 3
+        for test_path in required_node_tests:
+            assert test_path in workflow
+
+
+def test_build_week_evidence_records_completed_local_semantic_acceptance() -> None:
+    evidence = Path("docs/build-week-integration-evidence.md").read_text(encoding="utf-8")
+
+    for completed_check in (
+        "Deterministic regeneration: completed",
+        "Local full suite: completed (222 passed, 1 skipped)",
+        "Validators and preview build: completed",
+        "Browser acceptance: completed",
+    ):
+        assert completed_check in evidence
+
+    assert "GitHub Actions | Pending for this branch." in evidence
+    assert "GitHub Pages | Pending for this branch." in evidence
 
 
 def test_textbook_skill_requires_mobile_quiz_contract() -> None:

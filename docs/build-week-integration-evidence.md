@@ -40,8 +40,10 @@ downstream artifact was regenerated.
 
 | Check | Current evidence |
 |---|---|
-| Automated | Local focused Python, Node, schema, validator, and deterministic-generation checks passed through Tasks 1–7; Task 8 documentation checks are recorded below. |
-| Browser | The semantic revision still requires the final desktop/mobile control and both-palette acceptance pass in Task 9. |
+| Deterministic regeneration | Deterministic regeneration: completed on 2026-07-20. All three payloads regenerated into temporary files with byte-identical SHA-256 hashes to their committed artifacts. |
+| Automated | Local full suite: completed (222 passed, 1 skipped). Ruff format/check, the three Node behavior suites (13 tests), strict OKF validation, and the preview build are recorded below. |
+| Validators and preview build | Validators and preview build: completed on 2026-07-20 for all three companions, strict OKF validation, and the textbook preview. |
+| Browser | Browser acceptance: completed for the semantic revision across desktop and narrow/mobile layouts, including semantic controls, both palettes, visible focus, and static fallbacks. |
 | GitHub Actions | Pending for this branch. The earlier public baseline at `50bd20f` completed Actions successfully; that historical result does not verify this revision. |
 | GitHub Pages | Pending for this branch. All three earlier public routes returned HTTP 200 at `50bd20f`; the semantic outputs must be checked again after publication. |
 
@@ -108,7 +110,7 @@ prompts, README structure, and lecture-level links.
 
 ## Local semantic-revision evidence
 
-Run on 2026-07-20 before the final publication pass:
+Run on 2026-07-20 for the final local publication pass:
 
 - The portable visualization model suite passed **10 Node tests**.
 - Focused Classification generator and payload checks passed **132 tests**;
@@ -117,22 +119,26 @@ Run on 2026-07-20 before the final publication pass:
   generated artifact reported `VALID`.
 - Core and adapter contract checks passed **34 tests with 1 optional skip**;
   both skills passed their quick validators.
-- Cross-topic EDA, Regression, Classification, and textbook preview checks
-  passed **6 tests**; the combined quiz and visualization Node suite passed
-  **10 tests**.
-- Both CI workflow files parsed as YAML, and focused Ruff checks and
-  `git diff --check` passed.
+- The combined quiz, visualization-model, and visualization-control-state
+  suite passed **13 Node tests**.
+- The local full Python suite passed **222 tests with 1 optional skip**.
+- Both CI workflow files parsed as YAML; Ruff format and lint, strict OKF
+  validation, the textbook preview build, and `git diff --check` passed.
+- Browser acceptance completed on desktop and narrow/mobile layouts. It
+  exercised each semantic control, both palette modes, keyboard-visible focus,
+  reduced motion, focus mode, and static fallbacks.
 
-These are completed local checks, not a claim about final full-suite, browser,
-Actions, or Pages results. Task 9 owns those final checks.
+These are completed local checks. GitHub Actions and GitHub Pages remain
+explicitly pending until this branch is published.
 
 ## Deterministic regeneration status
 
 Each semantic payload has been generated through the course wrapper, and the
-topic tests assert deterministic output against its committed artifact. The
-artifact inventory records the current local bytes. Task 9 will regenerate all
-three into a separate verification directory and compare them together before
-any publication claim is made.
+topic tests assert deterministic output against its committed artifact. On
+2026-07-20, all three were regenerated into temporary verification files and
+each SHA-256 hash matched its committed artifact. The artifact inventory
+therefore records the verified current local bytes; it is not a deployment
+claim.
 
 ## Historical desktop visual review
 

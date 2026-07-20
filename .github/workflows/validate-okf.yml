@@ -12,6 +12,11 @@ on:
       - "docs/interactive-lecture-learning-assistant.md"
       - "docs/contributing-to-textbook.md"
       - "docs/okf-authoring-guide.md"
+      - "docs/learning-companions-architecture.md"
+      - "docs/student-quickstart.md"
+      - "docs/student-learning-companion-quickstart.md"
+      - "docs/build-week-integration-evidence.md"
+      - "docs/build-week-submission-preparation.md"
       - "lectures/lecture_01_eda/README.md"
       - "README.md"
       - "AGENTS.md"
@@ -31,6 +36,7 @@ on:
       - "tests/test_classification_part_1_lecture_experience.py"
       - "tests/quiz_state_machine.test.js"
       - "tests/visualization_models.test.js"
+      - "tests/visualization_control_state.test.js"
       - "pyproject.toml"
       - "uv.lock"
       - ".github/workflows/validate-okf.yml"
@@ -42,6 +48,11 @@ on:
       - "docs/interactive-lecture-learning-assistant.md"
       - "docs/contributing-to-textbook.md"
       - "docs/okf-authoring-guide.md"
+      - "docs/learning-companions-architecture.md"
+      - "docs/student-quickstart.md"
+      - "docs/student-learning-companion-quickstart.md"
+      - "docs/build-week-integration-evidence.md"
+      - "docs/build-week-submission-preparation.md"
       - "lectures/lecture_01_eda/README.md"
       - "README.md"
       - "AGENTS.md"
@@ -61,6 +72,7 @@ on:
       - "tests/test_classification_part_1_lecture_experience.py"
       - "tests/quiz_state_machine.test.js"
       - "tests/visualization_models.test.js"
+      - "tests/visualization_control_state.test.js"
       - "pyproject.toml"
       - "uv.lock"
       - ".github/workflows/validate-okf.yml"
@@ -91,14 +103,14 @@ jobs:
 
       - name: Check validator formatting and lint
         run: |
-          uv run --no-sync ruff format --check src/mlcourse/okf_validation.py tools/validate_okf.py tools/build_textbook_preview.py .agents/skills/interactive-learning-experience-builder/scripts/generate_learning_experience.py .agents/skills/interactive-learning-experience-builder/scripts/validate_learning_experience.py .agents/skills/ml-course-interactive-learning-assistant/scripts/generate_course_learning_experience.py tests/test_okf_validation.py tests/test_textbook_preview.py tests/test_textbook_contribution_skill.py tests/test_interactive_learning_assistant_docs.py tests/test_interactive_learning_assistant_skill.py tests/test_interactive_learning_experience_builder_skill.py tests/test_learning_experience_portability.py tests/test_lecture_site_generator.py tests/test_eda_lecture_experience.py
-          uv run --no-sync ruff check src/mlcourse/okf_validation.py tools/validate_okf.py tools/build_textbook_preview.py .agents/skills/interactive-learning-experience-builder/scripts/generate_learning_experience.py .agents/skills/interactive-learning-experience-builder/scripts/validate_learning_experience.py .agents/skills/ml-course-interactive-learning-assistant/scripts/generate_course_learning_experience.py tests/test_okf_validation.py tests/test_textbook_preview.py tests/test_textbook_contribution_skill.py tests/test_interactive_learning_assistant_docs.py tests/test_interactive_learning_assistant_skill.py tests/test_interactive_learning_experience_builder_skill.py tests/test_learning_experience_portability.py tests/test_lecture_site_generator.py tests/test_eda_lecture_experience.py
+          uv run --no-sync ruff format --check src/mlcourse/okf_validation.py tools/validate_okf.py tools/build_textbook_preview.py .agents/skills/interactive-learning-experience-builder/scripts/generate_learning_experience.py .agents/skills/interactive-learning-experience-builder/scripts/validate_learning_experience.py .agents/skills/ml-course-interactive-learning-assistant/scripts/generate_course_learning_experience.py tests/test_okf_validation.py tests/test_textbook_preview.py tests/test_textbook_contribution_skill.py tests/test_interactive_learning_assistant_docs.py tests/test_interactive_learning_assistant_skill.py tests/test_interactive_learning_experience_builder_skill.py tests/test_learning_experience_portability.py tests/test_lecture_site_generator.py tests/test_eda_lecture_experience.py tests/test_regression_lecture_experience.py tests/test_classification_part_1_lecture_experience.py
+          uv run --no-sync ruff check src/mlcourse/okf_validation.py tools/validate_okf.py tools/build_textbook_preview.py .agents/skills/interactive-learning-experience-builder/scripts/generate_learning_experience.py .agents/skills/interactive-learning-experience-builder/scripts/validate_learning_experience.py .agents/skills/ml-course-interactive-learning-assistant/scripts/generate_course_learning_experience.py tests/test_okf_validation.py tests/test_textbook_preview.py tests/test_textbook_contribution_skill.py tests/test_interactive_learning_assistant_docs.py tests/test_interactive_learning_assistant_skill.py tests/test_interactive_learning_experience_builder_skill.py tests/test_learning_experience_portability.py tests/test_lecture_site_generator.py tests/test_eda_lecture_experience.py tests/test_regression_lecture_experience.py tests/test_classification_part_1_lecture_experience.py
 
       - name: Run validator tests
         run: uv run --no-sync pytest tests/test_okf_validation.py tests/test_textbook_preview.py tests/test_textbook_contribution_skill.py tests/test_interactive_learning_assistant_docs.py tests/test_interactive_learning_assistant_skill.py tests/test_interactive_learning_experience_builder_skill.py tests/test_learning_experience_portability.py tests/test_lecture_site_generator.py tests/test_eda_lecture_experience.py tests/test_regression_lecture_experience.py tests/test_classification_part_1_lecture_experience.py
 
       - name: Run browser behavior models
-        run: node --test tests/quiz_state_machine.test.js tests/visualization_models.test.js
+        run: node --test tests/quiz_state_machine.test.js tests/visualization_models.test.js tests/visualization_control_state.test.js
 
       - name: Validate bundle
         run: uv run --no-sync python tools/validate_okf.py okf/
