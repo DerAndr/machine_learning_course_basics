@@ -19,6 +19,10 @@
       --danger: #a33a3a;
       --border: #cad3dc;
       --focus: #111111;
+      --graph-primary: #6d28d9;
+      --graph-primary-strong: #4c1d95;
+      --graph-secondary: #0f766e;
+      --graph-secondary-strong: #115e59;
       --shadow: 0 10px 28px rgb(23 33 43 / 8%);
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
@@ -30,6 +34,10 @@
       --success: #009e73;
       --danger: #cc79a7;
       --focus: #000000;
+      --graph-primary: #0072b2;
+      --graph-primary-strong: #00547f;
+      --graph-secondary: #d55e00;
+      --graph-secondary-strong: #9f4500;
     }
 
     * {
@@ -184,6 +192,11 @@
       width: 1.35rem;
     }
 
+    .setting-status {
+      color: var(--muted);
+      margin: -0.65rem 0 0 2rem;
+    }
+
     textarea {
       border: 1px solid var(--border);
       border-radius: 0.55rem;
@@ -270,15 +283,121 @@
     }
 
     .mark-primary {
-      fill: var(--accent);
-      stroke: var(--accent-strong);
+      fill: var(--graph-primary);
+      stroke: var(--graph-primary-strong);
       stroke-width: 2;
     }
 
     .mark-secondary {
+      color: var(--graph-secondary);
       fill: url("#diagonal-hatch");
-      stroke: var(--secondary);
+      stroke: var(--graph-secondary-strong);
       stroke-width: 3;
+    }
+
+    .mark-series-primary {
+      fill: var(--graph-primary);
+      stroke: var(--graph-primary-strong);
+      stroke-width: 2;
+    }
+
+    .mark-series-secondary {
+      color: var(--graph-secondary);
+      fill: url("#diagonal-hatch");
+      stroke: var(--graph-secondary-strong);
+      stroke-width: 3;
+    }
+
+    .boundary-line,
+    .zero-line {
+      fill: none;
+      stroke: var(--graph-secondary-strong);
+      stroke-dasharray: 9 6;
+      stroke-width: 3;
+    }
+
+    .residual-line {
+      stroke: var(--graph-secondary-strong);
+      stroke-width: 2;
+    }
+
+    .metric-bar {
+      fill: var(--graph-primary);
+      stroke: var(--graph-primary-strong);
+      stroke-width: 2;
+    }
+
+    .confusion-cell rect {
+      stroke-width: 3;
+    }
+
+    .confusion-cell text {
+      fill: var(--ink);
+      font-size: 16px;
+      font-weight: 750;
+    }
+
+    .outcome-tn rect,
+    .outcome-tp rect {
+      fill: var(--graph-primary);
+      fill-opacity: 0.22;
+      stroke: var(--graph-primary-strong);
+    }
+
+    .outcome-fp,
+    .outcome-fn {
+      color: var(--graph-secondary);
+    }
+
+    .outcome-fp rect,
+    .outcome-fn rect {
+      fill: url("#diagonal-hatch");
+      stroke: var(--graph-secondary-strong);
+    }
+
+    .coefficient-line {
+      fill: none;
+      stroke-width: 3;
+    }
+
+    .feature-label {
+      fill: var(--ink);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .coefficient-legend {
+      color: var(--muted);
+      margin: 0.75rem 0 0;
+    }
+
+    .model-ridge {
+      stroke: var(--graph-primary);
+    }
+
+    .model-lasso {
+      stroke: var(--graph-secondary);
+      stroke-dasharray: 8 5;
+    }
+
+    .coefficient-zero {
+      color: var(--graph-secondary-strong);
+      fill: var(--surface);
+      stroke: currentColor;
+      stroke-width: 3;
+    }
+
+    .visualization-table {
+      border-collapse: collapse;
+      margin-top: 0.75rem;
+      width: 100%;
+    }
+
+    .visualization-table th,
+    .visualization-table td {
+      border-bottom: 1px solid var(--border);
+      padding: 0.4rem 0.55rem;
+      text-align: left;
     }
 
     .graph-fallback {
@@ -416,10 +535,15 @@
           <input data-setting="focus" type="checkbox">
           <span>Focus-friendly (ADHD-friendly) view</span>
         </label>
-        <label class="setting">
-          <input data-setting="color-blind" type="checkbox">
-          <span>Color-blind-safe palette</span>
-        </label>
+        <div>
+          <label class="setting">
+            <input data-setting="color-blind" type="checkbox">
+            <span>Color-blind-safe palette</span>
+          </label>
+          <p id="palette-status" class="setting-status" aria-live="polite">
+            Palette: standard
+          </p>
+        </div>
         <label class="setting">
           <input data-setting="break-prompts" type="checkbox">
           <span>Funny topic break prompts</span>
@@ -675,6 +799,98 @@
 
   </script>
   <script>const CONTENT = {"meta":{"experience_id":"lecture-01-eda","title":"Exploratory Data Analysis: Interactive Review","sources":["lectures/lecture_01_eda/README.md","lectures/lecture_01_eda/lecture_notes.md","lectures/lecture_01_eda/lecture_examples/README.md","lectures/lecture_01_eda/practical_session/README.md"]},"defaults":{"difficulty":"foundations","focus_mode":true,"color_blind":true,"break_prompts":true},"concepts":[{"id":"eda-before-modeling","title":"Explore before you model","explanation":"Exploratory Data Analysis examines structure, quality, distributions, anomalies, and relationships before formal modeling. In CRISP-DM it belongs to Data Understanding, where it reduces uncertainty about what the variables mean and whether the data supports later conclusions.","interpretation":"Begin with questions about rows, columns, types, missing values, and the target. Treat each plot or statistic as evidence for a specific question, not as decoration.","common_mistakes":["Fitting a model before checking whether columns, units, and missing values are sensible.","Treating EDA as a one-time checklist instead of returning to it after data changes."],"sources":["lectures/lecture_01_eda/lecture_notes.md","lectures/lecture_01_eda/practical_session/README.md"]},{"id":"data-types-and-structure","title":"Structure and data types choose the question","explanation":"Rows, columns, data types, unique values, and missingness define the dataset you actually have. Numerical, categorical, ordinal, and time-series variables require different summaries and plots.","interpretation":"Use numerical summaries for measured quantities, counts and proportions for categories, and preserve the ordering of ordinal categories. Inspect structure before plotting so a numeric-looking code is not mistaken for a measured quantity.","common_mistakes":["Taking the mean of an unordered category code.","Treating an ordered category as though its levels had no order."],"sources":["lectures/lecture_01_eda/lecture_notes.md","lectures/lecture_01_eda/practical_session/README.md"]},{"id":"center-spread-skew","title":"Read center, spread, and shape together","explanation":"Mean, median, and mode describe different notions of center; variance and standard deviation describe spread; skewness describes asymmetry. The mean uses every value and is sensitive to extremes, while the median is more robust.","interpretation":"For a right-skewed variable, report the median alongside its spread and distribution shape. A single average cannot show whether values are concentrated, variable, or asymmetric.","common_mistakes":["Reporting a mean without checking the distribution or spread.","Assuming all libraries use the same bias correction or kurtosis convention."],"sources":["lectures/lecture_01_eda/lecture_notes.md"]},{"id":"histogram-bins","title":"Histogram shape depends on bins","explanation":"A histogram groups numerical values into bins to reveal frequency and shape. Too few bins can hide clusters or multiple peaks, while too many can make random variation look like meaningful structure.","interpretation":"Change the bin count and look for conclusions that remain stable. Use a histogram as one view of shape, supported by summaries or another view such as an ECDF.","common_mistakes":["Treating one arbitrary bin setting as the unique shape of the data.","Comparing histogram bar heights when the bin widths differ."],"sources":["lectures/lecture_01_eda/lecture_notes.md","lectures/lecture_01_eda/lecture_examples/README.md"]},{"id":"iqr-boxplot-outliers","title":"IQR fences flag observations for inspection","explanation":"The interquartile range is Q3 minus Q1 and contains the middle half of ordered observations. Many box plots flag values below Q1 - 1.5 × IQR or above Q3 + 1.5 × IQR.","interpretation":"A flagged point is unusual relative to this distribution, not automatically an error. Check its source, units, group, and domain meaning before deciding how to handle it.","common_mistakes":["Deleting every point beyond a box-plot whisker.","Reading the box as the full data range instead of the middle 50 percent."],"sources":["lectures/lecture_01_eda/lecture_notes.md","lectures/lecture_01_eda/practical_session/README.md"]},{"id":"scatter-association","title":"Association is evidence, not causation","explanation":"A scatter plot shows how two numerical variables vary together and can reveal direction, clusters, non-linearity, and outliers. Pearson correlation summarizes linear association but does not establish a causal mechanism.","interpretation":"Describe what the points show, then consider grouping variables, non-linear patterns, and domain explanations. A trend between flipper length and body mass does not prove that changing one causes the other.","common_mistakes":["Using correlation as proof of causation.","Concluding that no relationship exists because Pearson correlation is near zero."],"sources":["lectures/lecture_01_eda/lecture_notes.md","lectures/lecture_01_eda/practical_session/README.md"]},{"id":"missing-counts-proportions","title":"Compare missing counts in context","explanation":"A missing-value count gives the number of unavailable observations, while a missing proportion divides that count by the relevant total. Proportions make columns or groups of different sizes comparable.","interpretation":"Report both count and denominator. Then investigate whether missingness is concentrated in particular variables or groups, because missing data can change summaries and interpretation.","common_mistakes":["Comparing raw missing counts across datasets of very different sizes.","Treating missingness only as a cleaning inconvenience without checking its pattern."],"sources":["lectures/lecture_01_eda/lecture_notes.md","lectures/lecture_01_eda/practical_session/README.md"]},{"id":"automation-with-reasoning","title":"Automation starts the investigation","explanation":"Automated EDA tools can quickly summarize types, missingness, quantiles, distributions, and correlations. They save time and make initial reporting consistent, but they lack domain context and may miss subtle problems.","interpretation":"Use an automated report to generate questions and prioritize checks. Confirm important findings with targeted manual inspection and explain why each finding matters.","common_mistakes":["Submitting an automated report as though it were a reasoned analysis.","Assuming an inferred type or highlighted correlation must be correct."],"sources":["lectures/lecture_01_eda/lecture_notes.md","lectures/lecture_01_eda/lecture_examples/README.md"]}],"visualizations":[{"id":"penguin-mass-bins","type":"histogram","title":"One illustrative distribution, several bin choices","explanation":"These fixed illustrative measurements support a bin-width experiment. Coarse bins emphasize the broad concentration, while finer bins reveal local variation without changing the underlying observations.","data":[2700,2850,3000,3050,3150,3250,3300,3400,3450,3550,3650,3700,3800,3900,4000,4100,4200,4350,4500,4700,4950,5200,5550,5850],"controls":{"bins":[4,6,8,12]},"fallback":"Illustrative mass-like values, sorted: 2700, 2850, 3000, 3050, 3150, 3250, 3300, 3400, 3450, 3550, 3650, 3700, 3800, 3900, 4000, 4100, 4200, 4350, 4500, 4700, 4950, 5200, 5550, 5850. The same values can look smoother or noisier as bin count changes."},{"id":"mass-iqr-fence","type":"boxplot","title":"An IQR flag is not a deletion command","explanation":"Change the fence multiplier and notice which observations are flagged. The rule describes unusual position in this sample; it does not diagnose a measurement error.","data":[28,29,30,30,31,31,32,32,33,34,35,36,37,42,52],"controls":{"fence_multipliers":[1,1.5,2]},"fallback":"Sorted measurements: 28, 29, 30, 30, 31, 31, 32, 32, 33, 34, 35, 36, 37, 42, 52. A 1 × IQR fence flags 42 and 52, while wider fences flag only 52. Either flag still needs source and domain inspection."},{"id":"flipper-mass-association","type":"scatter","title":"Illustrative flipper length and body mass association","explanation":"These fixed illustrative points model the positive association discussed in the lecture: larger flipper measurements often coincide with larger body mass. The dashed line summarizes direction, not a causal claim.","data":[{"x":178,"y":3150},{"x":181,"y":3300},{"x":185,"y":3450},{"x":188,"y":3600},{"x":191,"y":3500},{"x":195,"y":3900},{"x":199,"y":4050},{"x":203,"y":4300},{"x":210,"y":4700},{"x":216,"y":5100}],"controls":{"trend_line":true},"fallback":"Pairs of flipper length in millimetres and body mass in grams: (178, 3150), (181, 3300), (185, 3450), (188, 3600), (191, 3500), (195, 3900), (199, 4050), (203, 4300), (210, 4700), (216, 5100). Values generally rise together, with variation around the trend."},{"id":"penguin-missingness","type":"missingness","title":"Illustrative missingness: counts need denominators","explanation":"Compare raw missing counts with percentages in this fixed teaching example. A smaller count can represent the larger missing-data problem when its denominator is much smaller.","data":[{"label":"column A","missing":2,"total":344},{"label":"column B","missing":11,"total":344},{"label":"small subgroup","missing":6,"total":40},{"label":"large subgroup","missing":12,"total":300}],"controls":{"sort":["source","descending"]},"fallback":"Illustrative missingness table: column A 2/344 (about 0.6%); column B 11/344 (about 3.2%); small subgroup 6/40 (15%); large subgroup 12/300 (4%). Although 6 is a smaller count than 12, it is the larger proportion."}],"quizzes":{"foundations":[{"id":"eda-f-01","type":"single-choice","prompt":"When should the first EDA pass happen?","options":["Before formal modeling","Only after the final model","Only when model accuracy is low"],"answer":"Before formal modeling","explanation":"EDA belongs to Data Understanding and should reveal structure and quality issues before modeling choices are made.","concept":"eda-before-modeling"},{"id":"eda-f-02","type":"single-choice","prompt":"Which summary is most appropriate for an unordered species column?","options":["Counts and proportions","Mean and variance","Pearson correlation"],"answer":"Counts and proportions","explanation":"Species is categorical, so frequencies, proportions, mode, unique count, and missing count are meaningful summaries.","concept":"data-types-and-structure"},{"id":"eda-f-03","type":"single-choice","prompt":"Which measure of center is usually more robust to an extreme value?","options":["Median","Mean","Variance"],"answer":"Median","explanation":"The median depends on ordered position rather than the magnitude of every value, so a single extreme usually affects it less.","concept":"center-spread-skew"},{"id":"eda-f-04","type":"single-choice","prompt":"What does positive skewness describe?","options":["A long right tail","A long left tail","No spread"],"answer":"A long right tail","explanation":"Positive skew means the distribution extends farther toward large values; the mean is often pulled above the median.","concept":"center-spread-skew"},{"id":"eda-f-05","type":"single-choice","prompt":"What does a histogram bar count?","options":["Observations in a numerical interval","Causal effects","Missing column names"],"answer":"Observations in a numerical interval","explanation":"A histogram groups numerical observations into bins and displays their frequencies.","concept":"histogram-bins"},{"id":"eda-f-06","type":"single-choice","prompt":"How is the interquartile range calculated?","options":["Q3 minus Q1","Maximum minus minimum","Mean minus median"],"answer":"Q3 minus Q1","explanation":"IQR = Q3 - Q1 and describes the spread of the middle 50 percent of observations.","concept":"iqr-boxplot-outliers"},{"id":"eda-f-07","type":"single-choice","prompt":"What does a point beyond a standard box-plot whisker mean?","options":["It deserves inspection","It is certainly a data error","It proves the distribution is normal"],"answer":"It deserves inspection","explanation":"The 1.5 × IQR rule flags an unusual position; source and domain checks are needed before calling it erroneous.","concept":"iqr-boxplot-outliers"},{"id":"eda-f-08","type":"single-choice","prompt":"A strong scatter-plot trend proves that changing x causes y.","options":["False","True","Only when the line slopes upward"],"answer":"False","explanation":"Association can result from grouping, confounding, selection, or other mechanisms; a scatter plot alone does not establish causation.","concept":"scatter-association"},{"id":"eda-f-09","type":"single-choice","prompt":"Why report a missing proportion as well as a count?","options":["It accounts for the denominator","It makes every count smaller","It identifies the cause of missingness"],"answer":"It accounts for the denominator","explanation":"Dividing by the relevant total makes missingness comparable across columns or groups of different sizes.","concept":"missing-counts-proportions"},{"id":"eda-f-10","type":"single-choice","prompt":"What is the best role for an automated EDA report?","options":["A starting point for targeted checks","A replacement for interpretation","Proof that inferred types are correct"],"answer":"A starting point for targeted checks","explanation":"Automation is fast and consistent, but important findings still require context and manual confirmation.","concept":"automation-with-reasoning"}],"applied":[{"id":"eda-a-01","type":"single-choice","prompt":"A new table arrives with 344 rows. What should you inspect before drawing pair plots?","options":["Columns, types, unique values, and missingness","Only model accuracy","Only the target mean"],"answer":"Columns, types, unique values, and missingness","explanation":"Structural inspection establishes what each field represents and which analyses are valid before more elaborate plots.","concept":"data-types-and-structure"},{"id":"eda-a-02","type":"single-choice","prompt":"Household incomes are strongly right-skewed by a few very large values. Which center should be emphasized?","options":["Median","Mean only","Maximum"],"answer":"Median","explanation":"The median is less pulled by the large right-tail observations and better represents the ordered middle.","concept":"center-spread-skew"},{"id":"eda-a-03","type":"single-choice","prompt":"A cluster disappears when a histogram changes from 20 bins to 4. What is the sound next step?","options":["Check several bin settings and another distribution view","Declare the cluster nonexistent","Keep only the most dramatic plot"],"answer":"Check several bin settings and another distribution view","explanation":"Histogram appearance depends on bins, so a stable conclusion should survive reasonable settings and supporting views.","concept":"histogram-bins"},{"id":"eda-a-04","type":"single-choice","prompt":"If Q1 = 10 and Q3 = 14, which value lies above the usual upper 1.5 × IQR fence?","options":["25","18","14"],"answer":"25","explanation":"IQR is 4 and the upper fence is 14 + 1.5 × 4 = 20, so 25 is beyond it.","concept":"iqr-boxplot-outliers"},{"id":"eda-a-05","type":"single-choice","prompt":"Penguin flipper length and body mass rise together in a scatter plot. Which claim is supported?","options":["They have a positive association in these data","Longer flippers necessarily cause higher mass","Species cannot affect the pattern"],"answer":"They have a positive association in these data","explanation":"The plot supports a descriptive association; causal direction and possible group structure require additional evidence.","concept":"scatter-association"},{"id":"eda-a-06","type":"single-choice","prompt":"Group A has 20 missing values among 100 rows; group B has 30 among 300. Which has the larger missing proportion?","options":["Group A","Group B","They are equal"],"answer":"Group A","explanation":"Group A is 20% missing while group B is 10%, even though B has the larger raw count.","concept":"missing-counts-proportions"},{"id":"eda-a-07","type":"single-choice","prompt":"A column stores island names. Which pair gives the most useful first summary?","options":["Category counts and percentages","Variance and standard deviation","Skewness and kurtosis"],"answer":"Category counts and percentages","explanation":"Island is categorical, so frequency and relative frequency reveal group sizes and imbalance.","concept":"data-types-and-structure"},{"id":"eda-a-08","type":"single-choice","prompt":"Survey satisfaction uses Low, Medium, High. What must an analysis preserve?","options":["The ordering of the levels","An arbitrary numeric distance between labels","Only alphabetical order"],"answer":"The ordering of the levels","explanation":"This is ordinal data: order is meaningful, but equal numerical spacing between adjacent levels is not guaranteed.","concept":"data-types-and-structure"},{"id":"eda-a-09","type":"single-choice","prompt":"An automated report labels a numeric-looking ID column as continuous. What should you do?","options":["Inspect its meaning and unique values manually","Accept the type without question","Compute its mean and stop"],"answer":"Inspect its meaning and unique values manually","explanation":"Automated type inference lacks domain meaning; identifiers should not be analyzed as measured quantities merely because they use digits.","concept":"automation-with-reasoning"},{"id":"eda-a-10","type":"single-choice","prompt":"Why is standard deviation often easier to interpret than variance?","options":["It is in the original measurement units","It ignores all extreme values","It always lies between 0 and 1"],"answer":"It is in the original measurement units","explanation":"Standard deviation is the square root of variance, returning spread to the variable's original units.","concept":"center-spread-skew"}],"challenge":[{"id":"eda-c-01","type":"single-choice","prompt":"A pooled scatter plot shows a trend, but each species forms a separate cluster. What is the strongest interpretation?","options":["Inspect within-species and pooled patterns separately","Ignore species because the pooled line is enough","The pooled trend proves one mechanism"],"answer":"Inspect within-species and pooled patterns separately","explanation":"Group structure can create or alter an aggregate association, so both conditional and pooled views are needed.","concept":"scatter-association"},{"id":"eda-c-02","type":"single-choice","prompt":"Pearson correlation is near zero, but the scatter plot forms a clear U-shape. What follows?","options":["There is a non-linear relationship that Pearson correlation misses","There is no relationship","The scatter plot must be wrong"],"answer":"There is a non-linear relationship that Pearson correlation misses","explanation":"Pearson correlation summarizes linear association; opposite slopes on either side of a U can cancel numerically.","concept":"scatter-association"},{"id":"eda-c-03","type":"single-choice","prompt":"A biologically plausible penguin measurement lies beyond the 1.5 × IQR fence. What is the defensible action?","options":["Retain it while checking source, units, and influence","Delete it automatically","Replace it with the mean immediately"],"answer":"Retain it while checking source, units, and influence","explanation":"The fence flags rarity, not invalidity; provenance and sensitivity checks should guide any treatment.","concept":"iqr-boxplot-outliers"},{"id":"eda-c-04","type":"single-choice","prompt":"Two reports use the same observations but one histogram looks bimodal and the other smooth. What should be audited first?","options":["Bin edges and widths","The causal mechanism","The missing-data cause"],"answer":"Bin edges and widths","explanation":"Histogram structure can change materially with bin definitions even though the underlying observations are identical.","concept":"histogram-bins"},{"id":"eda-c-05","type":"single-choice","prompt":"Two columns each have 10 missing cells; one has 50 rows and one has 1000. Which statement is accurate?","options":["Their counts match but their missing proportions differ","Their missing-data impact is identical","The larger table has the larger proportion"],"answer":"Their counts match but their missing proportions differ","explanation":"The proportions are 20% and 1%, showing why the denominator is essential to interpretation.","concept":"missing-counts-proportions"},{"id":"eda-c-06","type":"single-choice","prompt":"Which ordering is a common signature of a positively skewed distribution?","options":["Mode \u003c Median \u003c Mean","Mean \u003c Median \u003c Mode","Mean = Median = Mode always"],"answer":"Mode \u003c Median \u003c Mean","explanation":"Large right-tail values pull the mean farthest right, while the mode remains near the most frequent region.","concept":"center-spread-skew"},{"id":"eda-c-07","type":"single-choice","prompt":"One library reports normal-distribution kurtosis near 3 and another near 0. What should you check?","options":["Whether Fisher's definition subtracts 3","Whether the median was sorted","Whether categories were alphabetized"],"answer":"Whether Fisher's definition subtracts 3","explanation":"Fisher kurtosis uses normal = 0 by subtracting 3, while another convention reports normal = 3.","concept":"center-spread-skew"},{"id":"eda-c-08","type":"single-choice","prompt":"An automated report highlights a strong correlation between an ID and the target. Why is skepticism warranted?","options":["The ID may encode ordering, leakage, or collection artifacts","Automated correlations are always causal","IDs are always continuous measurements"],"answer":"The ID may encode ordering, leakage, or collection artifacts","explanation":"A numeric association can be real in the table yet meaningless or harmful for the intended modeling problem.","concept":"automation-with-reasoning"},{"id":"eda-c-09","type":"single-choice","prompt":"What is the best use of a correlation heatmap during early EDA?","options":["Screen pairs for follow-up plots and domain checks","Prove causal relationships among all features","Replace every univariate summary"],"answer":"Screen pairs for follow-up plots and domain checks","explanation":"A heatmap efficiently surfaces linear associations but cannot establish causality or show all distributional structure.","concept":"scatter-association"},{"id":"eda-c-10","type":"single-choice","prompt":"Why revisit EDA after preprocessing creates transformed features?","options":["Transformations can change distributions, missingness, and relationships","EDA is required only for raw data","Model scores make data checks unnecessary"],"answer":"Transformations can change distributions, missingness, and relationships","explanation":"EDA is iterative: whenever the representation changes, earlier assumptions and patterns should be checked again.","concept":"eda-before-modeling"}]},"break_prompts":["Stretch those whiskers before the next box plot.","Give your eyes a tiny interquartile break: middle 50 percent relaxed.","Stand up and form a positive association with the water bottle.","No timer, no pressure: let the histogram bins settle before continuing."]};</script>
+  <script>(function visualizationModelsFactory(root, factory) {
+  const api = factory();
+  if (typeof module === "object" && module.exports) module.exports = api;
+  root.LearningVisualizationModels = api;
+})(typeof globalThis === "object" ? globalThis : this, function buildModels() {
+  "use strict";
+
+  function safeRatio(numerator, denominator) {
+    return denominator === 0 ? null : numerator / denominator;
+  }
+
+  function thresholdSummary(records, threshold) {
+    const counts = { tp: 0, fp: 0, tn: 0, fn: 0 };
+    records.forEach((record) => {
+      const predicted = Number(record.score) >= threshold ? 1 : 0;
+      const actual = Number(record.actual);
+      if (predicted === 1 && actual === 1) counts.tp += 1;
+      else if (predicted === 1 && actual === 0) counts.fp += 1;
+      else if (predicted === 0 && actual === 0) counts.tn += 1;
+      else counts.fn += 1;
+    });
+    return {
+      threshold,
+      ...counts,
+      precision: safeRatio(counts.tp, counts.tp + counts.fp),
+      recall: safeRatio(counts.tp, counts.tp + counts.fn),
+    };
+  }
+
+  function seriesStyles(seriesNames) {
+    const names = [...new Set(seriesNames.map(String))].sort();
+    const styles = [
+      { colorRole: "primary", shape: "circle", pattern: "solid" },
+      { colorRole: "secondary", shape: "square", pattern: "hatched" },
+    ];
+    return Object.fromEntries(names.map((name, index) => [name, styles[index]]));
+  }
+
+  function boundarySummary(points, boundary, positiveSeries) {
+    const allSeries = [...new Set(points.map((point) => String(point.series)))].sort();
+    const negativeSeries = allSeries.find((series) => series !== positiveSeries);
+    const mapped = points.map((point) => {
+      const boundaryY = Number(boundary.slope) * Number(point.x) + Number(boundary.intercept);
+      const predictedSeries = Number(point.y) >= boundaryY ? positiveSeries : negativeSeries;
+      return {
+        ...point,
+        boundaryY,
+        predictedSeries,
+        correct: predictedSeries === String(point.series),
+      };
+    });
+    const correct = mapped.filter((point) => point.correct).length;
+    return { points: mapped, correct, incorrect: mapped.length - correct };
+  }
+
+  function residualPoints(scenario) {
+    return scenario.points.map((point) => ({
+      ...point,
+      fitted: Number(point.predicted),
+      residual: Number(point.observed) - Number(point.predicted),
+    }));
+  }
+
+  function coefficientSnapshot(data, index) {
+    return {
+      penalty: Number(data.penalties[index]),
+      rows: data.series.map((series) => ({
+        feature: String(series.feature),
+        ridge: Number(series.ridge[index]),
+        lasso: Number(series.lasso[index]),
+        lassoIsZero: Number(series.lasso[index]) === 0,
+      })),
+    };
+  }
+
+  function errorMetricSummary(baseErrors, adjustableError) {
+    const errors = [...baseErrors.map(Number), Number(adjustableError)];
+    const mae = errors.reduce((sum, value) => sum + Math.abs(value), 0) / errors.length;
+    const mse = errors.reduce((sum, value) => sum + value ** 2, 0) / errors.length;
+    return { errors, mae, mse, rmse: Math.sqrt(mse) };
+  }
+
+  return {
+    boundarySummary,
+    coefficientSnapshot,
+    errorMetricSummary,
+    residualPoints,
+    seriesStyles,
+    thresholdSummary,
+  };
+});
+</script>
   <script>
     "use strict";
 
@@ -783,6 +999,9 @@
       document.querySelector('[data-setting="focus"]').checked = state.focus;
       document.querySelector('[data-setting="color-blind"]').checked = state.colorBlind;
       document.querySelector('[data-setting="break-prompts"]').checked = state.breakPrompts;
+      byId("palette-status").textContent = state.colorBlind
+        ? "Palette: color-blind-safe"
+        : "Palette: standard";
       if (!state.breakPrompts) byId("break-prompt").hidden = true;
       saveSettings();
       renderConcepts();
@@ -961,7 +1180,374 @@
       ).join("; ");
     }
 
+    function renderBinaryThreshold(visualization, target, summary, threshold) {
+      const result = LearningVisualizationModels.thresholdSummary(
+        visualization.data,
+        threshold,
+      );
+      const formatMetric = (value) => value === null ? "not defined" : value.toFixed(2);
+      const positive = escapeHtml(String(visualization.labels.positive));
+      const negative = escapeHtml(String(visualization.labels.negative));
+      target.innerHTML = `<div class="threshold-layout">
+        <svg viewBox="0 0 520 250" role="img"
+          aria-label="${escapeHtml(visualization.title)} confusion matrix">
+          <text class="chart-label" x="240" y="24">Predicted ${negative}</text>
+          <text class="chart-label" x="385" y="24">Predicted ${positive}</text>
+          <text class="chart-label" x="12" y="95">Actual ${negative}</text>
+          <text class="chart-label" x="12" y="190">Actual ${positive}</text>
+          <g class="confusion-cell outcome-tn">
+            <rect x="190" y="45" width="135" height="80"></rect>
+            <text x="245" y="88">TN ${result.tn}</text>
+          </g>
+          <g class="confusion-cell outcome-fp">
+            <rect x="335" y="45" width="135" height="80"></rect>
+            <text x="390" y="88">FP ${result.fp}</text>
+          </g>
+          <g class="confusion-cell outcome-fn">
+            <rect x="190" y="140" width="135" height="80"></rect>
+            <text x="245" y="183">FN ${result.fn}</text>
+          </g>
+          <g class="confusion-cell outcome-tp">
+            <rect x="335" y="140" width="135" height="80"></rect>
+            <text x="390" y="183">TP ${result.tp}</text>
+          </g>
+        </svg>
+      </div>`;
+      summary.textContent =
+        `Threshold ${threshold.toFixed(2)}. TP ${result.tp}, FP ${result.fp}, ` +
+        `TN ${result.tn}, FN ${result.fn}. Precision ${formatMetric(result.precision)}; ` +
+        `recall ${formatMetric(result.recall)}.`;
+    }
+
+    function renderLabeledScatter(visualization, target, summary, boundaryId) {
+      const points = visualization.data;
+      const boundaries = visualization.controls.boundaries;
+      const boundary = boundaries.find((candidate) => candidate.id === boundaryId)
+        || boundaries.find((candidate) => candidate.id === visualization.controls.initial)
+        || boundaries[0];
+      const positiveSeries = String(visualization.labels.positive_series);
+      const result = LearningVisualizationModels.boundarySummary(
+        points,
+        boundary,
+        positiveSeries,
+      );
+      const styles = LearningVisualizationModels.seriesStyles(
+        points.map((point) => point.series),
+      );
+      const xs = points.map((point) => Number(point.x));
+      const ys = points.map((point) => Number(point.y));
+      const minX = Math.min(...xs);
+      const maxX = Math.max(...xs);
+      const boundaryYs = [
+        Number(boundary.slope) * minX + Number(boundary.intercept),
+        Number(boundary.slope) * maxX + Number(boundary.intercept),
+      ];
+      const minY = Math.min(...ys, ...boundaryYs);
+      const maxY = Math.max(...ys, ...boundaryYs);
+      const xScale = (value) => 65 + ((value - minX) / Math.max(1, maxX - minX)) * 410;
+      const yScale = (value) => 220 - ((value - minY) / Math.max(1, maxY - minY)) * 175;
+      const pointMark = (point) => {
+        const series = String(point.series);
+        const style = styles[series];
+        const seriesLabel = visualization.labels.series[series];
+        const predictedLabel = visualization.labels.series[point.predictedSeries];
+        const title = `True series ${seriesLabel}: ${visualization.labels.x_axis} ${point.x}, ` +
+          `${visualization.labels.y_axis} ${point.y}; predicted as ${predictedLabel}`;
+        if (style.shape === "square") {
+          return `<rect class="mark-series-${style.colorRole}" data-shape="${style.shape}"
+            x="${xScale(Number(point.x)) - 7}" y="${yScale(Number(point.y)) - 7}"
+            width="14" height="14"><title>${escapeHtml(title)}</title></rect>`;
+        }
+        return `<circle class="mark-series-${style.colorRole}" data-shape="${style.shape}"
+          cx="${xScale(Number(point.x))}" cy="${yScale(Number(point.y))}" r="7">
+          <title>${escapeHtml(title)}</title></circle>`;
+      };
+      target.innerHTML = `<svg viewBox="0 0 520 270" role="img"
+        aria-label="${escapeHtml(visualization.title)} labeled scatter plot">
+        <line x1="65" y1="220" x2="475" y2="220" stroke="currentColor"></line>
+        <line x1="65" y1="45" x2="65" y2="220" stroke="currentColor"></line>
+        <line class="boundary-line" x1="${xScale(minX)}" y1="${yScale(boundaryYs[0])}"
+          x2="${xScale(maxX)}" y2="${yScale(boundaryYs[1])}">
+          <title>${escapeHtml(boundary.label)}</title>
+        </line>
+        ${result.points.map(pointMark).join("")}
+        <text class="chart-label" x="210" y="255">
+          ${escapeHtml(visualization.labels.x_axis)}
+        </text>
+        <text class="chart-label" x="8" y="28">
+          ${escapeHtml(visualization.labels.y_axis)}
+        </text>
+      </svg>`;
+      summary.textContent =
+        `${boundary.label}. ${result.correct} of ${result.points.length} illustrative ` +
+        `points are on the expected side; ${result.incorrect} are not.`;
+    }
+
+    function renderResidualDiagnostics(visualization, target, summary, scenarioId) {
+      const scenarios = visualization.data.scenarios;
+      const scenario = scenarios.find((candidate) => candidate.id === scenarioId)
+        || scenarios.find((candidate) => candidate.id === visualization.controls.initial)
+        || scenarios[0];
+      const points = LearningVisualizationModels.residualPoints(scenario);
+      const xs = points.map((point) => Number(point.x));
+      const targets = points.flatMap((point) => [
+        Number(point.observed),
+        Number(point.predicted),
+      ]);
+      const residuals = points.map((point) => point.residual);
+      const minX = Math.min(...xs);
+      const maxX = Math.max(...xs);
+      const minTarget = Math.min(...targets);
+      const maxTarget = Math.max(...targets);
+      const maxAbsResidual = Math.max(1, ...residuals.map(Math.abs));
+      const xScale = (value) => 65 + ((value - minX) / Math.max(1, maxX - minX)) * 410;
+      const targetScale = (value) =>
+        185 - ((value - minTarget) / Math.max(1, maxTarget - minTarget)) * 140;
+      const fittedMin = Math.min(...points.map((point) => point.fitted));
+      const fittedMax = Math.max(...points.map((point) => point.fitted));
+      const fittedScale = (value) =>
+        65 + ((value - fittedMin) / Math.max(1, fittedMax - fittedMin)) * 410;
+      const residualScale = (value) => 115 - (value / maxAbsResidual) * 70;
+      target.innerHTML = `<svg viewBox="0 0 520 220" role="img"
+          aria-label="${escapeHtml(visualization.title)} observed and predicted panel">
+          ${points.map((point) => `<g>
+            <line class="residual-line" x1="${xScale(Number(point.x))}"
+              y1="${targetScale(Number(point.observed))}"
+              x2="${xScale(Number(point.x))}" y2="${targetScale(point.fitted)}"></line>
+            <circle class="mark-series-primary" data-shape="circle"
+              cx="${xScale(Number(point.x))}" cy="${targetScale(Number(point.observed))}" r="6">
+              <title>Observed ${escapeHtml(point.observed)} at
+                ${escapeHtml(visualization.labels.x_axis)} ${escapeHtml(point.x)}</title>
+            </circle>
+            <rect class="mark-series-secondary" data-shape="square"
+              x="${xScale(Number(point.x)) - 5}" y="${targetScale(point.fitted) - 5}"
+              width="10" height="10">
+              <title>Predicted ${escapeHtml(point.predicted)} at
+                ${escapeHtml(visualization.labels.x_axis)} ${escapeHtml(point.x)}</title>
+            </rect>
+          </g>`).join("")}
+          <text class="chart-label" x="205" y="212">
+            ${escapeHtml(visualization.labels.x_axis)}
+          </text>
+          <text class="chart-label" x="8" y="26">
+            ${escapeHtml(visualization.labels.target_axis)}
+          </text>
+        </svg>
+        <svg viewBox="0 0 520 220" role="img"
+          aria-label="${escapeHtml(visualization.title)} residual against fitted panel">
+          <line class="zero-line" x1="65" y1="${residualScale(0)}"
+            x2="475" y2="${residualScale(0)}"></line>
+          <text class="chart-label" x="70" y="${residualScale(0) - 8}">Positive residual</text>
+          <text class="chart-label" x="70" y="${residualScale(0) + 18}">Negative residual</text>
+          <text class="chart-label" x="425" y="${residualScale(0) - 8}">Zero residual</text>
+          ${points.map((point) => `<circle class="mark-series-primary" data-shape="circle"
+            cx="${fittedScale(point.fitted)}" cy="${residualScale(point.residual)}" r="6">
+            <title>Fitted ${point.fitted.toFixed(2)}, residual
+              ${point.residual.toFixed(2)}</title>
+          </circle>`).join("")}
+          <text class="chart-label" x="220" y="212">Fitted value</text>
+          <text class="chart-label" x="8" y="26">
+            ${escapeHtml(visualization.labels.residual_axis)}
+          </text>
+        </svg>`;
+      summary.textContent =
+        `${scenario.label}. Illustrative residuals range from ` +
+        `${Math.min(...residuals).toFixed(2)} to ${Math.max(...residuals).toFixed(2)}.`;
+    }
+
+    function coefficientFeatureStyle(featureIndex) {
+      const styles = [
+        { dashArray: "", marker: "●" },
+        { dashArray: "10 4", marker: "■" },
+        { dashArray: "2 4", marker: "▲" },
+        { dashArray: "14 3 2 3", marker: "◆" },
+      ];
+      return styles[featureIndex % styles.length];
+    }
+
+    function renderCoefficientPath(visualization, target, summary, selectedIndex) {
+      const data = visualization.data;
+      const index = Math.max(
+        0,
+        Math.min(data.penalties.length - 1, Number(selectedIndex)),
+      );
+      const snapshot = LearningVisualizationModels.coefficientSnapshot(data, index);
+      const allValues = data.series.flatMap((series) => [...series.ridge, ...series.lasso])
+        .map(Number);
+      const maxAbs = Math.max(1, ...allValues.map(Math.abs));
+      const xScale = (step) =>
+        65 + (step / Math.max(1, data.penalties.length - 1)) * 410;
+      const yScale = (value) => 120 - (Number(value) / maxAbs) * 85;
+      const paths = data.series.flatMap((series, featureIndex) =>
+        ["ridge", "lasso"].map((model) => {
+          const values = series[model];
+          const featureStyle = coefficientFeatureStyle(featureIndex);
+          const points = values.map(
+            (value, step) => `${xScale(step)},${yScale(value)}`,
+          ).join(" ");
+          const label = model === "ridge"
+            ? `<text class="feature-label" x="${xScale(data.penalties.length - 1) - 4}"
+                y="${yScale(values[values.length - 1]) - 7}" text-anchor="end">
+                ${featureStyle.marker} ${escapeHtml(series.feature)}</text>`
+            : "";
+          return `<polyline class="coefficient-line model-${model}" data-feature-pattern="${featureIndex}"
+            stroke-dasharray="${featureStyle.dashArray}" points="${points}">
+            <title>${escapeHtml(series.feature)} ${model} coefficient path; feature cue ${featureStyle.marker}</title>
+            </polyline>${label}`;
+        }),
+      ).join("");
+      const markers = snapshot.rows.map((row) => {
+        const x = xScale(index);
+        const ridgeY = yScale(row.ridge);
+        const lassoY = yScale(row.lasso);
+        const zeroMark = row.lassoIsZero
+          ? `<g class="coefficient-zero" data-shape="zero">
+              <circle cx="${x}" cy="${lassoY}" r="9"></circle>
+              <path d="M${x - 5},${lassoY - 5} L${x + 5},${lassoY + 5}
+                M${x + 5},${lassoY - 5} L${x - 5},${lassoY + 5}"></path>
+              <title>${escapeHtml(row.feature)} Lasso is exactly zero</title>
+            </g>`
+          : `<rect class="mark-series-secondary" data-shape="square"
+              x="${x - 6}" y="${lassoY - 6}" width="12" height="12">
+              <title>${escapeHtml(row.feature)} Lasso ${row.lasso}</title>
+            </rect>`;
+        return `<circle class="mark-series-primary" data-shape="circle"
+            cx="${x}" cy="${ridgeY}" r="6">
+            <title>${escapeHtml(row.feature)} Ridge ${row.ridge}</title>
+          </circle>${zeroMark}`;
+      }).join("");
+      target.innerHTML = `<svg viewBox="0 0 520 240" role="img"
+          aria-label="${escapeHtml(visualization.title)} coefficient path chart">
+          <line class="zero-line" x1="65" y1="${yScale(0)}"
+            x2="475" y2="${yScale(0)}"></line>
+          ${paths}
+          ${markers}
+          <text class="chart-label" x="195" y="228">Penalty strength</text>
+          <text class="chart-label" x="8" y="24">Coefficient</text>
+        </svg>
+        <p class="coefficient-legend">Feature cues: ${data.series.map((series, featureIndex) =>
+          `${coefficientFeatureStyle(featureIndex).marker} ${escapeHtml(series.feature)}`
+        ).join("; ")}. Ridge uses circles; Lasso uses squares or an exact-zero cross.</p>
+        <table class="visualization-table">
+          <caption>Coefficients at penalty ${snapshot.penalty}</caption>
+          <thead><tr><th>Feature</th><th>Ridge</th><th>Lasso</th></tr></thead>
+          <tbody>${snapshot.rows.map((row) => `<tr>
+            <th scope="row">${escapeHtml(row.feature)}</th>
+            <td>${row.ridge}</td>
+            <td>${row.lasso}${row.lassoIsZero ? " (exact zero)" : ""}</td>
+          </tr>`).join("")}</tbody>
+        </table>`;
+      summary.textContent =
+        `Penalty ${snapshot.penalty}. ` +
+        snapshot.rows.map((row) =>
+          `${row.feature}: Ridge ${row.ridge}, Lasso ${row.lasso}`
+        ).join("; ") + ".";
+    }
+
+    function renderErrorMetrics(visualization, target, summary, selectedIndex) {
+      const adjustableErrors = visualization.data.adjustable_error;
+      const index = Math.max(
+        0,
+        Math.min(adjustableErrors.length - 1, Number(selectedIndex)),
+      );
+      const adjustableError = Number(adjustableErrors[index]);
+      const result = LearningVisualizationModels.errorMetricSummary(
+        visualization.data.base_errors,
+        adjustableError,
+      );
+      const maxAbsError = Math.max(1, ...result.errors.map((value) => Math.abs(value)));
+      const errorScale = (value) => 260 + (Number(value) / maxAbsError) * 190;
+      const metrics = [
+        ["MAE", result.mae],
+        ["MSE", result.mse],
+        ["RMSE", result.rmse],
+      ];
+      const maxMetric = Math.max(1, ...metrics.map((metric) => metric[1]));
+      target.innerHTML = `<svg viewBox="0 0 520 320" role="img"
+        aria-label="${escapeHtml(visualization.title)} error and metric chart">
+        <line class="zero-line" x1="${errorScale(0)}" y1="35"
+          x2="${errorScale(0)}" y2="105"></line>
+        ${visualization.data.base_errors.map((error, markIndex) =>
+          `<circle class="mark-series-primary" data-shape="circle"
+            cx="${errorScale(error)}" cy="${58 + (markIndex % 2) * 24}" r="6">
+            <title>Base error ${escapeHtml(error)}</title>
+          </circle>`
+        ).join("")}
+        <rect class="mark-series-secondary" data-shape="square"
+          x="${errorScale(adjustableError) - 8}" y="62" width="16" height="16">
+          <title>Adjustable error ${adjustableError}</title>
+        </rect>
+        <text class="chart-label" x="210" y="122">Prediction error</text>
+        ${metrics.map(([label, value], metricIndex) => {
+          const width = (value / maxMetric) * 330;
+          const y = 160 + metricIndex * 48;
+          return `<g><text class="chart-label" x="25" y="${y + 20}">${label}</text>
+            <rect class="metric-bar" data-shape="bar" x="95" y="${y}"
+              width="${width}" height="26">
+              <title>${label} ${value.toFixed(2)}</title>
+            </rect>
+            <text class="chart-label" x="${105 + width}" y="${y + 20}">
+              ${value.toFixed(2)}
+            </text></g>`;
+        }).join("")}
+      </svg>`;
+      const units = visualization.labels.units;
+      summary.textContent =
+        `Adjustable error ${adjustableError.toFixed(2)} ${units}. ` +
+        `MAE ${result.mae.toFixed(2)} ${units}; MSE ${result.mse.toFixed(2)} ` +
+        `${units} squared; RMSE ${result.rmse.toFixed(2)} ${units}.`;
+    }
+
     function visualizationControl(visualization) {
+      if (visualization.type === "binary-threshold") {
+        const controls = visualization.controls;
+        return `<label>Decision threshold
+          <input type="range" min="${controls.minimum}" max="${controls.maximum}"
+            step="${controls.step}" value="${controls.initial}"
+            data-viz-control="${escapeHtml(visualization.id)}">
+        </label>`;
+      }
+      if (visualization.type === "labeled-scatter") {
+        const controls = visualization.controls;
+        return `<label>Decision boundary
+          <select data-viz-control="${escapeHtml(visualization.id)}">
+            ${controls.boundaries.map((boundary) =>
+              `<option value="${escapeHtml(boundary.id)}"
+                ${boundary.id === controls.initial ? "selected" : ""}>
+                ${escapeHtml(boundary.label)}
+              </option>`
+            ).join("")}
+          </select>
+        </label>`;
+      }
+      if (visualization.type === "residual-diagnostics") {
+        return `<label>Residual scenario
+          <select data-viz-control="${escapeHtml(visualization.id)}">
+            ${visualization.data.scenarios.map((scenario) =>
+              `<option value="${escapeHtml(scenario.id)}"
+                ${scenario.id === visualization.controls.initial ? "selected" : ""}>
+                ${escapeHtml(scenario.label)}
+              </option>`
+            ).join("")}
+          </select>
+        </label>`;
+      }
+      if (visualization.type === "coefficient-path") {
+        const lastIndex = visualization.data.penalties.length - 1;
+        return `<label>Penalty step
+          <input type="range" min="0" max="${lastIndex}" step="1"
+            value="${visualization.controls.initial_index}"
+            data-viz-control="${escapeHtml(visualization.id)}">
+        </label>`;
+      }
+      if (visualization.type === "error-metrics") {
+        const lastIndex = visualization.data.adjustable_error.length - 1;
+        return `<label>Adjustable error
+          <input type="range" min="0" max="${lastIndex}" step="1"
+            value="${visualization.controls.initial_index}"
+            data-viz-control="${escapeHtml(visualization.id)}">
+        </label>`;
+      }
       if (visualization.type === "histogram") {
         const choices = visualization.controls?.bins || [4, 6, 8];
         return `<label>Number of bins
@@ -996,7 +1582,17 @@
       const control = document.querySelector(
         `[data-viz-control="${CSS.escape(visualization.id)}"]`,
       );
-      if (visualization.type === "histogram") {
+      if (visualization.type === "binary-threshold") {
+        renderBinaryThreshold(visualization, target, summary, Number(control.value));
+      } else if (visualization.type === "labeled-scatter") {
+        renderLabeledScatter(visualization, target, summary, control.value);
+      } else if (visualization.type === "residual-diagnostics") {
+        renderResidualDiagnostics(visualization, target, summary, control.value);
+      } else if (visualization.type === "coefficient-path") {
+        renderCoefficientPath(visualization, target, summary, Number(control.value));
+      } else if (visualization.type === "error-metrics") {
+        renderErrorMetrics(visualization, target, summary, Number(control.value));
+      } else if (visualization.type === "histogram") {
         renderHistogram(visualization, target, summary, Math.max(1, Number(control.value)));
       } else if (visualization.type === "boxplot") {
         renderBoxplot(visualization, target, summary, Number(control.value));
@@ -1027,7 +1623,8 @@
         const control = document.querySelector(
           `[data-viz-control="${CSS.escape(visualization.id)}"]`,
         );
-        control.addEventListener("change", () => renderOneVisualization(visualization));
+        const eventType = control.matches('input[type="range"]') ? "input" : "change";
+        control.addEventListener(eventType, () => renderOneVisualization(visualization));
         renderOneVisualization(visualization);
       });
       byId("previous-visualization").disabled = state.visualizationIndex === 0;

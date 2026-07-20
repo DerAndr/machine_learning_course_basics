@@ -84,12 +84,12 @@ def test_eda_payload_and_generated_site_meet_learning_contract(
 
     assert payload["meta"]["experience_id"] == "lecture-01-eda"
     assert {concept["id"] for concept in payload["concepts"]} == EXPECTED_CONCEPTS
-    assert {item["type"] for item in payload["visualizations"]} == {
+    assert [visualization["type"] for visualization in payload["visualizations"]] == [
         "histogram",
         "boxplot",
         "scatter",
         "missingness",
-    }
+    ]
     assert all(len(payload["quizzes"][level]) == 10 for level in LEVELS)
     questions = [question for level in LEVELS for question in payload["quizzes"][level]]
     assert len({question["id"] for question in questions}) == 30
@@ -112,6 +112,14 @@ def test_eda_payload_and_generated_site_meet_learning_contract(
     assert "__QUIZ_STATE_MACHINE__" not in html
     assert "LearningExperienceQuiz" in html
     assert payload["meta"]["title"] in html
+    for hook in (
+        "LearningVisualizationModels",
+        'id="palette-status"',
+        "Palette: color-blind-safe",
+        "--graph-primary:#6d28d9",
+        "--graph-primary:#0072b2",
+    ):
+        assert hook.replace(" ", "") in html.replace(" ", "")
     assert _load_script("validate_learning_experience").validate_html(SITE_PATH) == []
 
     okf_before = _okf_hashes()
