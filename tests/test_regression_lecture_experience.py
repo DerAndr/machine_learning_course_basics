@@ -36,7 +36,11 @@ EXPECTED_CONCEPTS = {
     "regression-metrics",
     "validation-overfitting-interpretation",
 }
-EXPECTED_VISUALIZATION_TYPES = {"scatter", "histogram", "boxplot"}
+EXPECTED_VISUALIZATION_TYPES = {
+    "residual-diagnostics",
+    "coefficient-path",
+    "error-metrics",
+}
 
 
 def _load_core_script(name: str) -> ModuleType:
@@ -76,25 +80,6 @@ def _okf_hashes() -> dict[Path, str]:
     }
 
 
-def _outlier_count(values: list[float], multiplier: float) -> int:
-    ordered = sorted(values)
-
-    def quantile(fraction: float) -> float:
-        position = (len(ordered) - 1) * fraction
-        lower = int(position)
-        upper = min(lower + 1, len(ordered) - 1)
-        weight = position - lower
-        return ordered[lower] * (1 - weight) + ordered[upper] * weight
-
-    q1 = quantile(0.25)
-    q3 = quantile(0.75)
-    iqr = q3 - q1
-    return sum(
-        value < q1 - multiplier * iqr or value > q3 + multiplier * iqr
-        for value in ordered
-    )
-
-
 def test_regression_payload_and_generated_site_meet_learning_contract(
     tmp_path: Path,
 ) -> None:
@@ -113,13 +98,26 @@ def test_regression_payload_and_generated_site_meet_learning_contract(
     assert {
         item["type"] for item in payload["visualizations"]
     } == EXPECTED_VISUALIZATION_TYPES
-    assert {
-        item["id"]: item["type"] for item in payload["visualizations"]
-    } == {
-        "reg-fitted-relationship": "scatter",
-        "reg-residual-distribution": "histogram",
-        "reg-residual-outliers": "boxplot",
-    }
+    visualizations = payload["visualizations"]
+    assert [visualization["type"] for visualization in visualizations] == [
+        "residual-diagnostics",
+        "coefficient-path",
+        "error-metrics",
+    ]
+
+    residuals = visualizations[0]
+    assert [scenario["id"] for scenario in residuals["data"]["scenarios"]] == [
+        "appropriate",
+        "curvature",
+        "funnel",
+    ]
+
+    paths = visualizations[1]
+    assert paths["data"]["penalties"] == [0, 0.1, 0.5, 1, 2]
+    assert all(series["lasso"][-1] == 0 for series in paths["data"]["series"])
+
+    metrics = visualizations[2]
+    assert metrics["data"]["adjustable_error"] == [0, 5, 10, 20]
     assert all(len(payload["quizzes"][level]) == 10 for level in LEVELS)
 
     questions = [
@@ -158,15 +156,6 @@ def test_regression_payload_and_generated_site_meet_learning_contract(
         for source in concept["sources"]
     )
 
-    visualizations = {item["type"]: item for item in payload["visualizations"]}
-    assert visualizations["scatter"]["controls"]["trend_line"] is True
-    assert len(visualizations["histogram"]["controls"]["bins"]) >= 4
-    assert visualizations["boxplot"]["controls"]["fence_multipliers"] == [1, 1.5, 2]
-    outlier_counts = {
-        _outlier_count(visualizations["boxplot"]["data"], multiplier)
-        for multiplier in visualizations["boxplot"]["controls"]["fence_multipliers"]
-    }
-    assert len(outlier_counts) > 1
     assert all(item["fallback"].strip() for item in payload["visualizations"])
 
     html = SITE_PATH.read_text(encoding="utf-8")
@@ -175,6 +164,16 @@ def test_regression_payload_and_generated_site_meet_learning_contract(
     assert "__QUIZ_STATE_MACHINE__" not in html
     assert "LearningExperienceQuiz" in html
     assert payload["meta"]["title"] in html
+    for hook in (
+        "Appropriate linear fit",
+        "Curved residual pattern",
+        "Funnel-shaped variance",
+        "Ridge",
+        "Lasso",
+        "MAE",
+        "RMSE",
+    ):
+        assert hook in html
     assert _load_core_script("validate_learning_experience").validate_html(SITE_PATH) == []
 
     okf_before = _okf_hashes()

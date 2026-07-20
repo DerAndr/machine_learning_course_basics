@@ -142,94 +142,101 @@
   ],
   "visualizations": [
     {
-      "id": "reg-fitted-relationship",
-      "type": "scatter",
-      "title": "Illustrative fitted values and observed targets",
-      "explanation": "These small illustrative pairs compare fitted values on the horizontal axis with observed targets on the vertical axis. The optional trend line summarizes their positive relationship, while vertical departures from the overall relationship remind us that fitted values are not the observations themselves.",
-      "data": [
-        {"x": 20, "y": 18},
-        {"x": 30, "y": 33},
-        {"x": 40, "y": 37},
-        {"x": 50, "y": 55},
-        {"x": 60, "y": 58},
-        {"x": 70, "y": 74},
-        {"x": 80, "y": 79},
-        {"x": 90, "y": 97},
-        {"x": 100, "y": 96},
-        {"x": 110, "y": 116}
-      ],
-      "controls": {
-        "trend_line": true
+      "id": "reg-residual-diagnostics",
+      "type": "residual-diagnostics",
+      "title": "Residual diagnostics: fit the pattern, not just the score",
+      "explanation": "Choose an illustrative residual scenario to compare observed and predicted targets, then inspect residuals against fitted values. A useful linear fit leaves residuals close to zero without a systematic pattern; curvature and changing spread point to structure the model has missed.",
+      "data": {
+        "scenarios": [
+          {
+            "id": "appropriate",
+            "label": "Appropriate linear fit",
+            "points": [
+              {"id": "appropriate-1", "x": 1, "predicted": 3, "observed": 3.2},
+              {"id": "appropriate-2", "x": 2, "predicted": 5, "observed": 4.7},
+              {"id": "appropriate-3", "x": 3, "predicted": 7, "observed": 7.1},
+              {"id": "appropriate-4", "x": 4, "predicted": 9, "observed": 9},
+              {"id": "appropriate-5", "x": 5, "predicted": 11, "observed": 10.8},
+              {"id": "appropriate-6", "x": 6, "predicted": 13, "observed": 13.3},
+              {"id": "appropriate-7", "x": 7, "predicted": 15, "observed": 14.9}
+            ]
+          },
+          {
+            "id": "curvature",
+            "label": "Curved residual pattern",
+            "points": [
+              {"id": "curvature-1", "x": 1, "predicted": 3, "observed": 5},
+              {"id": "curvature-2", "x": 2, "predicted": 5, "observed": 5},
+              {"id": "curvature-3", "x": 3, "predicted": 7, "observed": 6},
+              {"id": "curvature-4", "x": 4, "predicted": 9, "observed": 7},
+              {"id": "curvature-5", "x": 5, "predicted": 11, "observed": 10},
+              {"id": "curvature-6", "x": 6, "predicted": 13, "observed": 13},
+              {"id": "curvature-7", "x": 7, "predicted": 15, "observed": 17}
+            ]
+          },
+          {
+            "id": "funnel",
+            "label": "Funnel-shaped variance",
+            "points": [
+              {"id": "funnel-1", "x": 1, "predicted": 3, "observed": 2.8},
+              {"id": "funnel-2", "x": 2, "predicted": 5, "observed": 5.3},
+              {"id": "funnel-3", "x": 3, "predicted": 7, "observed": 6.4},
+              {"id": "funnel-4", "x": 4, "predicted": 9, "observed": 9.8},
+              {"id": "funnel-5", "x": 5, "predicted": 11, "observed": 9.6},
+              {"id": "funnel-6", "x": 6, "predicted": 13, "observed": 14.8},
+              {"id": "funnel-7", "x": 7, "predicted": 15, "observed": 12.6}
+            ]
+          }
+        ]
       },
-      "fallback": "Illustrative fitted-observed pairs: (20, 18), (30, 33), (40, 37), (50, 55), (60, 58), (70, 74), (80, 79), (90, 97), (100, 96), (110, 116). Observed targets generally rise with fitted values, but each pair can depart from the fitted relationship."
+      "controls": {"initial": "appropriate"},
+      "labels": {
+        "x_axis": "Predictor",
+        "target_axis": "Observed target",
+        "residual_axis": "Residual (observed - predicted)"
+      },
+      "fallback": "Appropriate linear fit: residuals remain close to zero without a systematic pattern. Curved residual pattern: residuals are positive at both ends and negative in the middle. Funnel-shaped variance: residual magnitude grows as fitted values increase."
     },
     {
-      "id": "reg-residual-distribution",
-      "type": "histogram",
-      "title": "One illustrative residual set, several bin choices",
-      "explanation": "These fixed illustrative residuals are centered near zero but include tails. Changing the bin count can make the same residual set look smoother or more fragmented, so distribution claims should be checked across sensible bin choices and supported by other diagnostics.",
-      "data": [
-        -12,
-        -9,
-        -7,
-        -5,
-        -4,
-        -3,
-        -2,
-        -2,
-        -1,
-        -1,
-        0,
-        0,
-        0,
-        1,
-        1,
-        2,
-        2,
-        3,
-        4,
-        5,
-        7,
-        9,
-        12
-      ],
-      "controls": {
-        "bins": [4, 6, 8, 12]
+      "id": "reg-coefficient-path",
+      "type": "coefficient-path",
+      "title": "Ridge and Lasso coefficient paths",
+      "explanation": "Move through fixed illustrative penalty strengths to compare how Ridge and Lasso change the same three coefficients. These are illustrative precomputed paths, not fitted estimates from a learner's data: Ridge shrinks coefficients without feature selection here, while Lasso can set a coefficient exactly to zero.",
+      "data": {
+        "penalties": [0, 0.1, 0.5, 1, 2],
+        "series": [
+          {
+            "feature": "Area",
+            "ridge": [3, 2.7, 2.2, 1.7, 1.1],
+            "lasso": [3, 2.6, 1.8, 0.8, 0]
+          },
+          {
+            "feature": "Rooms",
+            "ridge": [1.8, 1.6, 1.2, 0.9, 0.5],
+            "lasso": [1.8, 1.4, 0.7, 0, 0]
+          },
+          {
+            "feature": "Age",
+            "ridge": [-1.2, -1.1, -0.9, -0.7, -0.4],
+            "lasso": [-1.2, -0.9, -0.3, 0, 0]
+          }
+        ]
       },
-      "fallback": "Illustrative residuals range from -12 to 12 and cluster near zero, with symmetric tail values at -12, -9, -7, 7, 9, and 12. Four bins show the broad center and tails; finer binning reveals more local variation without changing the observations."
+      "controls": {"initial_index": 0},
+      "fallback": "These are illustrative precomputed paths. As the penalty rises, Ridge shrinks Area, Rooms, and Age without feature selection here; Lasso reaches zero for Rooms and Age and later Area. A Lasso zero does not establish causal irrelevance."
     },
     {
-      "id": "reg-residual-outliers",
-      "type": "boxplot",
-      "title": "Residual fences flag unusual misses",
-      "explanation": "These fixed illustrative residual-like values show how the IQR fence multiplier changes which misses are flagged. A flagged residual deserves investigation for model misspecification, influence, or data quality; the box plot alone does not prove an observation is erroneous.",
-      "data": [
-        -12,
-        -9,
-        -7,
-        -3,
-        -2.5,
-        -2,
-        -1.5,
-        -1,
-        -0.5,
-        0,
-        0,
-        0.5,
-        1,
-        1.5,
-        2,
-        2,
-        2.5,
-        3,
-        7,
-        9,
-        12
-      ],
-      "controls": {
-        "fence_multipliers": [1, 1.5, 2]
+      "id": "reg-error-metrics",
+      "type": "error-metrics",
+      "title": "Metric sensitivity to one large error",
+      "explanation": "Keep five fixed prediction errors and change one additional illustrative error. MAE grows with the average absolute miss, while MSE and RMSE respond more strongly when one error becomes large because they square errors first.",
+      "data": {
+        "base_errors": [-2, -1, 0, 1, 2],
+        "adjustable_error": [0, 5, 10, 20]
       },
-      "fallback": "Illustrative sorted residual-like values run from -12 to 12 with Q1 = -2 and Q3 = 2. A 1 x IQR fence flags six values (-12, -9, -7, 7, 9, 12), a 1.5 x fence flags four (-12, -9, 9, 12), and a 2 x fence flags two (-12, 12). Every flag still requires contextual investigation."
+      "controls": {"initial_index": 1},
+      "labels": {"units": "target units"},
+      "fallback": "With adjustable error 0, MAE and RMSE summarize the five fixed errors. With adjustable error 20, both rise, but squared errors make RMSE rise more strongly. Values are in target units except MSE, which is in target units squared."
     }
   ],
   "quizzes": {

@@ -19,6 +19,10 @@
       --danger: #a33a3a;
       --border: #cad3dc;
       --focus: #111111;
+      --graph-primary: #6d28d9;
+      --graph-primary-strong: #4c1d95;
+      --graph-secondary: #0f766e;
+      --graph-secondary-strong: #115e59;
       --shadow: 0 10px 28px rgb(23 33 43 / 8%);
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
@@ -30,6 +34,10 @@
       --success: #009e73;
       --danger: #cc79a7;
       --focus: #000000;
+      --graph-primary: #0072b2;
+      --graph-primary-strong: #00547f;
+      --graph-secondary: #d55e00;
+      --graph-secondary-strong: #9f4500;
     }
 
     * {
@@ -184,6 +192,11 @@
       width: 1.35rem;
     }
 
+    .setting-status {
+      color: var(--muted);
+      margin: -0.65rem 0 0 2rem;
+    }
+
     textarea {
       border: 1px solid var(--border);
       border-radius: 0.55rem;
@@ -270,15 +283,121 @@
     }
 
     .mark-primary {
-      fill: var(--accent);
-      stroke: var(--accent-strong);
+      fill: var(--graph-primary);
+      stroke: var(--graph-primary-strong);
       stroke-width: 2;
     }
 
     .mark-secondary {
+      color: var(--graph-secondary);
       fill: url("#diagonal-hatch");
-      stroke: var(--secondary);
+      stroke: var(--graph-secondary-strong);
       stroke-width: 3;
+    }
+
+    .mark-series-primary {
+      fill: var(--graph-primary);
+      stroke: var(--graph-primary-strong);
+      stroke-width: 2;
+    }
+
+    .mark-series-secondary {
+      color: var(--graph-secondary);
+      fill: url("#diagonal-hatch");
+      stroke: var(--graph-secondary-strong);
+      stroke-width: 3;
+    }
+
+    .boundary-line,
+    .zero-line {
+      fill: none;
+      stroke: var(--graph-secondary-strong);
+      stroke-dasharray: 9 6;
+      stroke-width: 3;
+    }
+
+    .residual-line {
+      stroke: var(--graph-secondary-strong);
+      stroke-width: 2;
+    }
+
+    .metric-bar {
+      fill: var(--graph-primary);
+      stroke: var(--graph-primary-strong);
+      stroke-width: 2;
+    }
+
+    .confusion-cell rect {
+      stroke-width: 3;
+    }
+
+    .confusion-cell text {
+      fill: var(--ink);
+      font-size: 16px;
+      font-weight: 750;
+    }
+
+    .outcome-tn rect,
+    .outcome-tp rect {
+      fill: var(--graph-primary);
+      fill-opacity: 0.22;
+      stroke: var(--graph-primary-strong);
+    }
+
+    .outcome-fp,
+    .outcome-fn {
+      color: var(--graph-secondary);
+    }
+
+    .outcome-fp rect,
+    .outcome-fn rect {
+      fill: url("#diagonal-hatch");
+      stroke: var(--graph-secondary-strong);
+    }
+
+    .coefficient-line {
+      fill: none;
+      stroke-width: 3;
+    }
+
+    .feature-label {
+      fill: var(--ink);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .coefficient-legend {
+      color: var(--muted);
+      margin: 0.75rem 0 0;
+    }
+
+    .model-ridge {
+      stroke: var(--graph-primary);
+    }
+
+    .model-lasso {
+      stroke: var(--graph-secondary);
+      stroke-dasharray: 8 5;
+    }
+
+    .coefficient-zero {
+      color: var(--graph-secondary-strong);
+      fill: var(--surface);
+      stroke: currentColor;
+      stroke-width: 3;
+    }
+
+    .visualization-table {
+      border-collapse: collapse;
+      margin-top: 0.75rem;
+      width: 100%;
+    }
+
+    .visualization-table th,
+    .visualization-table td {
+      border-bottom: 1px solid var(--border);
+      padding: 0.4rem 0.55rem;
+      text-align: left;
     }
 
     .graph-fallback {
@@ -416,10 +535,15 @@
           <input data-setting="focus" type="checkbox">
           <span>Focus-friendly (ADHD-friendly) view</span>
         </label>
-        <label class="setting">
-          <input data-setting="color-blind" type="checkbox">
-          <span>Color-blind-safe palette</span>
-        </label>
+        <div>
+          <label class="setting">
+            <input data-setting="color-blind" type="checkbox">
+            <span>Color-blind-safe palette</span>
+          </label>
+          <p id="palette-status" class="setting-status" aria-live="polite">
+            Palette: standard
+          </p>
+        </div>
         <label class="setting">
           <input data-setting="break-prompts" type="checkbox">
           <span>Funny topic break prompts</span>
@@ -482,7 +606,7 @@
     <section id="static-content" class="static-reference">
       <details>
         <summary>Open complete static explanations and answer review</summary>
-        <div class="static-reference-body"><h2>Complete static learning reference</h2><p>This reference remains available when scripts or browser storage are unavailable.</p><section><h3>Concepts</h3><article><h4>Regression predicts continuous targets</h4><p>Regression is used when the target is a number, such as a house price, sales volume, or disease-progression measurement. Simple regression uses one predictor, multiple regression uses several, and polynomial regression adds transformed terms while remaining linear in its coefficients. The lecture contrasts interpretable linear models with flexible tree regressors that split feature space into regions.</p><p><strong>How to interpret it:</strong> Start by checking that the target is continuous and by asking what relationship the chosen model family can represent. A linear model describes a global coefficient-based relationship; a tree can capture non-linearity and interactions but can overfit without controls.</p><h5>Common mistakes</h5><ul><li>Using regression for a class label just because the labels are encoded as numbers.</li><li>Assuming polynomial regression is non-linear in its coefficients.</li><li>Treating a more flexible model as automatically better on unseen data.</li></ul><p><strong>Sources:</strong> lectures/lecture_04_regression/lecture_notes.md; lectures/lecture_04_regression/README.md</p></article><article><h4>OLS learns from squared residuals</h4><p>A fitted value is a model prediction. Its residual is actual minus predicted: e_i = y_i - y_hat_i. Ordinary Least Squares chooses coefficients that minimize the sum of squared residuals, so large residuals receive more weight than small ones.</p><p><strong>How to interpret it:</strong> Keep the sign convention visible when reading diagnostics: a positive residual means the observed target was above the fitted value. OLS summarizes one coefficient solution, while residuals show observation-by-observation misses.</p><h5>Common mistakes</h5><ul><li>Computing a residual as predicted minus actual and then reversing its interpretation.</li><li>Assuming a small total squared error guarantees that residuals have no pattern.</li><li>Confusing a fitted value with the observed target.</li></ul><p><strong>Sources:</strong> lectures/lecture_04_regression/lecture_notes.md; lectures/lecture_04_regression/lecture_examples/README.md</p></article><article><h4>Treat assumptions as diagnostic questions</h4><p>Linear regression assumptions include linearity in the coefficients, independent observations, constant error variance, no perfect multicollinearity, zero-mean errors, and no residual autocorrelation. Normal errors are mainly needed for exact confidence intervals and hypothesis tests, not for computing OLS coefficients.</p><p><strong>How to interpret it:</strong> Ask what the residual plots and data-collection process say about each assumption. Curvature can suggest missing non-linearity, a funnel can suggest heteroscedasticity, and ordered residual patterns can suggest dependence.</p><h5>Common mistakes</h5><ul><li>Treating assumptions as guarantees supplied by the algorithm.</li><li>Believing normal residuals are required merely to calculate OLS coefficients.</li><li>Checking only one metric and skipping residual diagnostics.</li></ul><p><strong>Sources:</strong> lectures/lecture_04_regression/lecture_notes.md; lectures/lecture_04_regression/practical_session/README.md</p></article><article><h4>Multicollinearity destabilizes coefficients</h4><p>When predictors are strongly related, X-transpose-X can become poorly conditioned. Coefficient estimates may then vary greatly after small data changes even when predictive performance remains acceptable. Pairwise correlations are a useful first pass, while Variance Inflation Factor checks whether one feature is explained by all the others.</p><p><strong>How to interpret it:</strong> Use a high VIF as a warning signal rather than a universal deletion rule. Investigate redundant features, derived ratios, encoding choices, and whether the goal is stable interpretation or prediction.</p><h5>Common mistakes</h5><ul><li>Assuming good predictions make every coefficient stable and interpretable.</li><li>Using only a pairwise correlation matrix to rule out multicollinearity.</li><li>Treating VIF thresholds as laws that automatically decide which feature to remove.</li></ul><p><strong>Sources:</strong> lectures/lecture_04_regression/lecture_notes.md; lectures/lecture_04_regression/README.md; lectures/lecture_04_regression/practical_session/README.md</p></article><article><h4>Ridge and Lasso trade fit for stability</h4><p>Regularization adds a coefficient penalty to squared error. Ridge uses an L2 penalty and usually shrinks coefficients without making them exactly zero. Lasso uses an L1 penalty and can set coefficients to zero, producing a sparse model. With strongly correlated predictors, Lasso may select one and suppress another somewhat arbitrarily.</p><p><strong>How to interpret it:</strong> Prefer Ridge when many predictors may carry signal and stability is important. Consider Lasso when sparsity is useful, but validate the penalty strength and avoid interpreting selected features as uniquely proven causes.</p><h5>Common mistakes</h5><ul><li>Claiming Ridge performs automatic feature selection by setting many coefficients exactly to zero.</li><li>Choosing the regularization strength from test-set performance.</li><li>Treating a Lasso-selected feature as causal or uniquely important.</li></ul><p><strong>Sources:</strong> lectures/lecture_04_regression/lecture_notes.md; lectures/lecture_04_regression/README.md; lectures/lecture_04_regression/practical_session/README.md</p></article><article><h4>Scaling makes coefficient penalties comparable</h4><p>Ridge and Lasso penalize coefficient size. If predictors use very different numeric scales, coefficient magnitudes partly reflect measurement units, so an unscaled penalty treats features unevenly. Standardizing numerical predictors before regularized regression makes the penalty more comparable across features.</p><p><strong>How to interpret it:</strong> Put scaling inside a training pipeline so the scaler is learned from training data and applied consistently to validation or test data. Scaling is especially important for coefficient-penalized models.</p><h5>Common mistakes</h5><ul><li>Fitting the scaler on the full dataset before the train-test split.</li><li>Assuming a penalty is fair across features measured in dollars, years, and fractions without scaling.</li><li>Scaling some folds manually and differently from others.</li></ul><p><strong>Sources:</strong> lectures/lecture_04_regression/lecture_notes.md; lectures/lecture_04_regression/practical_session/README.md</p></article><article><h4>Regression metrics emphasize different errors</h4><p>MAE averages absolute residuals and is less dominated by extreme misses. MSE averages squared residuals and penalizes large errors strongly. RMSE is the square root of MSE and returns to target units. R-squared compares the model with a mean-prediction baseline, but it does not prove causality or acceptable absolute error.</p><p><strong>How to interpret it:</strong> Choose metrics to match the consequence of error. Report a target-unit metric such as MAE or RMSE alongside R-squared, and remember that test R-squared can be negative when predictions are worse than the mean baseline.</p><h5>Common mistakes</h5><ul><li>Reading R-squared as the percentage of individual predictions that are correct.</li><li>Comparing MSE directly with target values even though MSE uses squared units.</li><li>Assuming the model with the smallest MAE must also have the smallest RMSE.</li></ul><p><strong>Sources:</strong> lectures/lecture_04_regression/lecture_notes.md; lectures/lecture_04_regression/lecture_examples/README.md</p></article><article><h4>Validate performance and limit interpretation</h4><p>Overfitting appears when training performance is strong but unseen-data performance is weak. Train-test splits and cross-validation estimate generalization, while residual analysis reveals missed structure that a single score can hide. Linear coefficients are conditional on the other features and are safest to interpret when specification, preprocessing, and multicollinearity are handled carefully.</p><p><strong>How to interpret it:</strong> Tune model complexity and regularization with validation or cross-validation, reserve the test set for final evaluation, and inspect residuals. Predictive success alone does not establish causality or guarantee stable coefficients.</p><h5>Common mistakes</h5><ul><li>Selecting hyperparameters by repeatedly checking the test set.</li><li>Using a high training score as evidence of generalization.</li><li>Describing a coefficient as a causal effect without design and assumption support.</li></ul><p><strong>Sources:</strong> lectures/lecture_04_regression/lecture_notes.md; lectures/lecture_04_regression/README.md; lectures/lecture_04_regression/practical_session/README.md</p></article></section><section><h3>Visualization reference</h3><article><h4>Illustrative fitted values and observed targets</h4><p>These small illustrative pairs compare fitted values on the horizontal axis with observed targets on the vertical axis. The optional trend line summarizes their positive relationship, while vertical departures from the overall relationship remind us that fitted values are not the observations themselves.</p><p class="graph-fallback"><strong>Graph fallback:</strong> Illustrative fitted-observed pairs: (20, 18), (30, 33), (40, 37), (50, 55), (60, 58), (70, 74), (80, 79), (90, 97), (100, 96), (110, 116). Observed targets generally rise with fitted values, but each pair can depart from the fitted relationship.</p></article><article><h4>One illustrative residual set, several bin choices</h4><p>These fixed illustrative residuals are centered near zero but include tails. Changing the bin count can make the same residual set look smoother or more fragmented, so distribution claims should be checked across sensible bin choices and supported by other diagnostics.</p><p class="graph-fallback"><strong>Graph fallback:</strong> Illustrative residuals range from -12 to 12 and cluster near zero, with symmetric tail values at -12, -9, -7, 7, 9, and 12. Four bins show the broad center and tails; finer binning reveals more local variation without changing the observations.</p></article><article><h4>Residual fences flag unusual misses</h4><p>These fixed illustrative residual-like values show how the IQR fence multiplier changes which misses are flagged. A flagged residual deserves investigation for model misspecification, influence, or data quality; the box plot alone does not prove an observation is erroneous.</p><p class="graph-fallback"><strong>Graph fallback:</strong> Illustrative sorted residual-like values run from -12 to 12 with Q1 = -2 and Q3 = 2. A 1 x IQR fence flags six values (-12, -9, -7, 7, 9, 12), a 1.5 x fence flags four (-12, -9, 9, 12), and a 2 x fence flags two (-12, 12). Every flag still requires contextual investigation.</p></article></section><section><h3>Quiz banks and answer review</h3><section><h4>Foundations</h4><ol><li><p><strong>Which target is a standard regression target?</strong></p><ul><li>A house price in euros</li><li>A spam or not-spam label</li><li>A species name</li></ul><p><strong>Answer:</strong> A house price in euros</p><p><strong>Explanation:</strong> Regression predicts a continuous numerical target such as price, sales, or disease progression.</p></li><li><p><strong>An observed target is 12 and its fitted value is 10. What is the residual using the lecture convention?</strong></p><ul><li>2</li><li>-2</li><li>22</li></ul><p><strong>Answer:</strong> 2</p><p><strong>Explanation:</strong> Residual equals actual minus predicted, so 12 - 10 = 2.</p></li><li><p><strong>What objective does ordinary least squares minimize?</strong></p><ul><li>The sum of squared residuals</li><li>The number of predictors</li><li>The largest target value</li></ul><p><strong>Answer:</strong> The sum of squared residuals</p><p><strong>Explanation:</strong> OLS selects coefficients that minimize total squared differences between observed and fitted targets.</p></li><li><p><strong>A residual-versus-fitted plot widens like a funnel. Which diagnostic question does this raise?</strong></p><ul><li>Whether error variance is constant</li><li>Whether the target is categorical</li><li>Whether Ridge sets coefficients to zero</li></ul><p><strong>Answer:</strong> Whether error variance is constant</p><p><strong>Explanation:</strong> A systematic change in residual spread suggests heteroscedasticity rather than constant error variance.</p></li><li><p><strong>What is a common consequence of strong multicollinearity?</strong></p><ul><li>Unstable coefficient estimates</li><li>A guaranteed perfect test score</li><li>Residuals that are always normal</li></ul><p><strong>Answer:</strong> Unstable coefficient estimates</p><p><strong>Explanation:</strong> Highly related predictors make coefficient estimates sensitive to small changes in the data.</p></li><li><p><strong>What does Ridge regression usually do to coefficients?</strong></p><ul><li>Shrinks them toward zero</li><li>Sets every coefficient exactly to zero</li><li>Removes the target variable</li></ul><p><strong>Answer:</strong> Shrinks them toward zero</p><p><strong>Explanation:</strong> Ridge uses an L2 penalty that stabilizes and shrinks coefficients, usually without making them exactly zero.</p></li><li><p><strong>What distinctive behavior can Lasso produce?</strong></p><ul><li>Some coefficients become exactly zero</li><li>Every residual becomes positive</li><li>The target becomes categorical</li></ul><p><strong>Answer:</strong> Some coefficients become exactly zero</p><p><strong>Explanation:</strong> Lasso's L1 penalty can create sparse solutions by setting some coefficients to zero.</p></li><li><p><strong>Why are numerical features commonly standardized before Ridge or Lasso?</strong></p><ul><li>To make the coefficient penalty comparable across feature scales</li><li>To guarantee causal coefficients</li><li>To make R-squared equal one</li></ul><p><strong>Answer:</strong> To make the coefficient penalty comparable across feature scales</p><p><strong>Explanation:</strong> Without scaling, measurement units affect coefficient magnitudes and therefore how strongly the penalty acts.</p></li><li><p><strong>Which metric returns a squared-error summary to the target's original units?</strong></p><ul><li>RMSE</li><li>MSE</li><li>R-squared</li></ul><p><strong>Answer:</strong> RMSE</p><p><strong>Explanation:</strong> RMSE is the square root of MSE, so it has the same units as the target.</p></li><li><p><strong>What does a high R-squared establish by itself?</strong></p><ul><li>Neither causality nor acceptable absolute error</li><li>That every coefficient is causal</li><li>That no validation is needed</li></ul><p><strong>Answer:</strong> Neither causality nor acceptable absolute error</p><p><strong>Explanation:</strong> R-squared compares explained variation with a mean baseline; it does not prove causation or show error magnitude in target units.</p></li></ol></section><section><h4>Applied</h4><ol><li><p><strong>A model includes x, x-squared, and x-cubed terms. Which statement is accurate?</strong></p><ul><li>It can be polynomial in x while linear in its coefficients</li><li>It cannot be fit with linear-model tools</li><li>Its target must be a class label</li></ul><p><strong>Answer:</strong> It can be polynomial in x while linear in its coefficients</p><p><strong>Explanation:</strong> Polynomial regression transforms predictors but remains a linear combination of the learned coefficients.</p></li><li><p><strong>Residuals trace a curved pattern around zero. What is the most direct concern?</strong></p><ul><li>The model may be missing non-linear structure</li><li>The residuals must be deleted</li><li>The target has become categorical</li></ul><p><strong>Answer:</strong> The model may be missing non-linear structure</p><p><strong>Explanation:</strong> Curvature in residuals indicates systematic structure left unexplained by the fitted relationship.</p></li><li><p><strong>A feature has a very large VIF. What does that indicate?</strong></p><ul><li>Other predictors explain much of that feature</li><li>The feature has no missing values</li><li>The model's test error is zero</li></ul><p><strong>Answer:</strong> Other predictors explain much of that feature</p><p><strong>Explanation:</strong> VIF grows when a feature can be predicted well from the remaining predictors, signaling coefficient instability risk.</p></li><li><p><strong>Two predictors are strongly correlated and Lasso keeps only one. What is the safest interpretation?</strong></p><ul><li>Selection between the correlated predictors may be unstable</li><li>The kept predictor is proven causal</li><li>The removed predictor contains no possible signal</li></ul><p><strong>Answer:</strong> Selection between the correlated predictors may be unstable</p><p><strong>Explanation:</strong> With correlated predictors, Lasso can select one and suppress another somewhat arbitrarily.</p></li><li><p><strong>Rare very large prediction errors are especially costly. Which metric emphasizes them more?</strong></p><ul><li>RMSE</li><li>MAE</li><li>Median target value</li></ul><p><strong>Answer:</strong> RMSE</p><p><strong>Explanation:</strong> RMSE derives from squared residuals, so large misses receive disproportionately more weight than under MAE.</p></li><li><p><strong>A model has negative R-squared on held-out data. What does that mean?</strong></p><ul><li>It performed worse than the mean-prediction baseline</li><li>R-squared can never be negative</li><li>Every residual is negative</li></ul><p><strong>Answer:</strong> It performed worse than the mean-prediction baseline</p><p><strong>Explanation:</strong> Test R-squared can be negative when the model predicts worse than using the held-out target mean baseline.</p></li><li><p><strong>Training error is tiny but test error is large. What is the likely problem?</strong></p><ul><li>Overfitting</li><li>Guaranteed underfitting</li><li>Perfect generalization</li></ul><p><strong>Answer:</strong> Overfitting</p><p><strong>Explanation:</strong> A large train-test performance gap is the standard warning that the model learned training-specific patterns.</p></li><li><p><strong>Where should Ridge or Lasso alpha be selected?</strong></p><ul><li>Using validation or cross-validation</li><li>By repeatedly optimizing the final test set</li><li>From the largest training coefficient</li></ul><p><strong>Answer:</strong> Using validation or cross-validation</p><p><strong>Explanation:</strong> Penalty strength is a hyperparameter and should be tuned without leaking information from the final test evaluation.</p></li><li><p><strong>In multiple linear regression, how is one coefficient interpreted?</strong></p><ul><li>As a target change holding the other modeled features fixed</li><li>As an unconditional causal effect</li><li>As the feature's missing-value count</li></ul><p><strong>Answer:</strong> As a target change holding the other modeled features fixed</p><p><strong>Explanation:</strong> A multiple-regression coefficient is conditional on the other included predictors and still needs assumptions for careful interpretation.</p></li><li><p><strong>Why compare a decision-tree regressor with a linear model?</strong></p><ul><li>The tree can capture non-linearity but may overfit more easily</li><li>The tree guarantees stable coefficients</li><li>The linear model can only predict class labels</li></ul><p><strong>Answer:</strong> The tree can capture non-linearity but may overfit more easily</p><p><strong>Explanation:</strong> Trees flexibly split feature space, while linear models impose a simpler global form and offer more direct coefficient interpretation.</p></li></ol></section><section><h4>Challenge</h4><ol><li><p><strong>Which role does residual normality mainly play in the lecture's OLS discussion?</strong></p><ul><li>Supporting exact confidence intervals and hypothesis tests</li><li>Making coefficient computation possible</li><li>Preventing every form of overfitting</li></ul><p><strong>Answer:</strong> Supporting exact confidence intervals and hypothesis tests</p><p><strong>Explanation:</strong> OLS coefficients can be computed without normal errors; normality is mainly invoked for exact finite-sample inference.</p></li><li><p><strong>Under the Gauss-Markov assumptions, what does BLUE mean for OLS?</strong></p><ul><li>It has the smallest variance among linear unbiased estimators</li><li>It is the best possible model of every kind</li><li>It always has the lowest test RMSE</li></ul><p><strong>Answer:</strong> It has the smallest variance among linear unbiased estimators</p><p><strong>Explanation:</strong> BLUE is a qualified statistical result, not a claim that OLS beats every non-linear or biased predictor.</p></li><li><p><strong>All pairwise feature correlations are moderate. Can multicollinearity still exist?</strong></p><ul><li>Yes, one feature can be explained by a combination of several others</li><li>No, pairwise checks prove it is absent</li><li>Only when the target is categorical</li></ul><p><strong>Answer:</strong> Yes, one feature can be explained by a combination of several others</p><p><strong>Explanation:</strong> Pairwise correlations can miss multivariate relationships; VIF uses all other predictors together.</p></li><li><p><strong>Why can keeping every one-hot category column together with an intercept be problematic?</strong></p><ul><li>The columns can create perfect multicollinearity</li><li>It guarantees negative R-squared</li><li>It makes the target non-continuous</li></ul><p><strong>Answer:</strong> The columns can create perfect multicollinearity</p><p><strong>Explanation:</strong> All dummy columns sum to a constant, so with an intercept one column is an exact combination of the others.</p></li><li><p><strong>One feature ranges in thousands and another between zero and one. What is the main regularization risk without scaling?</strong></p><ul><li>Coefficient size reflects units, so the penalty acts unevenly</li><li>OLS residuals become class labels</li><li>Cross-validation becomes impossible</li></ul><p><strong>Answer:</strong> Coefficient size reflects units, so the penalty acts unevenly</p><p><strong>Explanation:</strong> Ridge and Lasso penalize coefficients, whose magnitudes depend on feature units unless predictors are placed on comparable scales.</p></li><li><p><strong>Residuals are 1, -2, and 3. What is their MSE?</strong></p><ul><li>14/3</li><li>6/3</li><li>6</li></ul><p><strong>Answer:</strong> 14/3</p><p><strong>Explanation:</strong> The squared residuals are 1, 4, and 9; their mean is (1 + 4 + 9) / 3 = 14/3.</p></li><li><p><strong>Two models have similar MAE, but one makes occasional catastrophic errors. Which additional metric is especially informative?</strong></p><ul><li>RMSE</li><li>The number of feature names</li><li>Training-set row order</li></ul><p><strong>Answer:</strong> RMSE</p><p><strong>Explanation:</strong> RMSE increases more strongly with large residuals and can distinguish tail-risk behavior hidden by similar MAE values.</p></li><li><p><strong>OLS coefficients are available, but residual spread grows with fitted values. What is the careful conclusion?</strong></p><ul><li>Heteroscedasticity may weaken standard uncertainty estimates</li><li>The coefficients cannot be computed</li><li>The relationship is proven causal</li></ul><p><strong>Answer:</strong> Heteroscedasticity may weaken standard uncertainty estimates</p><p><strong>Explanation:</strong> Changing error variance does not prevent coefficient calculation, but standard inference can become less reliable.</p></li><li><p><strong>Two datasets yield the same R-squared but use targets with very different scales. What should accompany R-squared?</strong></p><ul><li>A target-unit error such as MAE or RMSE</li><li>Only the number of predictors</li><li>A causal claim</li></ul><p><strong>Answer:</strong> A target-unit error such as MAE or RMSE</p><p><strong>Explanation:</strong> R-squared is relative to target variation, while MAE or RMSE reveals the absolute size of prediction errors in meaningful units.</p></li><li><p><strong>A model predicts well, but coefficients change sharply across folds. What is the strongest next step?</strong></p><ul><li>Investigate multicollinearity and validate a regularized alternative</li><li>Declare every coefficient stable</li><li>Skip residual and validation checks</li></ul><p><strong>Answer:</strong> Investigate multicollinearity and validate a regularized alternative</p><p><strong>Explanation:</strong> Good predictions can coexist with unstable coefficients; multicollinearity diagnostics and regularization address the stability question.</p></li></ol></section></section><section><h3>Sources</h3><ul><li>lectures/lecture_04_regression/README.md</li><li>lectures/lecture_04_regression/lecture_notes.md</li><li>lectures/lecture_04_regression/lecture_examples/README.md</li><li>lectures/lecture_04_regression/practical_session/README.md</li></ul></section></div>
+        <div class="static-reference-body"><h2>Complete static learning reference</h2><p>This reference remains available when scripts or browser storage are unavailable.</p><section><h3>Concepts</h3><article><h4>Regression predicts continuous targets</h4><p>Regression is used when the target is a number, such as a house price, sales volume, or disease-progression measurement. Simple regression uses one predictor, multiple regression uses several, and polynomial regression adds transformed terms while remaining linear in its coefficients. The lecture contrasts interpretable linear models with flexible tree regressors that split feature space into regions.</p><p><strong>How to interpret it:</strong> Start by checking that the target is continuous and by asking what relationship the chosen model family can represent. A linear model describes a global coefficient-based relationship; a tree can capture non-linearity and interactions but can overfit without controls.</p><h5>Common mistakes</h5><ul><li>Using regression for a class label just because the labels are encoded as numbers.</li><li>Assuming polynomial regression is non-linear in its coefficients.</li><li>Treating a more flexible model as automatically better on unseen data.</li></ul><p><strong>Sources:</strong> lectures/lecture_04_regression/lecture_notes.md; lectures/lecture_04_regression/README.md</p></article><article><h4>OLS learns from squared residuals</h4><p>A fitted value is a model prediction. Its residual is actual minus predicted: e_i = y_i - y_hat_i. Ordinary Least Squares chooses coefficients that minimize the sum of squared residuals, so large residuals receive more weight than small ones.</p><p><strong>How to interpret it:</strong> Keep the sign convention visible when reading diagnostics: a positive residual means the observed target was above the fitted value. OLS summarizes one coefficient solution, while residuals show observation-by-observation misses.</p><h5>Common mistakes</h5><ul><li>Computing a residual as predicted minus actual and then reversing its interpretation.</li><li>Assuming a small total squared error guarantees that residuals have no pattern.</li><li>Confusing a fitted value with the observed target.</li></ul><p><strong>Sources:</strong> lectures/lecture_04_regression/lecture_notes.md; lectures/lecture_04_regression/lecture_examples/README.md</p></article><article><h4>Treat assumptions as diagnostic questions</h4><p>Linear regression assumptions include linearity in the coefficients, independent observations, constant error variance, no perfect multicollinearity, zero-mean errors, and no residual autocorrelation. Normal errors are mainly needed for exact confidence intervals and hypothesis tests, not for computing OLS coefficients.</p><p><strong>How to interpret it:</strong> Ask what the residual plots and data-collection process say about each assumption. Curvature can suggest missing non-linearity, a funnel can suggest heteroscedasticity, and ordered residual patterns can suggest dependence.</p><h5>Common mistakes</h5><ul><li>Treating assumptions as guarantees supplied by the algorithm.</li><li>Believing normal residuals are required merely to calculate OLS coefficients.</li><li>Checking only one metric and skipping residual diagnostics.</li></ul><p><strong>Sources:</strong> lectures/lecture_04_regression/lecture_notes.md; lectures/lecture_04_regression/practical_session/README.md</p></article><article><h4>Multicollinearity destabilizes coefficients</h4><p>When predictors are strongly related, X-transpose-X can become poorly conditioned. Coefficient estimates may then vary greatly after small data changes even when predictive performance remains acceptable. Pairwise correlations are a useful first pass, while Variance Inflation Factor checks whether one feature is explained by all the others.</p><p><strong>How to interpret it:</strong> Use a high VIF as a warning signal rather than a universal deletion rule. Investigate redundant features, derived ratios, encoding choices, and whether the goal is stable interpretation or prediction.</p><h5>Common mistakes</h5><ul><li>Assuming good predictions make every coefficient stable and interpretable.</li><li>Using only a pairwise correlation matrix to rule out multicollinearity.</li><li>Treating VIF thresholds as laws that automatically decide which feature to remove.</li></ul><p><strong>Sources:</strong> lectures/lecture_04_regression/lecture_notes.md; lectures/lecture_04_regression/README.md; lectures/lecture_04_regression/practical_session/README.md</p></article><article><h4>Ridge and Lasso trade fit for stability</h4><p>Regularization adds a coefficient penalty to squared error. Ridge uses an L2 penalty and usually shrinks coefficients without making them exactly zero. Lasso uses an L1 penalty and can set coefficients to zero, producing a sparse model. With strongly correlated predictors, Lasso may select one and suppress another somewhat arbitrarily.</p><p><strong>How to interpret it:</strong> Prefer Ridge when many predictors may carry signal and stability is important. Consider Lasso when sparsity is useful, but validate the penalty strength and avoid interpreting selected features as uniquely proven causes.</p><h5>Common mistakes</h5><ul><li>Claiming Ridge performs automatic feature selection by setting many coefficients exactly to zero.</li><li>Choosing the regularization strength from test-set performance.</li><li>Treating a Lasso-selected feature as causal or uniquely important.</li></ul><p><strong>Sources:</strong> lectures/lecture_04_regression/lecture_notes.md; lectures/lecture_04_regression/README.md; lectures/lecture_04_regression/practical_session/README.md</p></article><article><h4>Scaling makes coefficient penalties comparable</h4><p>Ridge and Lasso penalize coefficient size. If predictors use very different numeric scales, coefficient magnitudes partly reflect measurement units, so an unscaled penalty treats features unevenly. Standardizing numerical predictors before regularized regression makes the penalty more comparable across features.</p><p><strong>How to interpret it:</strong> Put scaling inside a training pipeline so the scaler is learned from training data and applied consistently to validation or test data. Scaling is especially important for coefficient-penalized models.</p><h5>Common mistakes</h5><ul><li>Fitting the scaler on the full dataset before the train-test split.</li><li>Assuming a penalty is fair across features measured in dollars, years, and fractions without scaling.</li><li>Scaling some folds manually and differently from others.</li></ul><p><strong>Sources:</strong> lectures/lecture_04_regression/lecture_notes.md; lectures/lecture_04_regression/practical_session/README.md</p></article><article><h4>Regression metrics emphasize different errors</h4><p>MAE averages absolute residuals and is less dominated by extreme misses. MSE averages squared residuals and penalizes large errors strongly. RMSE is the square root of MSE and returns to target units. R-squared compares the model with a mean-prediction baseline, but it does not prove causality or acceptable absolute error.</p><p><strong>How to interpret it:</strong> Choose metrics to match the consequence of error. Report a target-unit metric such as MAE or RMSE alongside R-squared, and remember that test R-squared can be negative when predictions are worse than the mean baseline.</p><h5>Common mistakes</h5><ul><li>Reading R-squared as the percentage of individual predictions that are correct.</li><li>Comparing MSE directly with target values even though MSE uses squared units.</li><li>Assuming the model with the smallest MAE must also have the smallest RMSE.</li></ul><p><strong>Sources:</strong> lectures/lecture_04_regression/lecture_notes.md; lectures/lecture_04_regression/lecture_examples/README.md</p></article><article><h4>Validate performance and limit interpretation</h4><p>Overfitting appears when training performance is strong but unseen-data performance is weak. Train-test splits and cross-validation estimate generalization, while residual analysis reveals missed structure that a single score can hide. Linear coefficients are conditional on the other features and are safest to interpret when specification, preprocessing, and multicollinearity are handled carefully.</p><p><strong>How to interpret it:</strong> Tune model complexity and regularization with validation or cross-validation, reserve the test set for final evaluation, and inspect residuals. Predictive success alone does not establish causality or guarantee stable coefficients.</p><h5>Common mistakes</h5><ul><li>Selecting hyperparameters by repeatedly checking the test set.</li><li>Using a high training score as evidence of generalization.</li><li>Describing a coefficient as a causal effect without design and assumption support.</li></ul><p><strong>Sources:</strong> lectures/lecture_04_regression/lecture_notes.md; lectures/lecture_04_regression/README.md; lectures/lecture_04_regression/practical_session/README.md</p></article></section><section><h3>Visualization reference</h3><article><h4>Residual diagnostics: fit the pattern, not just the score</h4><p>Choose an illustrative residual scenario to compare observed and predicted targets, then inspect residuals against fitted values. A useful linear fit leaves residuals close to zero without a systematic pattern; curvature and changing spread point to structure the model has missed.</p><p class="graph-fallback"><strong>Graph fallback:</strong> Appropriate linear fit: residuals remain close to zero without a systematic pattern. Curved residual pattern: residuals are positive at both ends and negative in the middle. Funnel-shaped variance: residual magnitude grows as fitted values increase.</p></article><article><h4>Ridge and Lasso coefficient paths</h4><p>Move through fixed illustrative penalty strengths to compare how Ridge and Lasso change the same three coefficients. These are illustrative precomputed paths, not fitted estimates from a learner's data: Ridge shrinks coefficients without feature selection here, while Lasso can set a coefficient exactly to zero.</p><p class="graph-fallback"><strong>Graph fallback:</strong> These are illustrative precomputed paths. As the penalty rises, Ridge shrinks Area, Rooms, and Age without feature selection here; Lasso reaches zero for Rooms and Age and later Area. A Lasso zero does not establish causal irrelevance.</p></article><article><h4>Metric sensitivity to one large error</h4><p>Keep five fixed prediction errors and change one additional illustrative error. MAE grows with the average absolute miss, while MSE and RMSE respond more strongly when one error becomes large because they square errors first.</p><p class="graph-fallback"><strong>Graph fallback:</strong> With adjustable error 0, MAE and RMSE summarize the five fixed errors. With adjustable error 20, both rise, but squared errors make RMSE rise more strongly. Values are in target units except MSE, which is in target units squared.</p></article></section><section><h3>Quiz banks and answer review</h3><section><h4>Foundations</h4><ol><li><p><strong>Which target is a standard regression target?</strong></p><ul><li>A house price in euros</li><li>A spam or not-spam label</li><li>A species name</li></ul><p><strong>Answer:</strong> A house price in euros</p><p><strong>Explanation:</strong> Regression predicts a continuous numerical target such as price, sales, or disease progression.</p></li><li><p><strong>An observed target is 12 and its fitted value is 10. What is the residual using the lecture convention?</strong></p><ul><li>2</li><li>-2</li><li>22</li></ul><p><strong>Answer:</strong> 2</p><p><strong>Explanation:</strong> Residual equals actual minus predicted, so 12 - 10 = 2.</p></li><li><p><strong>What objective does ordinary least squares minimize?</strong></p><ul><li>The sum of squared residuals</li><li>The number of predictors</li><li>The largest target value</li></ul><p><strong>Answer:</strong> The sum of squared residuals</p><p><strong>Explanation:</strong> OLS selects coefficients that minimize total squared differences between observed and fitted targets.</p></li><li><p><strong>A residual-versus-fitted plot widens like a funnel. Which diagnostic question does this raise?</strong></p><ul><li>Whether error variance is constant</li><li>Whether the target is categorical</li><li>Whether Ridge sets coefficients to zero</li></ul><p><strong>Answer:</strong> Whether error variance is constant</p><p><strong>Explanation:</strong> A systematic change in residual spread suggests heteroscedasticity rather than constant error variance.</p></li><li><p><strong>What is a common consequence of strong multicollinearity?</strong></p><ul><li>Unstable coefficient estimates</li><li>A guaranteed perfect test score</li><li>Residuals that are always normal</li></ul><p><strong>Answer:</strong> Unstable coefficient estimates</p><p><strong>Explanation:</strong> Highly related predictors make coefficient estimates sensitive to small changes in the data.</p></li><li><p><strong>What does Ridge regression usually do to coefficients?</strong></p><ul><li>Shrinks them toward zero</li><li>Sets every coefficient exactly to zero</li><li>Removes the target variable</li></ul><p><strong>Answer:</strong> Shrinks them toward zero</p><p><strong>Explanation:</strong> Ridge uses an L2 penalty that stabilizes and shrinks coefficients, usually without making them exactly zero.</p></li><li><p><strong>What distinctive behavior can Lasso produce?</strong></p><ul><li>Some coefficients become exactly zero</li><li>Every residual becomes positive</li><li>The target becomes categorical</li></ul><p><strong>Answer:</strong> Some coefficients become exactly zero</p><p><strong>Explanation:</strong> Lasso's L1 penalty can create sparse solutions by setting some coefficients to zero.</p></li><li><p><strong>Why are numerical features commonly standardized before Ridge or Lasso?</strong></p><ul><li>To make the coefficient penalty comparable across feature scales</li><li>To guarantee causal coefficients</li><li>To make R-squared equal one</li></ul><p><strong>Answer:</strong> To make the coefficient penalty comparable across feature scales</p><p><strong>Explanation:</strong> Without scaling, measurement units affect coefficient magnitudes and therefore how strongly the penalty acts.</p></li><li><p><strong>Which metric returns a squared-error summary to the target's original units?</strong></p><ul><li>RMSE</li><li>MSE</li><li>R-squared</li></ul><p><strong>Answer:</strong> RMSE</p><p><strong>Explanation:</strong> RMSE is the square root of MSE, so it has the same units as the target.</p></li><li><p><strong>What does a high R-squared establish by itself?</strong></p><ul><li>Neither causality nor acceptable absolute error</li><li>That every coefficient is causal</li><li>That no validation is needed</li></ul><p><strong>Answer:</strong> Neither causality nor acceptable absolute error</p><p><strong>Explanation:</strong> R-squared compares explained variation with a mean baseline; it does not prove causation or show error magnitude in target units.</p></li></ol></section><section><h4>Applied</h4><ol><li><p><strong>A model includes x, x-squared, and x-cubed terms. Which statement is accurate?</strong></p><ul><li>It can be polynomial in x while linear in its coefficients</li><li>It cannot be fit with linear-model tools</li><li>Its target must be a class label</li></ul><p><strong>Answer:</strong> It can be polynomial in x while linear in its coefficients</p><p><strong>Explanation:</strong> Polynomial regression transforms predictors but remains a linear combination of the learned coefficients.</p></li><li><p><strong>Residuals trace a curved pattern around zero. What is the most direct concern?</strong></p><ul><li>The model may be missing non-linear structure</li><li>The residuals must be deleted</li><li>The target has become categorical</li></ul><p><strong>Answer:</strong> The model may be missing non-linear structure</p><p><strong>Explanation:</strong> Curvature in residuals indicates systematic structure left unexplained by the fitted relationship.</p></li><li><p><strong>A feature has a very large VIF. What does that indicate?</strong></p><ul><li>Other predictors explain much of that feature</li><li>The feature has no missing values</li><li>The model's test error is zero</li></ul><p><strong>Answer:</strong> Other predictors explain much of that feature</p><p><strong>Explanation:</strong> VIF grows when a feature can be predicted well from the remaining predictors, signaling coefficient instability risk.</p></li><li><p><strong>Two predictors are strongly correlated and Lasso keeps only one. What is the safest interpretation?</strong></p><ul><li>Selection between the correlated predictors may be unstable</li><li>The kept predictor is proven causal</li><li>The removed predictor contains no possible signal</li></ul><p><strong>Answer:</strong> Selection between the correlated predictors may be unstable</p><p><strong>Explanation:</strong> With correlated predictors, Lasso can select one and suppress another somewhat arbitrarily.</p></li><li><p><strong>Rare very large prediction errors are especially costly. Which metric emphasizes them more?</strong></p><ul><li>RMSE</li><li>MAE</li><li>Median target value</li></ul><p><strong>Answer:</strong> RMSE</p><p><strong>Explanation:</strong> RMSE derives from squared residuals, so large misses receive disproportionately more weight than under MAE.</p></li><li><p><strong>A model has negative R-squared on held-out data. What does that mean?</strong></p><ul><li>It performed worse than the mean-prediction baseline</li><li>R-squared can never be negative</li><li>Every residual is negative</li></ul><p><strong>Answer:</strong> It performed worse than the mean-prediction baseline</p><p><strong>Explanation:</strong> Test R-squared can be negative when the model predicts worse than using the held-out target mean baseline.</p></li><li><p><strong>Training error is tiny but test error is large. What is the likely problem?</strong></p><ul><li>Overfitting</li><li>Guaranteed underfitting</li><li>Perfect generalization</li></ul><p><strong>Answer:</strong> Overfitting</p><p><strong>Explanation:</strong> A large train-test performance gap is the standard warning that the model learned training-specific patterns.</p></li><li><p><strong>Where should Ridge or Lasso alpha be selected?</strong></p><ul><li>Using validation or cross-validation</li><li>By repeatedly optimizing the final test set</li><li>From the largest training coefficient</li></ul><p><strong>Answer:</strong> Using validation or cross-validation</p><p><strong>Explanation:</strong> Penalty strength is a hyperparameter and should be tuned without leaking information from the final test evaluation.</p></li><li><p><strong>In multiple linear regression, how is one coefficient interpreted?</strong></p><ul><li>As a target change holding the other modeled features fixed</li><li>As an unconditional causal effect</li><li>As the feature's missing-value count</li></ul><p><strong>Answer:</strong> As a target change holding the other modeled features fixed</p><p><strong>Explanation:</strong> A multiple-regression coefficient is conditional on the other included predictors and still needs assumptions for careful interpretation.</p></li><li><p><strong>Why compare a decision-tree regressor with a linear model?</strong></p><ul><li>The tree can capture non-linearity but may overfit more easily</li><li>The tree guarantees stable coefficients</li><li>The linear model can only predict class labels</li></ul><p><strong>Answer:</strong> The tree can capture non-linearity but may overfit more easily</p><p><strong>Explanation:</strong> Trees flexibly split feature space, while linear models impose a simpler global form and offer more direct coefficient interpretation.</p></li></ol></section><section><h4>Challenge</h4><ol><li><p><strong>Which role does residual normality mainly play in the lecture's OLS discussion?</strong></p><ul><li>Supporting exact confidence intervals and hypothesis tests</li><li>Making coefficient computation possible</li><li>Preventing every form of overfitting</li></ul><p><strong>Answer:</strong> Supporting exact confidence intervals and hypothesis tests</p><p><strong>Explanation:</strong> OLS coefficients can be computed without normal errors; normality is mainly invoked for exact finite-sample inference.</p></li><li><p><strong>Under the Gauss-Markov assumptions, what does BLUE mean for OLS?</strong></p><ul><li>It has the smallest variance among linear unbiased estimators</li><li>It is the best possible model of every kind</li><li>It always has the lowest test RMSE</li></ul><p><strong>Answer:</strong> It has the smallest variance among linear unbiased estimators</p><p><strong>Explanation:</strong> BLUE is a qualified statistical result, not a claim that OLS beats every non-linear or biased predictor.</p></li><li><p><strong>All pairwise feature correlations are moderate. Can multicollinearity still exist?</strong></p><ul><li>Yes, one feature can be explained by a combination of several others</li><li>No, pairwise checks prove it is absent</li><li>Only when the target is categorical</li></ul><p><strong>Answer:</strong> Yes, one feature can be explained by a combination of several others</p><p><strong>Explanation:</strong> Pairwise correlations can miss multivariate relationships; VIF uses all other predictors together.</p></li><li><p><strong>Why can keeping every one-hot category column together with an intercept be problematic?</strong></p><ul><li>The columns can create perfect multicollinearity</li><li>It guarantees negative R-squared</li><li>It makes the target non-continuous</li></ul><p><strong>Answer:</strong> The columns can create perfect multicollinearity</p><p><strong>Explanation:</strong> All dummy columns sum to a constant, so with an intercept one column is an exact combination of the others.</p></li><li><p><strong>One feature ranges in thousands and another between zero and one. What is the main regularization risk without scaling?</strong></p><ul><li>Coefficient size reflects units, so the penalty acts unevenly</li><li>OLS residuals become class labels</li><li>Cross-validation becomes impossible</li></ul><p><strong>Answer:</strong> Coefficient size reflects units, so the penalty acts unevenly</p><p><strong>Explanation:</strong> Ridge and Lasso penalize coefficients, whose magnitudes depend on feature units unless predictors are placed on comparable scales.</p></li><li><p><strong>Residuals are 1, -2, and 3. What is their MSE?</strong></p><ul><li>14/3</li><li>6/3</li><li>6</li></ul><p><strong>Answer:</strong> 14/3</p><p><strong>Explanation:</strong> The squared residuals are 1, 4, and 9; their mean is (1 + 4 + 9) / 3 = 14/3.</p></li><li><p><strong>Two models have similar MAE, but one makes occasional catastrophic errors. Which additional metric is especially informative?</strong></p><ul><li>RMSE</li><li>The number of feature names</li><li>Training-set row order</li></ul><p><strong>Answer:</strong> RMSE</p><p><strong>Explanation:</strong> RMSE increases more strongly with large residuals and can distinguish tail-risk behavior hidden by similar MAE values.</p></li><li><p><strong>OLS coefficients are available, but residual spread grows with fitted values. What is the careful conclusion?</strong></p><ul><li>Heteroscedasticity may weaken standard uncertainty estimates</li><li>The coefficients cannot be computed</li><li>The relationship is proven causal</li></ul><p><strong>Answer:</strong> Heteroscedasticity may weaken standard uncertainty estimates</p><p><strong>Explanation:</strong> Changing error variance does not prevent coefficient calculation, but standard inference can become less reliable.</p></li><li><p><strong>Two datasets yield the same R-squared but use targets with very different scales. What should accompany R-squared?</strong></p><ul><li>A target-unit error such as MAE or RMSE</li><li>Only the number of predictors</li><li>A causal claim</li></ul><p><strong>Answer:</strong> A target-unit error such as MAE or RMSE</p><p><strong>Explanation:</strong> R-squared is relative to target variation, while MAE or RMSE reveals the absolute size of prediction errors in meaningful units.</p></li><li><p><strong>A model predicts well, but coefficients change sharply across folds. What is the strongest next step?</strong></p><ul><li>Investigate multicollinearity and validate a regularized alternative</li><li>Declare every coefficient stable</li><li>Skip residual and validation checks</li></ul><p><strong>Answer:</strong> Investigate multicollinearity and validate a regularized alternative</p><p><strong>Explanation:</strong> Good predictions can coexist with unstable coefficients; multicollinearity diagnostics and regularization address the stability question.</p></li></ol></section></section><section><h3>Sources</h3><ul><li>lectures/lecture_04_regression/README.md</li><li>lectures/lecture_04_regression/lecture_notes.md</li><li>lectures/lecture_04_regression/lecture_examples/README.md</li><li>lectures/lecture_04_regression/practical_session/README.md</li></ul></section></div>
       </details>
     </section>
 
@@ -674,7 +798,99 @@
 });
 
   </script>
-  <script>const CONTENT = {"meta":{"experience_id":"lecture-04-regression","title":"Regression: Interactive Review","sources":["lectures/lecture_04_regression/README.md","lectures/lecture_04_regression/lecture_notes.md","lectures/lecture_04_regression/lecture_examples/README.md","lectures/lecture_04_regression/practical_session/README.md"]},"defaults":{"difficulty":"foundations","focus_mode":true,"color_blind":true,"break_prompts":true},"concepts":[{"id":"regression-problem-types","title":"Regression predicts continuous targets","explanation":"Regression is used when the target is a number, such as a house price, sales volume, or disease-progression measurement. Simple regression uses one predictor, multiple regression uses several, and polynomial regression adds transformed terms while remaining linear in its coefficients. The lecture contrasts interpretable linear models with flexible tree regressors that split feature space into regions.","interpretation":"Start by checking that the target is continuous and by asking what relationship the chosen model family can represent. A linear model describes a global coefficient-based relationship; a tree can capture non-linearity and interactions but can overfit without controls.","common_mistakes":["Using regression for a class label just because the labels are encoded as numbers.","Assuming polynomial regression is non-linear in its coefficients.","Treating a more flexible model as automatically better on unseen data."],"sources":["lectures/lecture_04_regression/lecture_notes.md","lectures/lecture_04_regression/README.md"]},{"id":"ols-fitted-values-residuals","title":"OLS learns from squared residuals","explanation":"A fitted value is a model prediction. Its residual is actual minus predicted: e_i = y_i - y_hat_i. Ordinary Least Squares chooses coefficients that minimize the sum of squared residuals, so large residuals receive more weight than small ones.","interpretation":"Keep the sign convention visible when reading diagnostics: a positive residual means the observed target was above the fitted value. OLS summarizes one coefficient solution, while residuals show observation-by-observation misses.","common_mistakes":["Computing a residual as predicted minus actual and then reversing its interpretation.","Assuming a small total squared error guarantees that residuals have no pattern.","Confusing a fitted value with the observed target."],"sources":["lectures/lecture_04_regression/lecture_notes.md","lectures/lecture_04_regression/lecture_examples/README.md"]},{"id":"assumptions-as-diagnostics","title":"Treat assumptions as diagnostic questions","explanation":"Linear regression assumptions include linearity in the coefficients, independent observations, constant error variance, no perfect multicollinearity, zero-mean errors, and no residual autocorrelation. Normal errors are mainly needed for exact confidence intervals and hypothesis tests, not for computing OLS coefficients.","interpretation":"Ask what the residual plots and data-collection process say about each assumption. Curvature can suggest missing non-linearity, a funnel can suggest heteroscedasticity, and ordered residual patterns can suggest dependence.","common_mistakes":["Treating assumptions as guarantees supplied by the algorithm.","Believing normal residuals are required merely to calculate OLS coefficients.","Checking only one metric and skipping residual diagnostics."],"sources":["lectures/lecture_04_regression/lecture_notes.md","lectures/lecture_04_regression/practical_session/README.md"]},{"id":"multicollinearity-instability","title":"Multicollinearity destabilizes coefficients","explanation":"When predictors are strongly related, X-transpose-X can become poorly conditioned. Coefficient estimates may then vary greatly after small data changes even when predictive performance remains acceptable. Pairwise correlations are a useful first pass, while Variance Inflation Factor checks whether one feature is explained by all the others.","interpretation":"Use a high VIF as a warning signal rather than a universal deletion rule. Investigate redundant features, derived ratios, encoding choices, and whether the goal is stable interpretation or prediction.","common_mistakes":["Assuming good predictions make every coefficient stable and interpretable.","Using only a pairwise correlation matrix to rule out multicollinearity.","Treating VIF thresholds as laws that automatically decide which feature to remove."],"sources":["lectures/lecture_04_regression/lecture_notes.md","lectures/lecture_04_regression/README.md","lectures/lecture_04_regression/practical_session/README.md"]},{"id":"ridge-lasso-regularization","title":"Ridge and Lasso trade fit for stability","explanation":"Regularization adds a coefficient penalty to squared error. Ridge uses an L2 penalty and usually shrinks coefficients without making them exactly zero. Lasso uses an L1 penalty and can set coefficients to zero, producing a sparse model. With strongly correlated predictors, Lasso may select one and suppress another somewhat arbitrarily.","interpretation":"Prefer Ridge when many predictors may carry signal and stability is important. Consider Lasso when sparsity is useful, but validate the penalty strength and avoid interpreting selected features as uniquely proven causes.","common_mistakes":["Claiming Ridge performs automatic feature selection by setting many coefficients exactly to zero.","Choosing the regularization strength from test-set performance.","Treating a Lasso-selected feature as causal or uniquely important."],"sources":["lectures/lecture_04_regression/lecture_notes.md","lectures/lecture_04_regression/README.md","lectures/lecture_04_regression/practical_session/README.md"]},{"id":"scaling-for-regularization","title":"Scaling makes coefficient penalties comparable","explanation":"Ridge and Lasso penalize coefficient size. If predictors use very different numeric scales, coefficient magnitudes partly reflect measurement units, so an unscaled penalty treats features unevenly. Standardizing numerical predictors before regularized regression makes the penalty more comparable across features.","interpretation":"Put scaling inside a training pipeline so the scaler is learned from training data and applied consistently to validation or test data. Scaling is especially important for coefficient-penalized models.","common_mistakes":["Fitting the scaler on the full dataset before the train-test split.","Assuming a penalty is fair across features measured in dollars, years, and fractions without scaling.","Scaling some folds manually and differently from others."],"sources":["lectures/lecture_04_regression/lecture_notes.md","lectures/lecture_04_regression/practical_session/README.md"]},{"id":"regression-metrics","title":"Regression metrics emphasize different errors","explanation":"MAE averages absolute residuals and is less dominated by extreme misses. MSE averages squared residuals and penalizes large errors strongly. RMSE is the square root of MSE and returns to target units. R-squared compares the model with a mean-prediction baseline, but it does not prove causality or acceptable absolute error.","interpretation":"Choose metrics to match the consequence of error. Report a target-unit metric such as MAE or RMSE alongside R-squared, and remember that test R-squared can be negative when predictions are worse than the mean baseline.","common_mistakes":["Reading R-squared as the percentage of individual predictions that are correct.","Comparing MSE directly with target values even though MSE uses squared units.","Assuming the model with the smallest MAE must also have the smallest RMSE."],"sources":["lectures/lecture_04_regression/lecture_notes.md","lectures/lecture_04_regression/lecture_examples/README.md"]},{"id":"validation-overfitting-interpretation","title":"Validate performance and limit interpretation","explanation":"Overfitting appears when training performance is strong but unseen-data performance is weak. Train-test splits and cross-validation estimate generalization, while residual analysis reveals missed structure that a single score can hide. Linear coefficients are conditional on the other features and are safest to interpret when specification, preprocessing, and multicollinearity are handled carefully.","interpretation":"Tune model complexity and regularization with validation or cross-validation, reserve the test set for final evaluation, and inspect residuals. Predictive success alone does not establish causality or guarantee stable coefficients.","common_mistakes":["Selecting hyperparameters by repeatedly checking the test set.","Using a high training score as evidence of generalization.","Describing a coefficient as a causal effect without design and assumption support."],"sources":["lectures/lecture_04_regression/lecture_notes.md","lectures/lecture_04_regression/README.md","lectures/lecture_04_regression/practical_session/README.md"]}],"visualizations":[{"id":"reg-fitted-relationship","type":"scatter","title":"Illustrative fitted values and observed targets","explanation":"These small illustrative pairs compare fitted values on the horizontal axis with observed targets on the vertical axis. The optional trend line summarizes their positive relationship, while vertical departures from the overall relationship remind us that fitted values are not the observations themselves.","data":[{"x":20,"y":18},{"x":30,"y":33},{"x":40,"y":37},{"x":50,"y":55},{"x":60,"y":58},{"x":70,"y":74},{"x":80,"y":79},{"x":90,"y":97},{"x":100,"y":96},{"x":110,"y":116}],"controls":{"trend_line":true},"fallback":"Illustrative fitted-observed pairs: (20, 18), (30, 33), (40, 37), (50, 55), (60, 58), (70, 74), (80, 79), (90, 97), (100, 96), (110, 116). Observed targets generally rise with fitted values, but each pair can depart from the fitted relationship."},{"id":"reg-residual-distribution","type":"histogram","title":"One illustrative residual set, several bin choices","explanation":"These fixed illustrative residuals are centered near zero but include tails. Changing the bin count can make the same residual set look smoother or more fragmented, so distribution claims should be checked across sensible bin choices and supported by other diagnostics.","data":[-12,-9,-7,-5,-4,-3,-2,-2,-1,-1,0,0,0,1,1,2,2,3,4,5,7,9,12],"controls":{"bins":[4,6,8,12]},"fallback":"Illustrative residuals range from -12 to 12 and cluster near zero, with symmetric tail values at -12, -9, -7, 7, 9, and 12. Four bins show the broad center and tails; finer binning reveals more local variation without changing the observations."},{"id":"reg-residual-outliers","type":"boxplot","title":"Residual fences flag unusual misses","explanation":"These fixed illustrative residual-like values show how the IQR fence multiplier changes which misses are flagged. A flagged residual deserves investigation for model misspecification, influence, or data quality; the box plot alone does not prove an observation is erroneous.","data":[-12,-9,-7,-3,-2.5,-2,-1.5,-1,-0.5,0,0,0.5,1,1.5,2,2,2.5,3,7,9,12],"controls":{"fence_multipliers":[1,1.5,2]},"fallback":"Illustrative sorted residual-like values run from -12 to 12 with Q1 = -2 and Q3 = 2. A 1 x IQR fence flags six values (-12, -9, -7, 7, 9, 12), a 1.5 x fence flags four (-12, -9, 9, 12), and a 2 x fence flags two (-12, 12). Every flag still requires contextual investigation."}],"quizzes":{"foundations":[{"id":"reg-f-01","type":"single-choice","prompt":"Which target is a standard regression target?","options":["A house price in euros","A spam or not-spam label","A species name"],"answer":"A house price in euros","explanation":"Regression predicts a continuous numerical target such as price, sales, or disease progression.","concept":"regression-problem-types"},{"id":"reg-f-02","type":"single-choice","prompt":"An observed target is 12 and its fitted value is 10. What is the residual using the lecture convention?","options":["2","-2","22"],"answer":"2","explanation":"Residual equals actual minus predicted, so 12 - 10 = 2.","concept":"ols-fitted-values-residuals"},{"id":"reg-f-03","type":"single-choice","prompt":"What objective does ordinary least squares minimize?","options":["The sum of squared residuals","The number of predictors","The largest target value"],"answer":"The sum of squared residuals","explanation":"OLS selects coefficients that minimize total squared differences between observed and fitted targets.","concept":"ols-fitted-values-residuals"},{"id":"reg-f-04","type":"single-choice","prompt":"A residual-versus-fitted plot widens like a funnel. Which diagnostic question does this raise?","options":["Whether error variance is constant","Whether the target is categorical","Whether Ridge sets coefficients to zero"],"answer":"Whether error variance is constant","explanation":"A systematic change in residual spread suggests heteroscedasticity rather than constant error variance.","concept":"assumptions-as-diagnostics"},{"id":"reg-f-05","type":"single-choice","prompt":"What is a common consequence of strong multicollinearity?","options":["Unstable coefficient estimates","A guaranteed perfect test score","Residuals that are always normal"],"answer":"Unstable coefficient estimates","explanation":"Highly related predictors make coefficient estimates sensitive to small changes in the data.","concept":"multicollinearity-instability"},{"id":"reg-f-06","type":"single-choice","prompt":"What does Ridge regression usually do to coefficients?","options":["Shrinks them toward zero","Sets every coefficient exactly to zero","Removes the target variable"],"answer":"Shrinks them toward zero","explanation":"Ridge uses an L2 penalty that stabilizes and shrinks coefficients, usually without making them exactly zero.","concept":"ridge-lasso-regularization"},{"id":"reg-f-07","type":"single-choice","prompt":"What distinctive behavior can Lasso produce?","options":["Some coefficients become exactly zero","Every residual becomes positive","The target becomes categorical"],"answer":"Some coefficients become exactly zero","explanation":"Lasso's L1 penalty can create sparse solutions by setting some coefficients to zero.","concept":"ridge-lasso-regularization"},{"id":"reg-f-08","type":"single-choice","prompt":"Why are numerical features commonly standardized before Ridge or Lasso?","options":["To make the coefficient penalty comparable across feature scales","To guarantee causal coefficients","To make R-squared equal one"],"answer":"To make the coefficient penalty comparable across feature scales","explanation":"Without scaling, measurement units affect coefficient magnitudes and therefore how strongly the penalty acts.","concept":"scaling-for-regularization"},{"id":"reg-f-09","type":"single-choice","prompt":"Which metric returns a squared-error summary to the target's original units?","options":["RMSE","MSE","R-squared"],"answer":"RMSE","explanation":"RMSE is the square root of MSE, so it has the same units as the target.","concept":"regression-metrics"},{"id":"reg-f-10","type":"single-choice","prompt":"What does a high R-squared establish by itself?","options":["Neither causality nor acceptable absolute error","That every coefficient is causal","That no validation is needed"],"answer":"Neither causality nor acceptable absolute error","explanation":"R-squared compares explained variation with a mean baseline; it does not prove causation or show error magnitude in target units.","concept":"regression-metrics"}],"applied":[{"id":"reg-a-01","type":"single-choice","prompt":"A model includes x, x-squared, and x-cubed terms. Which statement is accurate?","options":["It can be polynomial in x while linear in its coefficients","It cannot be fit with linear-model tools","Its target must be a class label"],"answer":"It can be polynomial in x while linear in its coefficients","explanation":"Polynomial regression transforms predictors but remains a linear combination of the learned coefficients.","concept":"regression-problem-types"},{"id":"reg-a-02","type":"single-choice","prompt":"Residuals trace a curved pattern around zero. What is the most direct concern?","options":["The model may be missing non-linear structure","The residuals must be deleted","The target has become categorical"],"answer":"The model may be missing non-linear structure","explanation":"Curvature in residuals indicates systematic structure left unexplained by the fitted relationship.","concept":"assumptions-as-diagnostics"},{"id":"reg-a-03","type":"single-choice","prompt":"A feature has a very large VIF. What does that indicate?","options":["Other predictors explain much of that feature","The feature has no missing values","The model's test error is zero"],"answer":"Other predictors explain much of that feature","explanation":"VIF grows when a feature can be predicted well from the remaining predictors, signaling coefficient instability risk.","concept":"multicollinearity-instability"},{"id":"reg-a-04","type":"single-choice","prompt":"Two predictors are strongly correlated and Lasso keeps only one. What is the safest interpretation?","options":["Selection between the correlated predictors may be unstable","The kept predictor is proven causal","The removed predictor contains no possible signal"],"answer":"Selection between the correlated predictors may be unstable","explanation":"With correlated predictors, Lasso can select one and suppress another somewhat arbitrarily.","concept":"ridge-lasso-regularization"},{"id":"reg-a-05","type":"single-choice","prompt":"Rare very large prediction errors are especially costly. Which metric emphasizes them more?","options":["RMSE","MAE","Median target value"],"answer":"RMSE","explanation":"RMSE derives from squared residuals, so large misses receive disproportionately more weight than under MAE.","concept":"regression-metrics"},{"id":"reg-a-06","type":"single-choice","prompt":"A model has negative R-squared on held-out data. What does that mean?","options":["It performed worse than the mean-prediction baseline","R-squared can never be negative","Every residual is negative"],"answer":"It performed worse than the mean-prediction baseline","explanation":"Test R-squared can be negative when the model predicts worse than using the held-out target mean baseline.","concept":"regression-metrics"},{"id":"reg-a-07","type":"single-choice","prompt":"Training error is tiny but test error is large. What is the likely problem?","options":["Overfitting","Guaranteed underfitting","Perfect generalization"],"answer":"Overfitting","explanation":"A large train-test performance gap is the standard warning that the model learned training-specific patterns.","concept":"validation-overfitting-interpretation"},{"id":"reg-a-08","type":"single-choice","prompt":"Where should Ridge or Lasso alpha be selected?","options":["Using validation or cross-validation","By repeatedly optimizing the final test set","From the largest training coefficient"],"answer":"Using validation or cross-validation","explanation":"Penalty strength is a hyperparameter and should be tuned without leaking information from the final test evaluation.","concept":"validation-overfitting-interpretation"},{"id":"reg-a-09","type":"single-choice","prompt":"In multiple linear regression, how is one coefficient interpreted?","options":["As a target change holding the other modeled features fixed","As an unconditional causal effect","As the feature's missing-value count"],"answer":"As a target change holding the other modeled features fixed","explanation":"A multiple-regression coefficient is conditional on the other included predictors and still needs assumptions for careful interpretation.","concept":"validation-overfitting-interpretation"},{"id":"reg-a-10","type":"single-choice","prompt":"Why compare a decision-tree regressor with a linear model?","options":["The tree can capture non-linearity but may overfit more easily","The tree guarantees stable coefficients","The linear model can only predict class labels"],"answer":"The tree can capture non-linearity but may overfit more easily","explanation":"Trees flexibly split feature space, while linear models impose a simpler global form and offer more direct coefficient interpretation.","concept":"regression-problem-types"}],"challenge":[{"id":"reg-c-01","type":"single-choice","prompt":"Which role does residual normality mainly play in the lecture's OLS discussion?","options":["Supporting exact confidence intervals and hypothesis tests","Making coefficient computation possible","Preventing every form of overfitting"],"answer":"Supporting exact confidence intervals and hypothesis tests","explanation":"OLS coefficients can be computed without normal errors; normality is mainly invoked for exact finite-sample inference.","concept":"assumptions-as-diagnostics"},{"id":"reg-c-02","type":"single-choice","prompt":"Under the Gauss-Markov assumptions, what does BLUE mean for OLS?","options":["It has the smallest variance among linear unbiased estimators","It is the best possible model of every kind","It always has the lowest test RMSE"],"answer":"It has the smallest variance among linear unbiased estimators","explanation":"BLUE is a qualified statistical result, not a claim that OLS beats every non-linear or biased predictor.","concept":"assumptions-as-diagnostics"},{"id":"reg-c-03","type":"single-choice","prompt":"All pairwise feature correlations are moderate. Can multicollinearity still exist?","options":["Yes, one feature can be explained by a combination of several others","No, pairwise checks prove it is absent","Only when the target is categorical"],"answer":"Yes, one feature can be explained by a combination of several others","explanation":"Pairwise correlations can miss multivariate relationships; VIF uses all other predictors together.","concept":"multicollinearity-instability"},{"id":"reg-c-04","type":"single-choice","prompt":"Why can keeping every one-hot category column together with an intercept be problematic?","options":["The columns can create perfect multicollinearity","It guarantees negative R-squared","It makes the target non-continuous"],"answer":"The columns can create perfect multicollinearity","explanation":"All dummy columns sum to a constant, so with an intercept one column is an exact combination of the others.","concept":"multicollinearity-instability"},{"id":"reg-c-05","type":"single-choice","prompt":"One feature ranges in thousands and another between zero and one. What is the main regularization risk without scaling?","options":["Coefficient size reflects units, so the penalty acts unevenly","OLS residuals become class labels","Cross-validation becomes impossible"],"answer":"Coefficient size reflects units, so the penalty acts unevenly","explanation":"Ridge and Lasso penalize coefficients, whose magnitudes depend on feature units unless predictors are placed on comparable scales.","concept":"scaling-for-regularization"},{"id":"reg-c-06","type":"single-choice","prompt":"Residuals are 1, -2, and 3. What is their MSE?","options":["14/3","6/3","6"],"answer":"14/3","explanation":"The squared residuals are 1, 4, and 9; their mean is (1 + 4 + 9) / 3 = 14/3.","concept":"regression-metrics"},{"id":"reg-c-07","type":"single-choice","prompt":"Two models have similar MAE, but one makes occasional catastrophic errors. Which additional metric is especially informative?","options":["RMSE","The number of feature names","Training-set row order"],"answer":"RMSE","explanation":"RMSE increases more strongly with large residuals and can distinguish tail-risk behavior hidden by similar MAE values.","concept":"regression-metrics"},{"id":"reg-c-08","type":"single-choice","prompt":"OLS coefficients are available, but residual spread grows with fitted values. What is the careful conclusion?","options":["Heteroscedasticity may weaken standard uncertainty estimates","The coefficients cannot be computed","The relationship is proven causal"],"answer":"Heteroscedasticity may weaken standard uncertainty estimates","explanation":"Changing error variance does not prevent coefficient calculation, but standard inference can become less reliable.","concept":"assumptions-as-diagnostics"},{"id":"reg-c-09","type":"single-choice","prompt":"Two datasets yield the same R-squared but use targets with very different scales. What should accompany R-squared?","options":["A target-unit error such as MAE or RMSE","Only the number of predictors","A causal claim"],"answer":"A target-unit error such as MAE or RMSE","explanation":"R-squared is relative to target variation, while MAE or RMSE reveals the absolute size of prediction errors in meaningful units.","concept":"regression-metrics"},{"id":"reg-c-10","type":"single-choice","prompt":"A model predicts well, but coefficients change sharply across folds. What is the strongest next step?","options":["Investigate multicollinearity and validate a regularized alternative","Declare every coefficient stable","Skip residual and validation checks"],"answer":"Investigate multicollinearity and validate a regularized alternative","explanation":"Good predictions can coexist with unstable coefficients; multicollinearity diagnostics and regularization address the stability question.","concept":"validation-overfitting-interpretation"}]},"break_prompts":["Take a short residual break: step away, then return closer to zero.","Stretch gently before the next penalty term shrinks your range of motion.","Refill your water and give overfitting one fewer chance.","Look away from the screen for a moment; even fitted values need validation."]};</script>
+  <script>const CONTENT = {"meta":{"experience_id":"lecture-04-regression","title":"Regression: Interactive Review","sources":["lectures/lecture_04_regression/README.md","lectures/lecture_04_regression/lecture_notes.md","lectures/lecture_04_regression/lecture_examples/README.md","lectures/lecture_04_regression/practical_session/README.md"]},"defaults":{"difficulty":"foundations","focus_mode":true,"color_blind":true,"break_prompts":true},"concepts":[{"id":"regression-problem-types","title":"Regression predicts continuous targets","explanation":"Regression is used when the target is a number, such as a house price, sales volume, or disease-progression measurement. Simple regression uses one predictor, multiple regression uses several, and polynomial regression adds transformed terms while remaining linear in its coefficients. The lecture contrasts interpretable linear models with flexible tree regressors that split feature space into regions.","interpretation":"Start by checking that the target is continuous and by asking what relationship the chosen model family can represent. A linear model describes a global coefficient-based relationship; a tree can capture non-linearity and interactions but can overfit without controls.","common_mistakes":["Using regression for a class label just because the labels are encoded as numbers.","Assuming polynomial regression is non-linear in its coefficients.","Treating a more flexible model as automatically better on unseen data."],"sources":["lectures/lecture_04_regression/lecture_notes.md","lectures/lecture_04_regression/README.md"]},{"id":"ols-fitted-values-residuals","title":"OLS learns from squared residuals","explanation":"A fitted value is a model prediction. Its residual is actual minus predicted: e_i = y_i - y_hat_i. Ordinary Least Squares chooses coefficients that minimize the sum of squared residuals, so large residuals receive more weight than small ones.","interpretation":"Keep the sign convention visible when reading diagnostics: a positive residual means the observed target was above the fitted value. OLS summarizes one coefficient solution, while residuals show observation-by-observation misses.","common_mistakes":["Computing a residual as predicted minus actual and then reversing its interpretation.","Assuming a small total squared error guarantees that residuals have no pattern.","Confusing a fitted value with the observed target."],"sources":["lectures/lecture_04_regression/lecture_notes.md","lectures/lecture_04_regression/lecture_examples/README.md"]},{"id":"assumptions-as-diagnostics","title":"Treat assumptions as diagnostic questions","explanation":"Linear regression assumptions include linearity in the coefficients, independent observations, constant error variance, no perfect multicollinearity, zero-mean errors, and no residual autocorrelation. Normal errors are mainly needed for exact confidence intervals and hypothesis tests, not for computing OLS coefficients.","interpretation":"Ask what the residual plots and data-collection process say about each assumption. Curvature can suggest missing non-linearity, a funnel can suggest heteroscedasticity, and ordered residual patterns can suggest dependence.","common_mistakes":["Treating assumptions as guarantees supplied by the algorithm.","Believing normal residuals are required merely to calculate OLS coefficients.","Checking only one metric and skipping residual diagnostics."],"sources":["lectures/lecture_04_regression/lecture_notes.md","lectures/lecture_04_regression/practical_session/README.md"]},{"id":"multicollinearity-instability","title":"Multicollinearity destabilizes coefficients","explanation":"When predictors are strongly related, X-transpose-X can become poorly conditioned. Coefficient estimates may then vary greatly after small data changes even when predictive performance remains acceptable. Pairwise correlations are a useful first pass, while Variance Inflation Factor checks whether one feature is explained by all the others.","interpretation":"Use a high VIF as a warning signal rather than a universal deletion rule. Investigate redundant features, derived ratios, encoding choices, and whether the goal is stable interpretation or prediction.","common_mistakes":["Assuming good predictions make every coefficient stable and interpretable.","Using only a pairwise correlation matrix to rule out multicollinearity.","Treating VIF thresholds as laws that automatically decide which feature to remove."],"sources":["lectures/lecture_04_regression/lecture_notes.md","lectures/lecture_04_regression/README.md","lectures/lecture_04_regression/practical_session/README.md"]},{"id":"ridge-lasso-regularization","title":"Ridge and Lasso trade fit for stability","explanation":"Regularization adds a coefficient penalty to squared error. Ridge uses an L2 penalty and usually shrinks coefficients without making them exactly zero. Lasso uses an L1 penalty and can set coefficients to zero, producing a sparse model. With strongly correlated predictors, Lasso may select one and suppress another somewhat arbitrarily.","interpretation":"Prefer Ridge when many predictors may carry signal and stability is important. Consider Lasso when sparsity is useful, but validate the penalty strength and avoid interpreting selected features as uniquely proven causes.","common_mistakes":["Claiming Ridge performs automatic feature selection by setting many coefficients exactly to zero.","Choosing the regularization strength from test-set performance.","Treating a Lasso-selected feature as causal or uniquely important."],"sources":["lectures/lecture_04_regression/lecture_notes.md","lectures/lecture_04_regression/README.md","lectures/lecture_04_regression/practical_session/README.md"]},{"id":"scaling-for-regularization","title":"Scaling makes coefficient penalties comparable","explanation":"Ridge and Lasso penalize coefficient size. If predictors use very different numeric scales, coefficient magnitudes partly reflect measurement units, so an unscaled penalty treats features unevenly. Standardizing numerical predictors before regularized regression makes the penalty more comparable across features.","interpretation":"Put scaling inside a training pipeline so the scaler is learned from training data and applied consistently to validation or test data. Scaling is especially important for coefficient-penalized models.","common_mistakes":["Fitting the scaler on the full dataset before the train-test split.","Assuming a penalty is fair across features measured in dollars, years, and fractions without scaling.","Scaling some folds manually and differently from others."],"sources":["lectures/lecture_04_regression/lecture_notes.md","lectures/lecture_04_regression/practical_session/README.md"]},{"id":"regression-metrics","title":"Regression metrics emphasize different errors","explanation":"MAE averages absolute residuals and is less dominated by extreme misses. MSE averages squared residuals and penalizes large errors strongly. RMSE is the square root of MSE and returns to target units. R-squared compares the model with a mean-prediction baseline, but it does not prove causality or acceptable absolute error.","interpretation":"Choose metrics to match the consequence of error. Report a target-unit metric such as MAE or RMSE alongside R-squared, and remember that test R-squared can be negative when predictions are worse than the mean baseline.","common_mistakes":["Reading R-squared as the percentage of individual predictions that are correct.","Comparing MSE directly with target values even though MSE uses squared units.","Assuming the model with the smallest MAE must also have the smallest RMSE."],"sources":["lectures/lecture_04_regression/lecture_notes.md","lectures/lecture_04_regression/lecture_examples/README.md"]},{"id":"validation-overfitting-interpretation","title":"Validate performance and limit interpretation","explanation":"Overfitting appears when training performance is strong but unseen-data performance is weak. Train-test splits and cross-validation estimate generalization, while residual analysis reveals missed structure that a single score can hide. Linear coefficients are conditional on the other features and are safest to interpret when specification, preprocessing, and multicollinearity are handled carefully.","interpretation":"Tune model complexity and regularization with validation or cross-validation, reserve the test set for final evaluation, and inspect residuals. Predictive success alone does not establish causality or guarantee stable coefficients.","common_mistakes":["Selecting hyperparameters by repeatedly checking the test set.","Using a high training score as evidence of generalization.","Describing a coefficient as a causal effect without design and assumption support."],"sources":["lectures/lecture_04_regression/lecture_notes.md","lectures/lecture_04_regression/README.md","lectures/lecture_04_regression/practical_session/README.md"]}],"visualizations":[{"id":"reg-residual-diagnostics","type":"residual-diagnostics","title":"Residual diagnostics: fit the pattern, not just the score","explanation":"Choose an illustrative residual scenario to compare observed and predicted targets, then inspect residuals against fitted values. A useful linear fit leaves residuals close to zero without a systematic pattern; curvature and changing spread point to structure the model has missed.","data":{"scenarios":[{"id":"appropriate","label":"Appropriate linear fit","points":[{"id":"appropriate-1","x":1,"predicted":3,"observed":3.2},{"id":"appropriate-2","x":2,"predicted":5,"observed":4.7},{"id":"appropriate-3","x":3,"predicted":7,"observed":7.1},{"id":"appropriate-4","x":4,"predicted":9,"observed":9},{"id":"appropriate-5","x":5,"predicted":11,"observed":10.8},{"id":"appropriate-6","x":6,"predicted":13,"observed":13.3},{"id":"appropriate-7","x":7,"predicted":15,"observed":14.9}]},{"id":"curvature","label":"Curved residual pattern","points":[{"id":"curvature-1","x":1,"predicted":3,"observed":5},{"id":"curvature-2","x":2,"predicted":5,"observed":5},{"id":"curvature-3","x":3,"predicted":7,"observed":6},{"id":"curvature-4","x":4,"predicted":9,"observed":7},{"id":"curvature-5","x":5,"predicted":11,"observed":10},{"id":"curvature-6","x":6,"predicted":13,"observed":13},{"id":"curvature-7","x":7,"predicted":15,"observed":17}]},{"id":"funnel","label":"Funnel-shaped variance","points":[{"id":"funnel-1","x":1,"predicted":3,"observed":2.8},{"id":"funnel-2","x":2,"predicted":5,"observed":5.3},{"id":"funnel-3","x":3,"predicted":7,"observed":6.4},{"id":"funnel-4","x":4,"predicted":9,"observed":9.8},{"id":"funnel-5","x":5,"predicted":11,"observed":9.6},{"id":"funnel-6","x":6,"predicted":13,"observed":14.8},{"id":"funnel-7","x":7,"predicted":15,"observed":12.6}]}]},"controls":{"initial":"appropriate"},"labels":{"x_axis":"Predictor","target_axis":"Observed target","residual_axis":"Residual (observed - predicted)"},"fallback":"Appropriate linear fit: residuals remain close to zero without a systematic pattern. Curved residual pattern: residuals are positive at both ends and negative in the middle. Funnel-shaped variance: residual magnitude grows as fitted values increase."},{"id":"reg-coefficient-path","type":"coefficient-path","title":"Ridge and Lasso coefficient paths","explanation":"Move through fixed illustrative penalty strengths to compare how Ridge and Lasso change the same three coefficients. These are illustrative precomputed paths, not fitted estimates from a learner's data: Ridge shrinks coefficients without feature selection here, while Lasso can set a coefficient exactly to zero.","data":{"penalties":[0,0.1,0.5,1,2],"series":[{"feature":"Area","ridge":[3,2.7,2.2,1.7,1.1],"lasso":[3,2.6,1.8,0.8,0]},{"feature":"Rooms","ridge":[1.8,1.6,1.2,0.9,0.5],"lasso":[1.8,1.4,0.7,0,0]},{"feature":"Age","ridge":[-1.2,-1.1,-0.9,-0.7,-0.4],"lasso":[-1.2,-0.9,-0.3,0,0]}]},"controls":{"initial_index":0},"fallback":"These are illustrative precomputed paths. As the penalty rises, Ridge shrinks Area, Rooms, and Age without feature selection here; Lasso reaches zero for Rooms and Age and later Area. A Lasso zero does not establish causal irrelevance."},{"id":"reg-error-metrics","type":"error-metrics","title":"Metric sensitivity to one large error","explanation":"Keep five fixed prediction errors and change one additional illustrative error. MAE grows with the average absolute miss, while MSE and RMSE respond more strongly when one error becomes large because they square errors first.","data":{"base_errors":[-2,-1,0,1,2],"adjustable_error":[0,5,10,20]},"controls":{"initial_index":1},"labels":{"units":"target units"},"fallback":"With adjustable error 0, MAE and RMSE summarize the five fixed errors. With adjustable error 20, both rise, but squared errors make RMSE rise more strongly. Values are in target units except MSE, which is in target units squared."}],"quizzes":{"foundations":[{"id":"reg-f-01","type":"single-choice","prompt":"Which target is a standard regression target?","options":["A house price in euros","A spam or not-spam label","A species name"],"answer":"A house price in euros","explanation":"Regression predicts a continuous numerical target such as price, sales, or disease progression.","concept":"regression-problem-types"},{"id":"reg-f-02","type":"single-choice","prompt":"An observed target is 12 and its fitted value is 10. What is the residual using the lecture convention?","options":["2","-2","22"],"answer":"2","explanation":"Residual equals actual minus predicted, so 12 - 10 = 2.","concept":"ols-fitted-values-residuals"},{"id":"reg-f-03","type":"single-choice","prompt":"What objective does ordinary least squares minimize?","options":["The sum of squared residuals","The number of predictors","The largest target value"],"answer":"The sum of squared residuals","explanation":"OLS selects coefficients that minimize total squared differences between observed and fitted targets.","concept":"ols-fitted-values-residuals"},{"id":"reg-f-04","type":"single-choice","prompt":"A residual-versus-fitted plot widens like a funnel. Which diagnostic question does this raise?","options":["Whether error variance is constant","Whether the target is categorical","Whether Ridge sets coefficients to zero"],"answer":"Whether error variance is constant","explanation":"A systematic change in residual spread suggests heteroscedasticity rather than constant error variance.","concept":"assumptions-as-diagnostics"},{"id":"reg-f-05","type":"single-choice","prompt":"What is a common consequence of strong multicollinearity?","options":["Unstable coefficient estimates","A guaranteed perfect test score","Residuals that are always normal"],"answer":"Unstable coefficient estimates","explanation":"Highly related predictors make coefficient estimates sensitive to small changes in the data.","concept":"multicollinearity-instability"},{"id":"reg-f-06","type":"single-choice","prompt":"What does Ridge regression usually do to coefficients?","options":["Shrinks them toward zero","Sets every coefficient exactly to zero","Removes the target variable"],"answer":"Shrinks them toward zero","explanation":"Ridge uses an L2 penalty that stabilizes and shrinks coefficients, usually without making them exactly zero.","concept":"ridge-lasso-regularization"},{"id":"reg-f-07","type":"single-choice","prompt":"What distinctive behavior can Lasso produce?","options":["Some coefficients become exactly zero","Every residual becomes positive","The target becomes categorical"],"answer":"Some coefficients become exactly zero","explanation":"Lasso's L1 penalty can create sparse solutions by setting some coefficients to zero.","concept":"ridge-lasso-regularization"},{"id":"reg-f-08","type":"single-choice","prompt":"Why are numerical features commonly standardized before Ridge or Lasso?","options":["To make the coefficient penalty comparable across feature scales","To guarantee causal coefficients","To make R-squared equal one"],"answer":"To make the coefficient penalty comparable across feature scales","explanation":"Without scaling, measurement units affect coefficient magnitudes and therefore how strongly the penalty acts.","concept":"scaling-for-regularization"},{"id":"reg-f-09","type":"single-choice","prompt":"Which metric returns a squared-error summary to the target's original units?","options":["RMSE","MSE","R-squared"],"answer":"RMSE","explanation":"RMSE is the square root of MSE, so it has the same units as the target.","concept":"regression-metrics"},{"id":"reg-f-10","type":"single-choice","prompt":"What does a high R-squared establish by itself?","options":["Neither causality nor acceptable absolute error","That every coefficient is causal","That no validation is needed"],"answer":"Neither causality nor acceptable absolute error","explanation":"R-squared compares explained variation with a mean baseline; it does not prove causation or show error magnitude in target units.","concept":"regression-metrics"}],"applied":[{"id":"reg-a-01","type":"single-choice","prompt":"A model includes x, x-squared, and x-cubed terms. Which statement is accurate?","options":["It can be polynomial in x while linear in its coefficients","It cannot be fit with linear-model tools","Its target must be a class label"],"answer":"It can be polynomial in x while linear in its coefficients","explanation":"Polynomial regression transforms predictors but remains a linear combination of the learned coefficients.","concept":"regression-problem-types"},{"id":"reg-a-02","type":"single-choice","prompt":"Residuals trace a curved pattern around zero. What is the most direct concern?","options":["The model may be missing non-linear structure","The residuals must be deleted","The target has become categorical"],"answer":"The model may be missing non-linear structure","explanation":"Curvature in residuals indicates systematic structure left unexplained by the fitted relationship.","concept":"assumptions-as-diagnostics"},{"id":"reg-a-03","type":"single-choice","prompt":"A feature has a very large VIF. What does that indicate?","options":["Other predictors explain much of that feature","The feature has no missing values","The model's test error is zero"],"answer":"Other predictors explain much of that feature","explanation":"VIF grows when a feature can be predicted well from the remaining predictors, signaling coefficient instability risk.","concept":"multicollinearity-instability"},{"id":"reg-a-04","type":"single-choice","prompt":"Two predictors are strongly correlated and Lasso keeps only one. What is the safest interpretation?","options":["Selection between the correlated predictors may be unstable","The kept predictor is proven causal","The removed predictor contains no possible signal"],"answer":"Selection between the correlated predictors may be unstable","explanation":"With correlated predictors, Lasso can select one and suppress another somewhat arbitrarily.","concept":"ridge-lasso-regularization"},{"id":"reg-a-05","type":"single-choice","prompt":"Rare very large prediction errors are especially costly. Which metric emphasizes them more?","options":["RMSE","MAE","Median target value"],"answer":"RMSE","explanation":"RMSE derives from squared residuals, so large misses receive disproportionately more weight than under MAE.","concept":"regression-metrics"},{"id":"reg-a-06","type":"single-choice","prompt":"A model has negative R-squared on held-out data. What does that mean?","options":["It performed worse than the mean-prediction baseline","R-squared can never be negative","Every residual is negative"],"answer":"It performed worse than the mean-prediction baseline","explanation":"Test R-squared can be negative when the model predicts worse than using the held-out target mean baseline.","concept":"regression-metrics"},{"id":"reg-a-07","type":"single-choice","prompt":"Training error is tiny but test error is large. What is the likely problem?","options":["Overfitting","Guaranteed underfitting","Perfect generalization"],"answer":"Overfitting","explanation":"A large train-test performance gap is the standard warning that the model learned training-specific patterns.","concept":"validation-overfitting-interpretation"},{"id":"reg-a-08","type":"single-choice","prompt":"Where should Ridge or Lasso alpha be selected?","options":["Using validation or cross-validation","By repeatedly optimizing the final test set","From the largest training coefficient"],"answer":"Using validation or cross-validation","explanation":"Penalty strength is a hyperparameter and should be tuned without leaking information from the final test evaluation.","concept":"validation-overfitting-interpretation"},{"id":"reg-a-09","type":"single-choice","prompt":"In multiple linear regression, how is one coefficient interpreted?","options":["As a target change holding the other modeled features fixed","As an unconditional causal effect","As the feature's missing-value count"],"answer":"As a target change holding the other modeled features fixed","explanation":"A multiple-regression coefficient is conditional on the other included predictors and still needs assumptions for careful interpretation.","concept":"validation-overfitting-interpretation"},{"id":"reg-a-10","type":"single-choice","prompt":"Why compare a decision-tree regressor with a linear model?","options":["The tree can capture non-linearity but may overfit more easily","The tree guarantees stable coefficients","The linear model can only predict class labels"],"answer":"The tree can capture non-linearity but may overfit more easily","explanation":"Trees flexibly split feature space, while linear models impose a simpler global form and offer more direct coefficient interpretation.","concept":"regression-problem-types"}],"challenge":[{"id":"reg-c-01","type":"single-choice","prompt":"Which role does residual normality mainly play in the lecture's OLS discussion?","options":["Supporting exact confidence intervals and hypothesis tests","Making coefficient computation possible","Preventing every form of overfitting"],"answer":"Supporting exact confidence intervals and hypothesis tests","explanation":"OLS coefficients can be computed without normal errors; normality is mainly invoked for exact finite-sample inference.","concept":"assumptions-as-diagnostics"},{"id":"reg-c-02","type":"single-choice","prompt":"Under the Gauss-Markov assumptions, what does BLUE mean for OLS?","options":["It has the smallest variance among linear unbiased estimators","It is the best possible model of every kind","It always has the lowest test RMSE"],"answer":"It has the smallest variance among linear unbiased estimators","explanation":"BLUE is a qualified statistical result, not a claim that OLS beats every non-linear or biased predictor.","concept":"assumptions-as-diagnostics"},{"id":"reg-c-03","type":"single-choice","prompt":"All pairwise feature correlations are moderate. Can multicollinearity still exist?","options":["Yes, one feature can be explained by a combination of several others","No, pairwise checks prove it is absent","Only when the target is categorical"],"answer":"Yes, one feature can be explained by a combination of several others","explanation":"Pairwise correlations can miss multivariate relationships; VIF uses all other predictors together.","concept":"multicollinearity-instability"},{"id":"reg-c-04","type":"single-choice","prompt":"Why can keeping every one-hot category column together with an intercept be problematic?","options":["The columns can create perfect multicollinearity","It guarantees negative R-squared","It makes the target non-continuous"],"answer":"The columns can create perfect multicollinearity","explanation":"All dummy columns sum to a constant, so with an intercept one column is an exact combination of the others.","concept":"multicollinearity-instability"},{"id":"reg-c-05","type":"single-choice","prompt":"One feature ranges in thousands and another between zero and one. What is the main regularization risk without scaling?","options":["Coefficient size reflects units, so the penalty acts unevenly","OLS residuals become class labels","Cross-validation becomes impossible"],"answer":"Coefficient size reflects units, so the penalty acts unevenly","explanation":"Ridge and Lasso penalize coefficients, whose magnitudes depend on feature units unless predictors are placed on comparable scales.","concept":"scaling-for-regularization"},{"id":"reg-c-06","type":"single-choice","prompt":"Residuals are 1, -2, and 3. What is their MSE?","options":["14/3","6/3","6"],"answer":"14/3","explanation":"The squared residuals are 1, 4, and 9; their mean is (1 + 4 + 9) / 3 = 14/3.","concept":"regression-metrics"},{"id":"reg-c-07","type":"single-choice","prompt":"Two models have similar MAE, but one makes occasional catastrophic errors. Which additional metric is especially informative?","options":["RMSE","The number of feature names","Training-set row order"],"answer":"RMSE","explanation":"RMSE increases more strongly with large residuals and can distinguish tail-risk behavior hidden by similar MAE values.","concept":"regression-metrics"},{"id":"reg-c-08","type":"single-choice","prompt":"OLS coefficients are available, but residual spread grows with fitted values. What is the careful conclusion?","options":["Heteroscedasticity may weaken standard uncertainty estimates","The coefficients cannot be computed","The relationship is proven causal"],"answer":"Heteroscedasticity may weaken standard uncertainty estimates","explanation":"Changing error variance does not prevent coefficient calculation, but standard inference can become less reliable.","concept":"assumptions-as-diagnostics"},{"id":"reg-c-09","type":"single-choice","prompt":"Two datasets yield the same R-squared but use targets with very different scales. What should accompany R-squared?","options":["A target-unit error such as MAE or RMSE","Only the number of predictors","A causal claim"],"answer":"A target-unit error such as MAE or RMSE","explanation":"R-squared is relative to target variation, while MAE or RMSE reveals the absolute size of prediction errors in meaningful units.","concept":"regression-metrics"},{"id":"reg-c-10","type":"single-choice","prompt":"A model predicts well, but coefficients change sharply across folds. What is the strongest next step?","options":["Investigate multicollinearity and validate a regularized alternative","Declare every coefficient stable","Skip residual and validation checks"],"answer":"Investigate multicollinearity and validate a regularized alternative","explanation":"Good predictions can coexist with unstable coefficients; multicollinearity diagnostics and regularization address the stability question.","concept":"validation-overfitting-interpretation"}]},"break_prompts":["Take a short residual break: step away, then return closer to zero.","Stretch gently before the next penalty term shrinks your range of motion.","Refill your water and give overfitting one fewer chance.","Look away from the screen for a moment; even fitted values need validation."]};</script>
+  <script>(function visualizationModelsFactory(root, factory) {
+  const api = factory();
+  if (typeof module === "object" && module.exports) module.exports = api;
+  root.LearningVisualizationModels = api;
+})(typeof globalThis === "object" ? globalThis : this, function buildModels() {
+  "use strict";
+
+  function safeRatio(numerator, denominator) {
+    return denominator === 0 ? null : numerator / denominator;
+  }
+
+  function thresholdSummary(records, threshold) {
+    const counts = { tp: 0, fp: 0, tn: 0, fn: 0 };
+    records.forEach((record) => {
+      const predicted = Number(record.score) >= threshold ? 1 : 0;
+      const actual = Number(record.actual);
+      if (predicted === 1 && actual === 1) counts.tp += 1;
+      else if (predicted === 1 && actual === 0) counts.fp += 1;
+      else if (predicted === 0 && actual === 0) counts.tn += 1;
+      else counts.fn += 1;
+    });
+    return {
+      threshold,
+      ...counts,
+      precision: safeRatio(counts.tp, counts.tp + counts.fp),
+      recall: safeRatio(counts.tp, counts.tp + counts.fn),
+    };
+  }
+
+  function seriesStyles(seriesNames) {
+    const names = [...new Set(seriesNames.map(String))].sort();
+    const styles = [
+      { colorRole: "primary", shape: "circle", pattern: "solid" },
+      { colorRole: "secondary", shape: "square", pattern: "hatched" },
+    ];
+    return Object.fromEntries(names.map((name, index) => [name, styles[index]]));
+  }
+
+  function boundarySummary(points, boundary, positiveSeries) {
+    const allSeries = [...new Set(points.map((point) => String(point.series)))].sort();
+    const negativeSeries = allSeries.find((series) => series !== positiveSeries);
+    const mapped = points.map((point) => {
+      const boundaryY = Number(boundary.slope) * Number(point.x) + Number(boundary.intercept);
+      const predictedSeries = Number(point.y) >= boundaryY ? positiveSeries : negativeSeries;
+      return {
+        ...point,
+        boundaryY,
+        predictedSeries,
+        correct: predictedSeries === String(point.series),
+      };
+    });
+    const correct = mapped.filter((point) => point.correct).length;
+    return { points: mapped, correct, incorrect: mapped.length - correct };
+  }
+
+  function residualPoints(scenario) {
+    return scenario.points.map((point) => ({
+      ...point,
+      fitted: Number(point.predicted),
+      residual: Number(point.observed) - Number(point.predicted),
+    }));
+  }
+
+  function coefficientSnapshot(data, index) {
+    return {
+      penalty: Number(data.penalties[index]),
+      rows: data.series.map((series) => ({
+        feature: String(series.feature),
+        ridge: Number(series.ridge[index]),
+        lasso: Number(series.lasso[index]),
+        lassoIsZero: Number(series.lasso[index]) === 0,
+      })),
+    };
+  }
+
+  function errorMetricSummary(baseErrors, adjustableError) {
+    const errors = [...baseErrors.map(Number), Number(adjustableError)];
+    const mae = errors.reduce((sum, value) => sum + Math.abs(value), 0) / errors.length;
+    const mse = errors.reduce((sum, value) => sum + value ** 2, 0) / errors.length;
+    return { errors, mae, mse, rmse: Math.sqrt(mse) };
+  }
+
+  return {
+    boundarySummary,
+    coefficientSnapshot,
+    errorMetricSummary,
+    residualPoints,
+    seriesStyles,
+    thresholdSummary,
+  };
+});
+</script>
   <script>
     "use strict";
 
@@ -783,6 +999,9 @@
       document.querySelector('[data-setting="focus"]').checked = state.focus;
       document.querySelector('[data-setting="color-blind"]').checked = state.colorBlind;
       document.querySelector('[data-setting="break-prompts"]').checked = state.breakPrompts;
+      byId("palette-status").textContent = state.colorBlind
+        ? "Palette: color-blind-safe"
+        : "Palette: standard";
       if (!state.breakPrompts) byId("break-prompt").hidden = true;
       saveSettings();
       renderConcepts();
@@ -961,7 +1180,374 @@
       ).join("; ");
     }
 
+    function renderBinaryThreshold(visualization, target, summary, threshold) {
+      const result = LearningVisualizationModels.thresholdSummary(
+        visualization.data,
+        threshold,
+      );
+      const formatMetric = (value) => value === null ? "not defined" : value.toFixed(2);
+      const positive = escapeHtml(String(visualization.labels.positive));
+      const negative = escapeHtml(String(visualization.labels.negative));
+      target.innerHTML = `<div class="threshold-layout">
+        <svg viewBox="0 0 520 250" role="img"
+          aria-label="${escapeHtml(visualization.title)} confusion matrix">
+          <text class="chart-label" x="240" y="24">Predicted ${negative}</text>
+          <text class="chart-label" x="385" y="24">Predicted ${positive}</text>
+          <text class="chart-label" x="12" y="95">Actual ${negative}</text>
+          <text class="chart-label" x="12" y="190">Actual ${positive}</text>
+          <g class="confusion-cell outcome-tn">
+            <rect x="190" y="45" width="135" height="80"></rect>
+            <text x="245" y="88">TN ${result.tn}</text>
+          </g>
+          <g class="confusion-cell outcome-fp">
+            <rect x="335" y="45" width="135" height="80"></rect>
+            <text x="390" y="88">FP ${result.fp}</text>
+          </g>
+          <g class="confusion-cell outcome-fn">
+            <rect x="190" y="140" width="135" height="80"></rect>
+            <text x="245" y="183">FN ${result.fn}</text>
+          </g>
+          <g class="confusion-cell outcome-tp">
+            <rect x="335" y="140" width="135" height="80"></rect>
+            <text x="390" y="183">TP ${result.tp}</text>
+          </g>
+        </svg>
+      </div>`;
+      summary.textContent =
+        `Threshold ${threshold.toFixed(2)}. TP ${result.tp}, FP ${result.fp}, ` +
+        `TN ${result.tn}, FN ${result.fn}. Precision ${formatMetric(result.precision)}; ` +
+        `recall ${formatMetric(result.recall)}.`;
+    }
+
+    function renderLabeledScatter(visualization, target, summary, boundaryId) {
+      const points = visualization.data;
+      const boundaries = visualization.controls.boundaries;
+      const boundary = boundaries.find((candidate) => candidate.id === boundaryId)
+        || boundaries.find((candidate) => candidate.id === visualization.controls.initial)
+        || boundaries[0];
+      const positiveSeries = String(visualization.labels.positive_series);
+      const result = LearningVisualizationModels.boundarySummary(
+        points,
+        boundary,
+        positiveSeries,
+      );
+      const styles = LearningVisualizationModels.seriesStyles(
+        points.map((point) => point.series),
+      );
+      const xs = points.map((point) => Number(point.x));
+      const ys = points.map((point) => Number(point.y));
+      const minX = Math.min(...xs);
+      const maxX = Math.max(...xs);
+      const boundaryYs = [
+        Number(boundary.slope) * minX + Number(boundary.intercept),
+        Number(boundary.slope) * maxX + Number(boundary.intercept),
+      ];
+      const minY = Math.min(...ys, ...boundaryYs);
+      const maxY = Math.max(...ys, ...boundaryYs);
+      const xScale = (value) => 65 + ((value - minX) / Math.max(1, maxX - minX)) * 410;
+      const yScale = (value) => 220 - ((value - minY) / Math.max(1, maxY - minY)) * 175;
+      const pointMark = (point) => {
+        const series = String(point.series);
+        const style = styles[series];
+        const seriesLabel = visualization.labels.series[series];
+        const predictedLabel = visualization.labels.series[point.predictedSeries];
+        const title = `True series ${seriesLabel}: ${visualization.labels.x_axis} ${point.x}, ` +
+          `${visualization.labels.y_axis} ${point.y}; predicted as ${predictedLabel}`;
+        if (style.shape === "square") {
+          return `<rect class="mark-series-${style.colorRole}" data-shape="${style.shape}"
+            x="${xScale(Number(point.x)) - 7}" y="${yScale(Number(point.y)) - 7}"
+            width="14" height="14"><title>${escapeHtml(title)}</title></rect>`;
+        }
+        return `<circle class="mark-series-${style.colorRole}" data-shape="${style.shape}"
+          cx="${xScale(Number(point.x))}" cy="${yScale(Number(point.y))}" r="7">
+          <title>${escapeHtml(title)}</title></circle>`;
+      };
+      target.innerHTML = `<svg viewBox="0 0 520 270" role="img"
+        aria-label="${escapeHtml(visualization.title)} labeled scatter plot">
+        <line x1="65" y1="220" x2="475" y2="220" stroke="currentColor"></line>
+        <line x1="65" y1="45" x2="65" y2="220" stroke="currentColor"></line>
+        <line class="boundary-line" x1="${xScale(minX)}" y1="${yScale(boundaryYs[0])}"
+          x2="${xScale(maxX)}" y2="${yScale(boundaryYs[1])}">
+          <title>${escapeHtml(boundary.label)}</title>
+        </line>
+        ${result.points.map(pointMark).join("")}
+        <text class="chart-label" x="210" y="255">
+          ${escapeHtml(visualization.labels.x_axis)}
+        </text>
+        <text class="chart-label" x="8" y="28">
+          ${escapeHtml(visualization.labels.y_axis)}
+        </text>
+      </svg>`;
+      summary.textContent =
+        `${boundary.label}. ${result.correct} of ${result.points.length} illustrative ` +
+        `points are on the expected side; ${result.incorrect} are not.`;
+    }
+
+    function renderResidualDiagnostics(visualization, target, summary, scenarioId) {
+      const scenarios = visualization.data.scenarios;
+      const scenario = scenarios.find((candidate) => candidate.id === scenarioId)
+        || scenarios.find((candidate) => candidate.id === visualization.controls.initial)
+        || scenarios[0];
+      const points = LearningVisualizationModels.residualPoints(scenario);
+      const xs = points.map((point) => Number(point.x));
+      const targets = points.flatMap((point) => [
+        Number(point.observed),
+        Number(point.predicted),
+      ]);
+      const residuals = points.map((point) => point.residual);
+      const minX = Math.min(...xs);
+      const maxX = Math.max(...xs);
+      const minTarget = Math.min(...targets);
+      const maxTarget = Math.max(...targets);
+      const maxAbsResidual = Math.max(1, ...residuals.map(Math.abs));
+      const xScale = (value) => 65 + ((value - minX) / Math.max(1, maxX - minX)) * 410;
+      const targetScale = (value) =>
+        185 - ((value - minTarget) / Math.max(1, maxTarget - minTarget)) * 140;
+      const fittedMin = Math.min(...points.map((point) => point.fitted));
+      const fittedMax = Math.max(...points.map((point) => point.fitted));
+      const fittedScale = (value) =>
+        65 + ((value - fittedMin) / Math.max(1, fittedMax - fittedMin)) * 410;
+      const residualScale = (value) => 115 - (value / maxAbsResidual) * 70;
+      target.innerHTML = `<svg viewBox="0 0 520 220" role="img"
+          aria-label="${escapeHtml(visualization.title)} observed and predicted panel">
+          ${points.map((point) => `<g>
+            <line class="residual-line" x1="${xScale(Number(point.x))}"
+              y1="${targetScale(Number(point.observed))}"
+              x2="${xScale(Number(point.x))}" y2="${targetScale(point.fitted)}"></line>
+            <circle class="mark-series-primary" data-shape="circle"
+              cx="${xScale(Number(point.x))}" cy="${targetScale(Number(point.observed))}" r="6">
+              <title>Observed ${escapeHtml(point.observed)} at
+                ${escapeHtml(visualization.labels.x_axis)} ${escapeHtml(point.x)}</title>
+            </circle>
+            <rect class="mark-series-secondary" data-shape="square"
+              x="${xScale(Number(point.x)) - 5}" y="${targetScale(point.fitted) - 5}"
+              width="10" height="10">
+              <title>Predicted ${escapeHtml(point.predicted)} at
+                ${escapeHtml(visualization.labels.x_axis)} ${escapeHtml(point.x)}</title>
+            </rect>
+          </g>`).join("")}
+          <text class="chart-label" x="205" y="212">
+            ${escapeHtml(visualization.labels.x_axis)}
+          </text>
+          <text class="chart-label" x="8" y="26">
+            ${escapeHtml(visualization.labels.target_axis)}
+          </text>
+        </svg>
+        <svg viewBox="0 0 520 220" role="img"
+          aria-label="${escapeHtml(visualization.title)} residual against fitted panel">
+          <line class="zero-line" x1="65" y1="${residualScale(0)}"
+            x2="475" y2="${residualScale(0)}"></line>
+          <text class="chart-label" x="70" y="${residualScale(0) - 8}">Positive residual</text>
+          <text class="chart-label" x="70" y="${residualScale(0) + 18}">Negative residual</text>
+          <text class="chart-label" x="425" y="${residualScale(0) - 8}">Zero residual</text>
+          ${points.map((point) => `<circle class="mark-series-primary" data-shape="circle"
+            cx="${fittedScale(point.fitted)}" cy="${residualScale(point.residual)}" r="6">
+            <title>Fitted ${point.fitted.toFixed(2)}, residual
+              ${point.residual.toFixed(2)}</title>
+          </circle>`).join("")}
+          <text class="chart-label" x="220" y="212">Fitted value</text>
+          <text class="chart-label" x="8" y="26">
+            ${escapeHtml(visualization.labels.residual_axis)}
+          </text>
+        </svg>`;
+      summary.textContent =
+        `${scenario.label}. Illustrative residuals range from ` +
+        `${Math.min(...residuals).toFixed(2)} to ${Math.max(...residuals).toFixed(2)}.`;
+    }
+
+    function coefficientFeatureStyle(featureIndex) {
+      const styles = [
+        { dashArray: "", marker: "●" },
+        { dashArray: "10 4", marker: "■" },
+        { dashArray: "2 4", marker: "▲" },
+        { dashArray: "14 3 2 3", marker: "◆" },
+      ];
+      return styles[featureIndex % styles.length];
+    }
+
+    function renderCoefficientPath(visualization, target, summary, selectedIndex) {
+      const data = visualization.data;
+      const index = Math.max(
+        0,
+        Math.min(data.penalties.length - 1, Number(selectedIndex)),
+      );
+      const snapshot = LearningVisualizationModels.coefficientSnapshot(data, index);
+      const allValues = data.series.flatMap((series) => [...series.ridge, ...series.lasso])
+        .map(Number);
+      const maxAbs = Math.max(1, ...allValues.map(Math.abs));
+      const xScale = (step) =>
+        65 + (step / Math.max(1, data.penalties.length - 1)) * 410;
+      const yScale = (value) => 120 - (Number(value) / maxAbs) * 85;
+      const paths = data.series.flatMap((series, featureIndex) =>
+        ["ridge", "lasso"].map((model) => {
+          const values = series[model];
+          const featureStyle = coefficientFeatureStyle(featureIndex);
+          const points = values.map(
+            (value, step) => `${xScale(step)},${yScale(value)}`,
+          ).join(" ");
+          const label = model === "ridge"
+            ? `<text class="feature-label" x="${xScale(data.penalties.length - 1) - 4}"
+                y="${yScale(values[values.length - 1]) - 7}" text-anchor="end">
+                ${featureStyle.marker} ${escapeHtml(series.feature)}</text>`
+            : "";
+          return `<polyline class="coefficient-line model-${model}" data-feature-pattern="${featureIndex}"
+            stroke-dasharray="${featureStyle.dashArray}" points="${points}">
+            <title>${escapeHtml(series.feature)} ${model} coefficient path; feature cue ${featureStyle.marker}</title>
+            </polyline>${label}`;
+        }),
+      ).join("");
+      const markers = snapshot.rows.map((row) => {
+        const x = xScale(index);
+        const ridgeY = yScale(row.ridge);
+        const lassoY = yScale(row.lasso);
+        const zeroMark = row.lassoIsZero
+          ? `<g class="coefficient-zero" data-shape="zero">
+              <circle cx="${x}" cy="${lassoY}" r="9"></circle>
+              <path d="M${x - 5},${lassoY - 5} L${x + 5},${lassoY + 5}
+                M${x + 5},${lassoY - 5} L${x - 5},${lassoY + 5}"></path>
+              <title>${escapeHtml(row.feature)} Lasso is exactly zero</title>
+            </g>`
+          : `<rect class="mark-series-secondary" data-shape="square"
+              x="${x - 6}" y="${lassoY - 6}" width="12" height="12">
+              <title>${escapeHtml(row.feature)} Lasso ${row.lasso}</title>
+            </rect>`;
+        return `<circle class="mark-series-primary" data-shape="circle"
+            cx="${x}" cy="${ridgeY}" r="6">
+            <title>${escapeHtml(row.feature)} Ridge ${row.ridge}</title>
+          </circle>${zeroMark}`;
+      }).join("");
+      target.innerHTML = `<svg viewBox="0 0 520 240" role="img"
+          aria-label="${escapeHtml(visualization.title)} coefficient path chart">
+          <line class="zero-line" x1="65" y1="${yScale(0)}"
+            x2="475" y2="${yScale(0)}"></line>
+          ${paths}
+          ${markers}
+          <text class="chart-label" x="195" y="228">Penalty strength</text>
+          <text class="chart-label" x="8" y="24">Coefficient</text>
+        </svg>
+        <p class="coefficient-legend">Feature cues: ${data.series.map((series, featureIndex) =>
+          `${coefficientFeatureStyle(featureIndex).marker} ${escapeHtml(series.feature)}`
+        ).join("; ")}. Ridge uses circles; Lasso uses squares or an exact-zero cross.</p>
+        <table class="visualization-table">
+          <caption>Coefficients at penalty ${snapshot.penalty}</caption>
+          <thead><tr><th>Feature</th><th>Ridge</th><th>Lasso</th></tr></thead>
+          <tbody>${snapshot.rows.map((row) => `<tr>
+            <th scope="row">${escapeHtml(row.feature)}</th>
+            <td>${row.ridge}</td>
+            <td>${row.lasso}${row.lassoIsZero ? " (exact zero)" : ""}</td>
+          </tr>`).join("")}</tbody>
+        </table>`;
+      summary.textContent =
+        `Penalty ${snapshot.penalty}. ` +
+        snapshot.rows.map((row) =>
+          `${row.feature}: Ridge ${row.ridge}, Lasso ${row.lasso}`
+        ).join("; ") + ".";
+    }
+
+    function renderErrorMetrics(visualization, target, summary, selectedIndex) {
+      const adjustableErrors = visualization.data.adjustable_error;
+      const index = Math.max(
+        0,
+        Math.min(adjustableErrors.length - 1, Number(selectedIndex)),
+      );
+      const adjustableError = Number(adjustableErrors[index]);
+      const result = LearningVisualizationModels.errorMetricSummary(
+        visualization.data.base_errors,
+        adjustableError,
+      );
+      const maxAbsError = Math.max(1, ...result.errors.map((value) => Math.abs(value)));
+      const errorScale = (value) => 260 + (Number(value) / maxAbsError) * 190;
+      const metrics = [
+        ["MAE", result.mae],
+        ["MSE", result.mse],
+        ["RMSE", result.rmse],
+      ];
+      const maxMetric = Math.max(1, ...metrics.map((metric) => metric[1]));
+      target.innerHTML = `<svg viewBox="0 0 520 320" role="img"
+        aria-label="${escapeHtml(visualization.title)} error and metric chart">
+        <line class="zero-line" x1="${errorScale(0)}" y1="35"
+          x2="${errorScale(0)}" y2="105"></line>
+        ${visualization.data.base_errors.map((error, markIndex) =>
+          `<circle class="mark-series-primary" data-shape="circle"
+            cx="${errorScale(error)}" cy="${58 + (markIndex % 2) * 24}" r="6">
+            <title>Base error ${escapeHtml(error)}</title>
+          </circle>`
+        ).join("")}
+        <rect class="mark-series-secondary" data-shape="square"
+          x="${errorScale(adjustableError) - 8}" y="62" width="16" height="16">
+          <title>Adjustable error ${adjustableError}</title>
+        </rect>
+        <text class="chart-label" x="210" y="122">Prediction error</text>
+        ${metrics.map(([label, value], metricIndex) => {
+          const width = (value / maxMetric) * 330;
+          const y = 160 + metricIndex * 48;
+          return `<g><text class="chart-label" x="25" y="${y + 20}">${label}</text>
+            <rect class="metric-bar" data-shape="bar" x="95" y="${y}"
+              width="${width}" height="26">
+              <title>${label} ${value.toFixed(2)}</title>
+            </rect>
+            <text class="chart-label" x="${105 + width}" y="${y + 20}">
+              ${value.toFixed(2)}
+            </text></g>`;
+        }).join("")}
+      </svg>`;
+      const units = visualization.labels.units;
+      summary.textContent =
+        `Adjustable error ${adjustableError.toFixed(2)} ${units}. ` +
+        `MAE ${result.mae.toFixed(2)} ${units}; MSE ${result.mse.toFixed(2)} ` +
+        `${units} squared; RMSE ${result.rmse.toFixed(2)} ${units}.`;
+    }
+
     function visualizationControl(visualization) {
+      if (visualization.type === "binary-threshold") {
+        const controls = visualization.controls;
+        return `<label>Decision threshold
+          <input type="range" min="${controls.minimum}" max="${controls.maximum}"
+            step="${controls.step}" value="${controls.initial}"
+            data-viz-control="${escapeHtml(visualization.id)}">
+        </label>`;
+      }
+      if (visualization.type === "labeled-scatter") {
+        const controls = visualization.controls;
+        return `<label>Decision boundary
+          <select data-viz-control="${escapeHtml(visualization.id)}">
+            ${controls.boundaries.map((boundary) =>
+              `<option value="${escapeHtml(boundary.id)}"
+                ${boundary.id === controls.initial ? "selected" : ""}>
+                ${escapeHtml(boundary.label)}
+              </option>`
+            ).join("")}
+          </select>
+        </label>`;
+      }
+      if (visualization.type === "residual-diagnostics") {
+        return `<label>Residual scenario
+          <select data-viz-control="${escapeHtml(visualization.id)}">
+            ${visualization.data.scenarios.map((scenario) =>
+              `<option value="${escapeHtml(scenario.id)}"
+                ${scenario.id === visualization.controls.initial ? "selected" : ""}>
+                ${escapeHtml(scenario.label)}
+              </option>`
+            ).join("")}
+          </select>
+        </label>`;
+      }
+      if (visualization.type === "coefficient-path") {
+        const lastIndex = visualization.data.penalties.length - 1;
+        return `<label>Penalty step
+          <input type="range" min="0" max="${lastIndex}" step="1"
+            value="${visualization.controls.initial_index}"
+            data-viz-control="${escapeHtml(visualization.id)}">
+        </label>`;
+      }
+      if (visualization.type === "error-metrics") {
+        const lastIndex = visualization.data.adjustable_error.length - 1;
+        return `<label>Adjustable error
+          <input type="range" min="0" max="${lastIndex}" step="1"
+            value="${visualization.controls.initial_index}"
+            data-viz-control="${escapeHtml(visualization.id)}">
+        </label>`;
+      }
       if (visualization.type === "histogram") {
         const choices = visualization.controls?.bins || [4, 6, 8];
         return `<label>Number of bins
@@ -996,7 +1582,17 @@
       const control = document.querySelector(
         `[data-viz-control="${CSS.escape(visualization.id)}"]`,
       );
-      if (visualization.type === "histogram") {
+      if (visualization.type === "binary-threshold") {
+        renderBinaryThreshold(visualization, target, summary, Number(control.value));
+      } else if (visualization.type === "labeled-scatter") {
+        renderLabeledScatter(visualization, target, summary, control.value);
+      } else if (visualization.type === "residual-diagnostics") {
+        renderResidualDiagnostics(visualization, target, summary, control.value);
+      } else if (visualization.type === "coefficient-path") {
+        renderCoefficientPath(visualization, target, summary, Number(control.value));
+      } else if (visualization.type === "error-metrics") {
+        renderErrorMetrics(visualization, target, summary, Number(control.value));
+      } else if (visualization.type === "histogram") {
         renderHistogram(visualization, target, summary, Math.max(1, Number(control.value)));
       } else if (visualization.type === "boxplot") {
         renderBoxplot(visualization, target, summary, Number(control.value));
@@ -1027,7 +1623,8 @@
         const control = document.querySelector(
           `[data-viz-control="${CSS.escape(visualization.id)}"]`,
         );
-        control.addEventListener("change", () => renderOneVisualization(visualization));
+        const eventType = control.matches('input[type="range"]') ? "input" : "change";
+        control.addEventListener(eventType, () => renderOneVisualization(visualization));
         renderOneVisualization(visualization);
       });
       byId("previous-visualization").disabled = state.visualizationIndex === 0;
