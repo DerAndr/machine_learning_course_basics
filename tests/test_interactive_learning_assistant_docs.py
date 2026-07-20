@@ -232,6 +232,16 @@ def test_build_week_submission_preparation_is_actionable() -> None:
         "- [x] Confirm the public repository includes relevant licenses.",
     ):
         assert published_checklist_item in text
+    for human_only_item in (
+        "- [ ] Choose the project name personally.",
+        "- [ ] Rewrite the tagline and description in your own voice.",
+        "- [ ] Run `/feedback` in the primary Codex build task and save its Session ID.",
+        "- [ ] Capture final screenshots after deployment.",
+        "- [ ] Record and upload the public YouTube video under three minutes.",
+        "- [ ] Review the current official rules and announcements.",
+        "- [ ] Submit before July 21, 2026 at 5:00 PM Pacific Time.",
+    ):
+        assert human_only_item in text
     assert "semantic companion revision is currently local" not in text.lower()
     assert "merge `codex/build-week-showcase` into `basics`" not in text.lower()
 
@@ -366,15 +376,29 @@ def test_build_week_evidence_records_completed_local_semantic_acceptance() -> No
 
     for published_evidence in (
         "a9fd6d9ec61f5c05981734846d858572413f5f92",
-        "29729743749",
-        "29729739505",
-        "HTTP 200",
-        "Fast interactive reviews",
-        "Palette",
-        "Ridge",
-        "Decision threshold",
+        "https://github.com/DerAndr/machine_learning_course_basics/actions/runs/29729743749",
+        "https://github.com/DerAndr/machine_learning_course_basics/actions/runs/29729739505",
     ):
         assert published_evidence in evidence
+    for route, marker in (
+        (
+            "https://derandr.github.io/machine_learning_course_basics/",
+            "Fast interactive reviews",
+        ),
+        (
+            "https://derandr.github.io/machine_learning_course_basics/demos/lecture_01_eda/",
+            "Palette",
+        ),
+        (
+            "https://derandr.github.io/machine_learning_course_basics/demos/lecture_04_regression/",
+            "Ridge",
+        ),
+        (
+            "https://derandr.github.io/machine_learning_course_basics/demos/lecture_05_classification_part_1/",
+            "Decision threshold",
+        ),
+    ):
+        assert f"| `{route}` | `{marker}` |" in evidence
     assert "Pending for this branch" not in evidence
     assert "remain explicitly pending" not in evidence
     canonical_browser_evidence = (
