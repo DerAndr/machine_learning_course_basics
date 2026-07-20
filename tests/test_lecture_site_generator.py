@@ -894,6 +894,7 @@ def test_validate_html_does_not_mistake_model_usage_for_embedded_models(
     [
         "// globalThis.LearningVisualizationModels = {};",
         'const note = "globalThis.LearningVisualizationModels = {};";',
+        "const note = `globalThis.LearningVisualizationModels = {};`;",
     ],
 )
 def test_validate_html_rejects_comment_or_string_model_assignment(

@@ -61,7 +61,7 @@ VISUALIZATION_MODELS_DEFINITION = re.compile(
     r"|\b(?:const|let|var)\s+LearningVisualizationModels\s*=)"
 )
 JAVASCRIPT_COMMENTS_AND_STRINGS = re.compile(
-    r"//[^\r\n]*|/\*.*?\*/|'(?:\\.|[^'\\])*'|\"(?:\\.|[^\"\\])*\"",
+    r"//[^\r\n]*|/\*.*?\*/|'(?:\\.|[^'\\])*'|\"(?:\\.|[^\"\\])*\"|`(?:\\.|[^`\\])*`",
     re.DOTALL,
 )
 STICKY_PROGRESS_STYLE = re.compile(
