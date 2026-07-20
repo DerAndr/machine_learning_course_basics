@@ -90,9 +90,7 @@ def test_core_skill_is_domain_neutral() -> None:
 
 def test_core_skill_requires_semantic_visualizations_and_perceptible_palettes() -> None:
     skill_text = (CORE / "SKILL.md").read_text(encoding="utf-8")
-    contract_text = (CORE / "references" / "content-contract.md").read_text(
-        encoding="utf-8"
-    )
+    contract_text = (CORE / "references" / "content-contract.md").read_text(encoding="utf-8")
 
     for phrase in (
         "topic-relevant interpretation",
@@ -109,9 +107,7 @@ def test_core_skill_requires_semantic_visualizations_and_perceptible_palettes() 
 
 
 def test_content_contract_lists_all_supported_visualization_selection_shapes() -> None:
-    contract_text = (CORE / "references" / "content-contract.md").read_text(
-        encoding="utf-8"
-    )
+    contract_text = (CORE / "references" / "content-contract.md").read_text(encoding="utf-8")
 
     for phrase in (
         "| Type | Learning purpose | Required data shape | Control shape |",

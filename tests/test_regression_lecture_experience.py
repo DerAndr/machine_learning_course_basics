@@ -95,9 +95,7 @@ def test_regression_payload_and_generated_site_meet_learning_contract(
     }
     assert payload["meta"]["experience_id"] == EXPERIENCE_ID
     assert {concept["id"] for concept in payload["concepts"]} == EXPECTED_CONCEPTS
-    assert {
-        item["type"] for item in payload["visualizations"]
-    } == EXPECTED_VISUALIZATION_TYPES
+    assert {item["type"] for item in payload["visualizations"]} == EXPECTED_VISUALIZATION_TYPES
     visualizations = payload["visualizations"]
     assert [visualization["type"] for visualization in visualizations] == [
         "residual-diagnostics",
@@ -120,9 +118,7 @@ def test_regression_payload_and_generated_site_meet_learning_contract(
     assert metrics["data"]["adjustable_error"] == [0, 5, 10, 20]
     assert all(len(payload["quizzes"][level]) == 10 for level in LEVELS)
 
-    questions = [
-        question for level in LEVELS for question in payload["quizzes"][level]
-    ]
+    questions = [question for level in LEVELS for question in payload["quizzes"][level]]
     assert len({question["id"] for question in questions}) == 30
     assert [question["id"] for question in payload["quizzes"]["foundations"]] == [
         f"reg-f-{number:02d}" for number in range(1, 11)
@@ -145,13 +141,11 @@ def test_regression_payload_and_generated_site_meet_learning_contract(
             assert question["answer"] in question["options"]
 
     assert all(
-        source.startswith("lectures/lecture_04_regression/")
-        or source.startswith("okf/")
+        source.startswith("lectures/lecture_04_regression/") or source.startswith("okf/")
         for source in payload["meta"]["sources"]
     )
     assert all(
-        source.startswith("lectures/lecture_04_regression/")
-        or source.startswith("okf/")
+        source.startswith("lectures/lecture_04_regression/") or source.startswith("okf/")
         for concept in payload["concepts"]
         for source in concept["sources"]
     )

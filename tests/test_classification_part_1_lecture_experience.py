@@ -5,18 +5,8 @@ from pathlib import Path
 from types import ModuleType
 
 ROOT = Path(__file__).resolve().parents[1]
-CONTENT_PATH = (
-    ROOT
-    / "lecture_experiences"
-    / "content"
-    / "lecture_05_classification_part_1.json"
-)
-SITE_PATH = (
-    ROOT
-    / "lecture_experiences"
-    / "lecture_05_classification_part_1"
-    / "index.html"
-)
+CONTENT_PATH = ROOT / "lecture_experiences" / "content" / "lecture_05_classification_part_1.json"
+SITE_PATH = ROOT / "lecture_experiences" / "lecture_05_classification_part_1" / "index.html"
 TEMPLATE_PATH = (
     ROOT
     / ".agents"
@@ -85,9 +75,7 @@ def _okf_hashes() -> dict[Path, str]:
 
 
 def _source_is_allowed(source: str) -> bool:
-    return source.startswith(f"lectures/{LECTURE_SLUG}/") or source.startswith(
-        "okf/"
-    )
+    return source.startswith(f"lectures/{LECTURE_SLUG}/") or source.startswith("okf/")
 
 
 def test_classification_payload_and_generated_site_meet_learning_contract(
@@ -106,21 +94,15 @@ def test_classification_payload_and_generated_site_meet_learning_contract(
     assert payload["meta"]["experience_id"] == EXPERIENCE_ID
     assert payload["defaults"] == EXPECTED_DEFAULTS
     assert {concept["id"] for concept in payload["concepts"]} == EXPECTED_CONCEPTS
-    assert {item["type"] for item in payload["visualizations"]} == (
-        EXPECTED_VISUALIZATION_TYPES
-    )
+    assert {item["type"] for item in payload["visualizations"]} == (EXPECTED_VISUALIZATION_TYPES)
     assert {
         item["id"]: item["type"] for item in payload["visualizations"]
     } == EXPECTED_VISUALIZATIONS
     assert all(len(payload["quizzes"][level]) == 10 for level in LEVELS)
 
-    questions = [
-        question for level in LEVELS for question in payload["quizzes"][level]
-    ]
+    questions = [question for level in LEVELS for question in payload["quizzes"][level]]
     expected_question_ids = {
-        f"cls-{prefix}-{number:02d}"
-        for prefix in ("f", "a", "c")
-        for number in range(1, 11)
+        f"cls-{prefix}-{number:02d}" for prefix in ("f", "a", "c") for number in range(1, 11)
     }
     assert {question["id"] for question in questions} == expected_question_ids
     assert len({question["id"] for question in questions}) == 30
@@ -148,9 +130,7 @@ def test_classification_payload_and_generated_site_meet_learning_contract(
         "binary-threshold",
         "labeled-scatter",
     ]
-    assert {
-        item["id"]: item["type"] for item in visualizations
-    } == EXPECTED_VISUALIZATIONS
+    assert {item["id"]: item["type"] for item in visualizations} == EXPECTED_VISUALIZATIONS
 
     threshold = visualizations[0]
     assert threshold["controls"]["initial"] == 0.5
