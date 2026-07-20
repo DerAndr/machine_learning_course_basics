@@ -56,6 +56,10 @@ CONTENT_DATA_SCRIPT = re.compile(
     r"^\s*const\s+CONTENT\s*=\s*(\{.*\})\s*;\s*$",
     re.DOTALL,
 )
+VISUALIZATION_MODELS_DEFINITION = re.compile(
+    r"(?:\b(?:globalThis|root|window)\s*\.\s*LearningVisualizationModels\s*="
+    r"|\b(?:const|let|var)\s+LearningVisualizationModels\s*=)"
+)
 STICKY_PROGRESS_STYLE = re.compile(
     r"\.progress-panel\s*\{[^}]*\bposition\s*:\s*sticky\b",
     re.IGNORECASE | re.DOTALL,
@@ -94,9 +98,11 @@ class _ContractParser(HTMLParser):
         self.has_main = False
         self.has_viewport = False
         self.has_progress_panel = False
+        self.palette_statuses: list[list[str]] = []
         self._inside_style = False
         self._inside_script = False
         self._fallback_depth = 0
+        self._palette_status_depth = 0
         self.style_text: list[str] = []
         self.scripts: list[list[str]] = []
 
@@ -134,6 +140,11 @@ class _ContractParser(HTMLParser):
             self._fallback_depth = 1
         elif self._fallback_depth and tag not in VOID_ELEMENTS:
             self._fallback_depth += 1
+        if attributes.get("id") == "palette-status":
+            self.palette_statuses.append([])
+            self._palette_status_depth = 1
+        elif self._palette_status_depth and tag not in VOID_ELEMENTS:
+            self._palette_status_depth += 1
 
         resource = self._external_resource(tag, attributes)
         if resource:
@@ -150,6 +161,8 @@ class _ContractParser(HTMLParser):
             self._inside_script = False
         if self._fallback_depth:
             self._fallback_depth -= 1
+        if self._palette_status_depth:
+            self._palette_status_depth -= 1
 
     def handle_data(self, data: str) -> None:
         if self._inside_style:
@@ -158,6 +171,8 @@ class _ContractParser(HTMLParser):
             self.scripts[-1].append(data)
         if self._fallback_depth:
             self.graph_fallbacks[-1].append(data)
+        if self._palette_status_depth:
+            self.palette_statuses[-1].append(data)
 
     @staticmethod
     def _is_usable_control(tag: str, attrs: dict[str, str | None]) -> bool:
@@ -222,9 +237,9 @@ def validate_html(path: Path) -> list[str]:
     if _has_runtime_css_reference(style_without_comments):
         errors.append("external style or font resource is not portable")
 
-    executable_scripts = (
+    executable_scripts = [
         "".join(parts) for parts in parser.scripts if not _is_content_data_script("".join(parts))
-    )
+    ]
     if any(
         pattern.search(script) for script in executable_scripts for pattern in NETWORK_CAPABILITIES
     ):
@@ -242,6 +257,16 @@ def validate_html(path: Path) -> list[str]:
         not "".join(fallback).strip() for fallback in parser.graph_fallbacks
     ):
         errors.append("missing readable graph fallback")
+    if len(parser.palette_statuses) != 1 or any(
+        not "".join(status).strip() for status in parser.palette_statuses
+    ):
+        errors.append("missing live palette status")
+        if not parser.palette_statuses:
+            errors.append("missing palette-status element")
+    if not any(VISUALIZATION_MODELS_DEFINITION.search(script) for script in executable_scripts):
+        errors.append("missing embedded visualization models")
+    if "__VISUALIZATION_MODELS__" in html:
+        errors.append("unreplaced visualization model marker")
     if not parser.has_main:
         errors.append("missing main-content landmark")
     if not parser.has_viewport:

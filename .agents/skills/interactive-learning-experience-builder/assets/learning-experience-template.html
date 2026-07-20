@@ -19,6 +19,10 @@
       --danger: #a33a3a;
       --border: #cad3dc;
       --focus: #111111;
+      --graph-primary: #6d28d9;
+      --graph-primary-strong: #4c1d95;
+      --graph-secondary: #0f766e;
+      --graph-secondary-strong: #115e59;
       --shadow: 0 10px 28px rgb(23 33 43 / 8%);
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
@@ -30,6 +34,10 @@
       --success: #009e73;
       --danger: #cc79a7;
       --focus: #000000;
+      --graph-primary: #0072b2;
+      --graph-primary-strong: #00547f;
+      --graph-secondary: #d55e00;
+      --graph-secondary-strong: #9f4500;
     }
 
     * {
@@ -184,6 +192,11 @@
       width: 1.35rem;
     }
 
+    .setting-status {
+      color: var(--muted);
+      margin: -0.65rem 0 0 2rem;
+    }
+
     textarea {
       border: 1px solid var(--border);
       border-radius: 0.55rem;
@@ -270,15 +283,110 @@
     }
 
     .mark-primary {
-      fill: var(--accent);
-      stroke: var(--accent-strong);
+      fill: var(--graph-primary);
+      stroke: var(--graph-primary-strong);
       stroke-width: 2;
     }
 
     .mark-secondary {
+      color: var(--graph-secondary);
       fill: url("#diagonal-hatch");
-      stroke: var(--secondary);
+      stroke: var(--graph-secondary-strong);
       stroke-width: 3;
+    }
+
+    .mark-series-primary {
+      fill: var(--graph-primary);
+      stroke: var(--graph-primary-strong);
+      stroke-width: 2;
+    }
+
+    .mark-series-secondary {
+      color: var(--graph-secondary);
+      fill: url("#diagonal-hatch");
+      stroke: var(--graph-secondary-strong);
+      stroke-width: 3;
+    }
+
+    .boundary-line,
+    .zero-line {
+      fill: none;
+      stroke: var(--graph-secondary-strong);
+      stroke-dasharray: 9 6;
+      stroke-width: 3;
+    }
+
+    .residual-line {
+      stroke: var(--graph-secondary-strong);
+      stroke-width: 2;
+    }
+
+    .metric-bar {
+      fill: var(--graph-primary);
+      stroke: var(--graph-primary-strong);
+      stroke-width: 2;
+    }
+
+    .confusion-cell rect {
+      stroke-width: 3;
+    }
+
+    .confusion-cell text {
+      fill: var(--ink);
+      font-size: 16px;
+      font-weight: 750;
+    }
+
+    .outcome-tn rect,
+    .outcome-tp rect {
+      fill: var(--graph-primary);
+      fill-opacity: 0.22;
+      stroke: var(--graph-primary-strong);
+    }
+
+    .outcome-fp,
+    .outcome-fn {
+      color: var(--graph-secondary);
+    }
+
+    .outcome-fp rect,
+    .outcome-fn rect {
+      fill: url("#diagonal-hatch");
+      stroke: var(--graph-secondary-strong);
+    }
+
+    .coefficient-line {
+      fill: none;
+      stroke-width: 3;
+    }
+
+    .model-ridge {
+      stroke: var(--graph-primary);
+    }
+
+    .model-lasso {
+      stroke: var(--graph-secondary);
+      stroke-dasharray: 8 5;
+    }
+
+    .coefficient-zero {
+      color: var(--graph-secondary-strong);
+      fill: var(--surface);
+      stroke: currentColor;
+      stroke-width: 3;
+    }
+
+    .visualization-table {
+      border-collapse: collapse;
+      margin-top: 0.75rem;
+      width: 100%;
+    }
+
+    .visualization-table th,
+    .visualization-table td {
+      border-bottom: 1px solid var(--border);
+      padding: 0.4rem 0.55rem;
+      text-align: left;
     }
 
     .graph-fallback {
@@ -416,10 +524,15 @@
           <input data-setting="focus" type="checkbox">
           <span>Focus-friendly (ADHD-friendly) view</span>
         </label>
-        <label class="setting">
-          <input data-setting="color-blind" type="checkbox">
-          <span>Color-blind-safe palette</span>
-        </label>
+        <div>
+          <label class="setting">
+            <input data-setting="color-blind" type="checkbox">
+            <span>Color-blind-safe palette</span>
+          </label>
+          <p id="palette-status" class="setting-status" aria-live="polite">
+            Palette: standard
+          </p>
+        </div>
         <label class="setting">
           <input data-setting="break-prompts" type="checkbox">
           <span>Funny topic break prompts</span>
@@ -502,6 +615,7 @@
 __QUIZ_STATE_MACHINE__
   </script>
   <script>const CONTENT = __CONTENT_JSON__;</script>
+  <script>__VISUALIZATION_MODELS__</script>
   <script>
     "use strict";
 
@@ -610,6 +724,9 @@ __QUIZ_STATE_MACHINE__
       document.querySelector('[data-setting="focus"]').checked = state.focus;
       document.querySelector('[data-setting="color-blind"]').checked = state.colorBlind;
       document.querySelector('[data-setting="break-prompts"]').checked = state.breakPrompts;
+      byId("palette-status").textContent = state.colorBlind
+        ? "Palette: color-blind-safe"
+        : "Palette: standard";
       if (!state.breakPrompts) byId("break-prompt").hidden = true;
       saveSettings();
       renderConcepts();
@@ -788,7 +905,349 @@ __QUIZ_STATE_MACHINE__
       ).join("; ");
     }
 
+    function renderBinaryThreshold(visualization, target, summary, threshold) {
+      const result = LearningVisualizationModels.thresholdSummary(
+        visualization.data,
+        threshold,
+      );
+      const formatMetric = (value) => value === null ? "not defined" : value.toFixed(2);
+      target.innerHTML = `<div class="threshold-layout">
+        <svg viewBox="0 0 520 250" role="img"
+          aria-label="${escapeHtml(visualization.title)} confusion matrix">
+          <text class="chart-label" x="240" y="24">Predicted negative</text>
+          <text class="chart-label" x="385" y="24">Predicted positive</text>
+          <text class="chart-label" x="12" y="95">Actual negative</text>
+          <text class="chart-label" x="12" y="190">Actual positive</text>
+          <g class="confusion-cell outcome-tn">
+            <rect x="190" y="45" width="135" height="80"></rect>
+            <text x="245" y="88">TN ${result.tn}</text>
+          </g>
+          <g class="confusion-cell outcome-fp">
+            <rect x="335" y="45" width="135" height="80"></rect>
+            <text x="390" y="88">FP ${result.fp}</text>
+          </g>
+          <g class="confusion-cell outcome-fn">
+            <rect x="190" y="140" width="135" height="80"></rect>
+            <text x="245" y="183">FN ${result.fn}</text>
+          </g>
+          <g class="confusion-cell outcome-tp">
+            <rect x="335" y="140" width="135" height="80"></rect>
+            <text x="390" y="183">TP ${result.tp}</text>
+          </g>
+        </svg>
+      </div>`;
+      summary.textContent =
+        `Threshold ${threshold.toFixed(2)}. TP ${result.tp}, FP ${result.fp}, ` +
+        `TN ${result.tn}, FN ${result.fn}. Precision ${formatMetric(result.precision)}; ` +
+        `recall ${formatMetric(result.recall)}.`;
+    }
+
+    function renderLabeledScatter(visualization, target, summary, boundaryId) {
+      const points = visualization.data;
+      const boundaries = visualization.controls.boundaries;
+      const boundary = boundaries.find((candidate) => candidate.id === boundaryId)
+        || boundaries.find((candidate) => candidate.id === visualization.controls.initial)
+        || boundaries[0];
+      const positiveSeries = String(visualization.labels.positive_series);
+      const result = LearningVisualizationModels.boundarySummary(
+        points,
+        boundary,
+        positiveSeries,
+      );
+      const styles = LearningVisualizationModels.seriesStyles(
+        points.map((point) => point.series),
+      );
+      const xs = points.map((point) => Number(point.x));
+      const ys = points.map((point) => Number(point.y));
+      const minX = Math.min(...xs);
+      const maxX = Math.max(...xs);
+      const boundaryYs = [
+        Number(boundary.slope) * minX + Number(boundary.intercept),
+        Number(boundary.slope) * maxX + Number(boundary.intercept),
+      ];
+      const minY = Math.min(...ys, ...boundaryYs);
+      const maxY = Math.max(...ys, ...boundaryYs);
+      const xScale = (value) => 65 + ((value - minX) / Math.max(1, maxX - minX)) * 410;
+      const yScale = (value) => 220 - ((value - minY) / Math.max(1, maxY - minY)) * 175;
+      const pointMark = (point) => {
+        const series = String(point.series);
+        const style = styles[series];
+        const seriesLabel = visualization.labels.series[series];
+        const title = `${seriesLabel}: ${visualization.labels.x_axis} ${point.x}, ` +
+          `${visualization.labels.y_axis} ${point.y}`;
+        if (style.shape === "square") {
+          return `<rect class="mark-series-${style.colorRole}" data-shape="${style.shape}"
+            x="${xScale(Number(point.x)) - 7}" y="${yScale(Number(point.y)) - 7}"
+            width="14" height="14"><title>${escapeHtml(title)}</title></rect>`;
+        }
+        return `<circle class="mark-series-${style.colorRole}" data-shape="${style.shape}"
+          cx="${xScale(Number(point.x))}" cy="${yScale(Number(point.y))}" r="7">
+          <title>${escapeHtml(title)}</title></circle>`;
+      };
+      target.innerHTML = `<svg viewBox="0 0 520 270" role="img"
+        aria-label="${escapeHtml(visualization.title)} labeled scatter plot">
+        <line x1="65" y1="220" x2="475" y2="220" stroke="currentColor"></line>
+        <line x1="65" y1="45" x2="65" y2="220" stroke="currentColor"></line>
+        <line class="boundary-line" x1="${xScale(minX)}" y1="${yScale(boundaryYs[0])}"
+          x2="${xScale(maxX)}" y2="${yScale(boundaryYs[1])}">
+          <title>${escapeHtml(boundary.label)}</title>
+        </line>
+        ${result.points.map(pointMark).join("")}
+        <text class="chart-label" x="210" y="255">
+          ${escapeHtml(visualization.labels.x_axis)}
+        </text>
+        <text class="chart-label" x="8" y="28">
+          ${escapeHtml(visualization.labels.y_axis)}
+        </text>
+      </svg>`;
+      summary.textContent =
+        `${boundary.label}. ${result.correct} of ${result.points.length} illustrative ` +
+        `points are on the expected side; ${result.incorrect} are not.`;
+    }
+
+    function renderResidualDiagnostics(visualization, target, summary, scenarioId) {
+      const scenarios = visualization.data.scenarios;
+      const scenario = scenarios.find((candidate) => candidate.id === scenarioId)
+        || scenarios.find((candidate) => candidate.id === visualization.controls.initial)
+        || scenarios[0];
+      const points = LearningVisualizationModels.residualPoints(scenario);
+      const xs = points.map((point) => Number(point.x));
+      const targets = points.flatMap((point) => [
+        Number(point.observed),
+        Number(point.predicted),
+      ]);
+      const residuals = points.map((point) => point.residual);
+      const minX = Math.min(...xs);
+      const maxX = Math.max(...xs);
+      const minTarget = Math.min(...targets);
+      const maxTarget = Math.max(...targets);
+      const maxAbsResidual = Math.max(1, ...residuals.map(Math.abs));
+      const xScale = (value) => 65 + ((value - minX) / Math.max(1, maxX - minX)) * 410;
+      const targetScale = (value) =>
+        185 - ((value - minTarget) / Math.max(1, maxTarget - minTarget)) * 140;
+      const fittedMin = Math.min(...points.map((point) => point.fitted));
+      const fittedMax = Math.max(...points.map((point) => point.fitted));
+      const fittedScale = (value) =>
+        65 + ((value - fittedMin) / Math.max(1, fittedMax - fittedMin)) * 410;
+      const residualScale = (value) => 115 - (value / maxAbsResidual) * 70;
+      target.innerHTML = `<svg viewBox="0 0 520 220" role="img"
+          aria-label="${escapeHtml(visualization.title)} observed and predicted panel">
+          ${points.map((point) => `<g>
+            <line class="residual-line" x1="${xScale(Number(point.x))}"
+              y1="${targetScale(Number(point.observed))}"
+              x2="${xScale(Number(point.x))}" y2="${targetScale(point.fitted)}"></line>
+            <circle class="mark-series-primary" data-shape="circle"
+              cx="${xScale(Number(point.x))}" cy="${targetScale(Number(point.observed))}" r="6">
+              <title>Observed ${escapeHtml(point.observed)} at
+                ${escapeHtml(visualization.labels.x_axis)} ${escapeHtml(point.x)}</title>
+            </circle>
+            <rect class="mark-series-secondary" data-shape="square"
+              x="${xScale(Number(point.x)) - 5}" y="${targetScale(point.fitted) - 5}"
+              width="10" height="10">
+              <title>Predicted ${escapeHtml(point.predicted)} at
+                ${escapeHtml(visualization.labels.x_axis)} ${escapeHtml(point.x)}</title>
+            </rect>
+          </g>`).join("")}
+          <text class="chart-label" x="205" y="212">
+            ${escapeHtml(visualization.labels.x_axis)}
+          </text>
+          <text class="chart-label" x="8" y="26">
+            ${escapeHtml(visualization.labels.target_axis)}
+          </text>
+        </svg>
+        <svg viewBox="0 0 520 220" role="img"
+          aria-label="${escapeHtml(visualization.title)} residual against fitted panel">
+          <line class="zero-line" x1="65" y1="${residualScale(0)}"
+            x2="475" y2="${residualScale(0)}"></line>
+          ${points.map((point) => `<circle class="mark-series-primary" data-shape="circle"
+            cx="${fittedScale(point.fitted)}" cy="${residualScale(point.residual)}" r="6">
+            <title>Fitted ${point.fitted.toFixed(2)}, residual
+              ${point.residual.toFixed(2)}</title>
+          </circle>`).join("")}
+          <text class="chart-label" x="220" y="212">Fitted value</text>
+          <text class="chart-label" x="8" y="26">
+            ${escapeHtml(visualization.labels.residual_axis)}
+          </text>
+        </svg>`;
+      summary.textContent =
+        `${scenario.label}. Illustrative residuals range from ` +
+        `${Math.min(...residuals).toFixed(2)} to ${Math.max(...residuals).toFixed(2)}.`;
+    }
+
+    function renderCoefficientPath(visualization, target, summary, selectedIndex) {
+      const data = visualization.data;
+      const index = Math.max(
+        0,
+        Math.min(data.penalties.length - 1, Number(selectedIndex)),
+      );
+      const snapshot = LearningVisualizationModels.coefficientSnapshot(data, index);
+      const allValues = data.series.flatMap((series) => [...series.ridge, ...series.lasso])
+        .map(Number);
+      const maxAbs = Math.max(1, ...allValues.map(Math.abs));
+      const xScale = (step) =>
+        65 + (step / Math.max(1, data.penalties.length - 1)) * 410;
+      const yScale = (value) => 120 - (Number(value) / maxAbs) * 85;
+      const paths = data.series.flatMap((series, featureIndex) =>
+        ["ridge", "lasso"].map((model) => {
+          const values = series[model];
+          const points = values.map(
+            (value, step) => `${xScale(step)},${yScale(value)}`,
+          ).join(" ");
+          const featurePattern = featureIndex % 2 === 0 ? "" : ' stroke-width="5"';
+          return `<polyline class="coefficient-line model-${model}"${featurePattern}
+            points="${points}"><title>${escapeHtml(series.feature)} ${model}
+            coefficient path</title></polyline>`;
+        }),
+      ).join("");
+      const markers = snapshot.rows.map((row) => {
+        const x = xScale(index);
+        const ridgeY = yScale(row.ridge);
+        const lassoY = yScale(row.lasso);
+        const zeroMark = row.lassoIsZero
+          ? `<g class="coefficient-zero" data-shape="zero">
+              <circle cx="${x}" cy="${lassoY}" r="9"></circle>
+              <path d="M${x - 5},${lassoY - 5} L${x + 5},${lassoY + 5}
+                M${x + 5},${lassoY - 5} L${x - 5},${lassoY + 5}"></path>
+              <title>${escapeHtml(row.feature)} Lasso is exactly zero</title>
+            </g>`
+          : `<rect class="mark-series-secondary" data-shape="square"
+              x="${x - 6}" y="${lassoY - 6}" width="12" height="12">
+              <title>${escapeHtml(row.feature)} Lasso ${row.lasso}</title>
+            </rect>`;
+        return `<circle class="mark-series-primary" data-shape="circle"
+            cx="${x}" cy="${ridgeY}" r="6">
+            <title>${escapeHtml(row.feature)} Ridge ${row.ridge}</title>
+          </circle>${zeroMark}`;
+      }).join("");
+      target.innerHTML = `<svg viewBox="0 0 520 240" role="img"
+          aria-label="${escapeHtml(visualization.title)} coefficient path chart">
+          <line class="zero-line" x1="65" y1="${yScale(0)}"
+            x2="475" y2="${yScale(0)}"></line>
+          ${paths}
+          ${markers}
+          <text class="chart-label" x="195" y="228">Penalty strength</text>
+          <text class="chart-label" x="8" y="24">Coefficient</text>
+        </svg>
+        <table class="visualization-table">
+          <caption>Coefficients at penalty ${snapshot.penalty}</caption>
+          <thead><tr><th>Feature</th><th>Ridge</th><th>Lasso</th></tr></thead>
+          <tbody>${snapshot.rows.map((row) => `<tr>
+            <th scope="row">${escapeHtml(row.feature)}</th>
+            <td>${row.ridge}</td>
+            <td>${row.lasso}${row.lassoIsZero ? " (exact zero)" : ""}</td>
+          </tr>`).join("")}</tbody>
+        </table>`;
+      summary.textContent =
+        `Penalty ${snapshot.penalty}. ` +
+        snapshot.rows.map((row) =>
+          `${row.feature}: Ridge ${row.ridge}, Lasso ${row.lasso}`
+        ).join("; ") + ".";
+    }
+
+    function renderErrorMetrics(visualization, target, summary, selectedIndex) {
+      const adjustableErrors = visualization.data.adjustable_error;
+      const index = Math.max(
+        0,
+        Math.min(adjustableErrors.length - 1, Number(selectedIndex)),
+      );
+      const adjustableError = Number(adjustableErrors[index]);
+      const result = LearningVisualizationModels.errorMetricSummary(
+        visualization.data.base_errors,
+        adjustableError,
+      );
+      const maxAbsError = Math.max(1, ...result.errors.map((value) => Math.abs(value)));
+      const errorScale = (value) => 260 + (Number(value) / maxAbsError) * 190;
+      const metrics = [
+        ["MAE", result.mae],
+        ["MSE", result.mse],
+        ["RMSE", result.rmse],
+      ];
+      const maxMetric = Math.max(1, ...metrics.map((metric) => metric[1]));
+      target.innerHTML = `<svg viewBox="0 0 520 320" role="img"
+        aria-label="${escapeHtml(visualization.title)} error and metric chart">
+        <line class="zero-line" x1="${errorScale(0)}" y1="35"
+          x2="${errorScale(0)}" y2="105"></line>
+        ${visualization.data.base_errors.map((error, markIndex) =>
+          `<circle class="mark-series-primary" data-shape="circle"
+            cx="${errorScale(error)}" cy="${58 + (markIndex % 2) * 24}" r="6">
+            <title>Base error ${escapeHtml(error)}</title>
+          </circle>`
+        ).join("")}
+        <rect class="mark-series-secondary" data-shape="square"
+          x="${errorScale(adjustableError) - 8}" y="62" width="16" height="16">
+          <title>Adjustable error ${adjustableError}</title>
+        </rect>
+        <text class="chart-label" x="210" y="122">Prediction error</text>
+        ${metrics.map(([label, value], metricIndex) => {
+          const width = (value / maxMetric) * 330;
+          const y = 160 + metricIndex * 48;
+          return `<g><text class="chart-label" x="25" y="${y + 20}">${label}</text>
+            <rect class="metric-bar" data-shape="bar" x="95" y="${y}"
+              width="${width}" height="26">
+              <title>${label} ${value.toFixed(2)}</title>
+            </rect>
+            <text class="chart-label" x="${105 + width}" y="${y + 20}">
+              ${value.toFixed(2)}
+            </text></g>`;
+        }).join("")}
+      </svg>`;
+      const units = visualization.labels.units;
+      summary.textContent =
+        `Adjustable error ${adjustableError.toFixed(2)} ${units}. ` +
+        `MAE ${result.mae.toFixed(2)} ${units}; MSE ${result.mse.toFixed(2)} ` +
+        `${units} squared; RMSE ${result.rmse.toFixed(2)} ${units}.`;
+    }
+
     function visualizationControl(visualization) {
+      if (visualization.type === "binary-threshold") {
+        const controls = visualization.controls;
+        return `<label>Decision threshold
+          <input type="range" min="${controls.minimum}" max="${controls.maximum}"
+            step="${controls.step}" value="${controls.initial}"
+            data-viz-control="${escapeHtml(visualization.id)}">
+        </label>`;
+      }
+      if (visualization.type === "labeled-scatter") {
+        const controls = visualization.controls;
+        return `<label>Decision boundary
+          <select data-viz-control="${escapeHtml(visualization.id)}">
+            ${controls.boundaries.map((boundary) =>
+              `<option value="${escapeHtml(boundary.id)}"
+                ${boundary.id === controls.initial ? "selected" : ""}>
+                ${escapeHtml(boundary.label)}
+              </option>`
+            ).join("")}
+          </select>
+        </label>`;
+      }
+      if (visualization.type === "residual-diagnostics") {
+        return `<label>Residual scenario
+          <select data-viz-control="${escapeHtml(visualization.id)}">
+            ${visualization.data.scenarios.map((scenario) =>
+              `<option value="${escapeHtml(scenario.id)}"
+                ${scenario.id === visualization.controls.initial ? "selected" : ""}>
+                ${escapeHtml(scenario.label)}
+              </option>`
+            ).join("")}
+          </select>
+        </label>`;
+      }
+      if (visualization.type === "coefficient-path") {
+        const lastIndex = visualization.data.penalties.length - 1;
+        return `<label>Penalty step
+          <input type="range" min="0" max="${lastIndex}" step="1"
+            value="${visualization.controls.initial_index}"
+            data-viz-control="${escapeHtml(visualization.id)}">
+        </label>`;
+      }
+      if (visualization.type === "error-metrics") {
+        const lastIndex = visualization.data.adjustable_error.length - 1;
+        return `<label>Adjustable error
+          <input type="range" min="0" max="${lastIndex}" step="1"
+            value="${visualization.controls.initial_index}"
+            data-viz-control="${escapeHtml(visualization.id)}">
+        </label>`;
+      }
       if (visualization.type === "histogram") {
         const choices = visualization.controls?.bins || [4, 6, 8];
         return `<label>Number of bins
@@ -823,7 +1282,17 @@ __QUIZ_STATE_MACHINE__
       const control = document.querySelector(
         `[data-viz-control="${CSS.escape(visualization.id)}"]`,
       );
-      if (visualization.type === "histogram") {
+      if (visualization.type === "binary-threshold") {
+        renderBinaryThreshold(visualization, target, summary, Number(control.value));
+      } else if (visualization.type === "labeled-scatter") {
+        renderLabeledScatter(visualization, target, summary, control.value);
+      } else if (visualization.type === "residual-diagnostics") {
+        renderResidualDiagnostics(visualization, target, summary, control.value);
+      } else if (visualization.type === "coefficient-path") {
+        renderCoefficientPath(visualization, target, summary, Number(control.value));
+      } else if (visualization.type === "error-metrics") {
+        renderErrorMetrics(visualization, target, summary, Number(control.value));
+      } else if (visualization.type === "histogram") {
         renderHistogram(visualization, target, summary, Math.max(1, Number(control.value)));
       } else if (visualization.type === "boxplot") {
         renderBoxplot(visualization, target, summary, Number(control.value));
@@ -854,7 +1323,8 @@ __QUIZ_STATE_MACHINE__
         const control = document.querySelector(
           `[data-viz-control="${CSS.escape(visualization.id)}"]`,
         );
-        control.addEventListener("change", () => renderOneVisualization(visualization));
+        const eventType = control.matches('input[type="range"]') ? "input" : "change";
+        control.addEventListener(eventType, () => renderOneVisualization(visualization));
         renderOneVisualization(visualization);
       });
       byId("previous-visualization").disabled = state.visualizationIndex === 0;

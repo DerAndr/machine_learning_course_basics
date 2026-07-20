@@ -661,10 +661,23 @@ def test_minimal_template_exposes_offline_accessibility_contract() -> None:
         'data-setting="focus"',
         'data-setting="color-blind"',
         'data-setting="break-prompts"',
+        "__VISUALIZATION_MODELS__",
+        'id="palette-status"',
+        "--graph-primary: #6d28d9",
+        "--graph-secondary: #0f766e",
+        "--graph-primary: #0072b2",
+        "--graph-secondary: #d55e00",
         "renderHistogram",
         "renderBoxplot",
         "renderScatter",
         "renderMissingness",
+        "renderBinaryThreshold",
+        "renderLabeledScatter",
+        "renderResidualDiagnostics",
+        "renderCoefficientPath",
+        "renderErrorMetrics",
+        "LearningVisualizationModels.thresholdSummary",
+        "LearningVisualizationModels.seriesStyles",
         "renderQuiz",
         "showQuizResults",
         "safeStorage",
@@ -684,6 +697,16 @@ def test_interactive_template_exposes_stable_behavior_hooks(hook: str) -> None:
     template = template_path.read_text(encoding="utf-8")
 
     assert hook in template
+
+
+def test_palette_modes_use_visibly_different_graph_tokens() -> None:
+    template = TEMPLATE.read_text(encoding="utf-8")
+    assert "--graph-primary: #6d28d9" in template
+    assert "--graph-secondary: #0f766e" in template
+    assert "--graph-primary: #0072b2" in template
+    assert "--graph-secondary: #d55e00" in template
+    assert "Palette: standard" in template
+    assert "Palette: color-blind-safe" in template
 
 
 def test_interactive_template_preserves_non_color_and_focus_friendly_cues() -> None:
@@ -791,15 +814,75 @@ def _valid_html() -> str:
   <label>Difficulty <select data-setting="difficulty"></select></label>
   <label>Focus <input data-setting="focus" type="checkbox"></label>
   <label>Colour blind <input data-setting="color-blind" type="checkbox"></label>
+  <p id="palette-status">Palette: standard</p>
   <label>Break prompts <input data-setting="break-prompts" type="checkbox"></label>
   <main id="main-content">
     <section class="panel progress-panel">Progress</section>
     <section class="graph-fallback">The same lesson is available as text.</section>
   </main>
   <noscript><section id="static-content">Static learning content.</section></noscript>
+  <script>globalThis.LearningVisualizationModels = {};</script>
 </body>
 </html>
 """
+
+
+def test_validate_html_requires_palette_status(tmp_path: Path) -> None:
+    path = tmp_path / "index.html"
+    path.write_text(_valid_html().replace('id="palette-status"', ""), encoding="utf-8")
+    assert any("palette-status" in error for error in validate_html(path))
+
+
+def test_validate_html_rejects_duplicate_palette_status(tmp_path: Path) -> None:
+    path = tmp_path / "index.html"
+    duplicate = '<p id="palette-status">Palette: standard</p>'
+    path.write_text(
+        _valid_html().replace("</body>", f"{duplicate}</body>"),
+        encoding="utf-8",
+    )
+
+    assert "missing live palette status" in validate_html(path)
+
+
+def test_validate_html_requires_embedded_visualization_models(tmp_path: Path) -> None:
+    path = tmp_path / "index.html"
+    path.write_text(
+        _valid_html().replace(
+            "<script>globalThis.LearningVisualizationModels = {};</script>",
+            "",
+        ),
+        encoding="utf-8",
+    )
+
+    assert "missing embedded visualization models" in validate_html(path)
+
+
+def test_validate_html_does_not_mistake_model_usage_for_embedded_models(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "index.html"
+    path.write_text(
+        _valid_html().replace(
+            "globalThis.LearningVisualizationModels = {};",
+            "LearningVisualizationModels.thresholdSummary([], 0.5);",
+        ),
+        encoding="utf-8",
+    )
+
+    assert "missing embedded visualization models" in validate_html(path)
+
+
+def test_validate_html_rejects_unreplaced_visualization_model_marker(tmp_path: Path) -> None:
+    path = tmp_path / "index.html"
+    path.write_text(
+        _valid_html().replace(
+            "globalThis.LearningVisualizationModels = {};",
+            "__VISUALIZATION_MODELS__",
+        ),
+        encoding="utf-8",
+    )
+
+    assert "unreplaced visualization model marker" in validate_html(path)
 
 
 @pytest.mark.parametrize(
