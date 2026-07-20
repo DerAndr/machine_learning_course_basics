@@ -19,6 +19,10 @@
       --danger: #a33a3a;
       --border: #cad3dc;
       --focus: #111111;
+      --graph-primary: #6d28d9;
+      --graph-primary-strong: #4c1d95;
+      --graph-secondary: #0f766e;
+      --graph-secondary-strong: #115e59;
       --shadow: 0 10px 28px rgb(23 33 43 / 8%);
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
@@ -30,6 +34,10 @@
       --success: #009e73;
       --danger: #cc79a7;
       --focus: #000000;
+      --graph-primary: #0072b2;
+      --graph-primary-strong: #00547f;
+      --graph-secondary: #d55e00;
+      --graph-secondary-strong: #9f4500;
     }
 
     * {
@@ -184,6 +192,11 @@
       width: 1.35rem;
     }
 
+    .setting-status {
+      color: var(--muted);
+      margin: -0.65rem 0 0 2rem;
+    }
+
     textarea {
       border: 1px solid var(--border);
       border-radius: 0.55rem;
@@ -270,15 +283,121 @@
     }
 
     .mark-primary {
-      fill: var(--accent);
-      stroke: var(--accent-strong);
+      fill: var(--graph-primary);
+      stroke: var(--graph-primary-strong);
       stroke-width: 2;
     }
 
     .mark-secondary {
+      color: var(--graph-secondary);
       fill: url("#diagonal-hatch");
-      stroke: var(--secondary);
+      stroke: var(--graph-secondary-strong);
       stroke-width: 3;
+    }
+
+    .mark-series-primary {
+      fill: var(--graph-primary);
+      stroke: var(--graph-primary-strong);
+      stroke-width: 2;
+    }
+
+    .mark-series-secondary {
+      color: var(--graph-secondary);
+      fill: url("#diagonal-hatch");
+      stroke: var(--graph-secondary-strong);
+      stroke-width: 3;
+    }
+
+    .boundary-line,
+    .zero-line {
+      fill: none;
+      stroke: var(--graph-secondary-strong);
+      stroke-dasharray: 9 6;
+      stroke-width: 3;
+    }
+
+    .residual-line {
+      stroke: var(--graph-secondary-strong);
+      stroke-width: 2;
+    }
+
+    .metric-bar {
+      fill: var(--graph-primary);
+      stroke: var(--graph-primary-strong);
+      stroke-width: 2;
+    }
+
+    .confusion-cell rect {
+      stroke-width: 3;
+    }
+
+    .confusion-cell text {
+      fill: var(--ink);
+      font-size: 16px;
+      font-weight: 750;
+    }
+
+    .outcome-tn rect,
+    .outcome-tp rect {
+      fill: var(--graph-primary);
+      fill-opacity: 0.22;
+      stroke: var(--graph-primary-strong);
+    }
+
+    .outcome-fp,
+    .outcome-fn {
+      color: var(--graph-secondary);
+    }
+
+    .outcome-fp rect,
+    .outcome-fn rect {
+      fill: url("#diagonal-hatch");
+      stroke: var(--graph-secondary-strong);
+    }
+
+    .coefficient-line {
+      fill: none;
+      stroke-width: 3;
+    }
+
+    .feature-label {
+      fill: var(--ink);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .coefficient-legend {
+      color: var(--muted);
+      margin: 0.75rem 0 0;
+    }
+
+    .model-ridge {
+      stroke: var(--graph-primary);
+    }
+
+    .model-lasso {
+      stroke: var(--graph-secondary);
+      stroke-dasharray: 8 5;
+    }
+
+    .coefficient-zero {
+      color: var(--graph-secondary-strong);
+      fill: var(--surface);
+      stroke: currentColor;
+      stroke-width: 3;
+    }
+
+    .visualization-table {
+      border-collapse: collapse;
+      margin-top: 0.75rem;
+      width: 100%;
+    }
+
+    .visualization-table th,
+    .visualization-table td {
+      border-bottom: 1px solid var(--border);
+      padding: 0.4rem 0.55rem;
+      text-align: left;
     }
 
     .graph-fallback {
@@ -416,10 +535,15 @@
           <input data-setting="focus" type="checkbox">
           <span>Focus-friendly (ADHD-friendly) view</span>
         </label>
-        <label class="setting">
-          <input data-setting="color-blind" type="checkbox">
-          <span>Color-blind-safe palette</span>
-        </label>
+        <div>
+          <label class="setting">
+            <input data-setting="color-blind" type="checkbox">
+            <span>Color-blind-safe palette</span>
+          </label>
+          <p id="palette-status" class="setting-status" aria-live="polite">
+            Palette: standard
+          </p>
+        </div>
         <label class="setting">
           <input data-setting="break-prompts" type="checkbox">
           <span>Funny topic break prompts</span>
@@ -482,7 +606,7 @@
     <section id="static-content" class="static-reference">
       <details>
         <summary>Open complete static explanations and answer review</summary>
-        <div class="static-reference-body"><h2>Complete static learning reference</h2><p>This reference remains available when scripts or browser storage are unavailable.</p><section><h3>Concepts</h3><article><h4>Match the classifier to the target structure</h4><p>Classification predicts categorical targets or probabilities over categories. Binary tasks have two outcomes, multiclass tasks choose among more than two classes, multilabel tasks can assign several labels to one observation, and ordinal tasks use ordered classes whose gaps are not necessarily equal.</p><p><strong>How to interpret it:</strong> Identify whether one or several labels can apply and whether label order matters before choosing modeling and evaluation methods. An ordinal target preserves order without turning the levels into an ordinary continuous measurement.</p><h5>Common mistakes</h5><ul><li>Treating a multilabel task as multiclass even though several labels can be correct at once.</li><li>Treating ordered labels as equally spaced numerical values without justification.</li></ul><p><strong>Sources:</strong> lectures/lecture_05_classification_part_1/lecture_notes.md; lectures/lecture_05_classification_part_1/README.md</p></article><article><h4>KNN depends on meaningful distances</h4><p>K-Nearest Neighbors stores the training data and predicts from the majority class among the k nearest observations. The distance metric, feature scaling, dimensionality, and choice of k all change which observations count as neighbors.</p><p><strong>How to interpret it:</strong> Scale numerical features before distance-based comparison when their units differ, and select k with validation. Small k can follow local noise, while large k creates smoother neighborhoods that may blur a real boundary.</p><h5>Common mistakes</h5><ul><li>Letting a large-unit feature dominate distance solely because of its measurement scale.</li><li>Choosing k from training performance alone.</li></ul><p><strong>Sources:</strong> lectures/lecture_05_classification_part_1/lecture_notes.md; lectures/lecture_05_classification_part_1/lecture_examples/README.md; lectures/lecture_05_classification_part_1/practical_session/README.md</p></article><article><h4>Tree splits seek purer child nodes</h4><p>A decision tree recursively applies feature-threshold rules. Gini impurity and entropy measure how mixed the classes are in a node, and a useful split reduces impurity or uncertainty in its children.</p><p><strong>How to interpret it:</strong> Read a split as a local rule that partitions the current observations. Low impurity means one class dominates the node; it does not by itself prove that the rule will generalize to new data.</p><h5>Common mistakes</h5><ul><li>Assuming every impurity-reducing training split improves validation performance.</li><li>Reading Gini impurity as a feature importance score.</li></ul><p><strong>Sources:</strong> lectures/lecture_05_classification_part_1/lecture_notes.md; lectures/lecture_05_classification_part_1/lecture_examples/README.md</p></article><article><h4>Control tree complexity before it memorizes noise</h4><p>Deep trees can keep making greedy splits until small training patterns are memorized. Maximum depth, minimum samples per split or leaf, pruning, and cost-complexity control reduce effective tree complexity.</p><p><strong>How to interpret it:</strong> Compare training and validation behavior while changing a complexity control. A shallow tree may underfit, while an unconstrained tree can be accurate on training data yet fragile on unseen observations.</p><h5>Common mistakes</h5><ul><li>Choosing the deepest tree because it has the highest training accuracy.</li><li>Calling a very deep tree easy to interpret merely because every rule is technically visible.</li></ul><p><strong>Sources:</strong> lectures/lecture_05_classification_part_1/lecture_notes.md; lectures/lecture_05_classification_part_1/practical_session/README.md</p></article><article><h4>Separate probability estimation from the decision threshold</h4><p>Logistic regression applies the sigmoid function to a linear score, producing an estimated positive-class probability between zero and one. A threshold, often 0.5 by default, then converts that probability into a class decision.</p><p><strong>How to interpret it:</strong> Choose the threshold according to the cost of false positives and false negatives. Raising it usually produces fewer positive predictions; lowering it usually catches more positives but can also create more false alarms.</p><h5>Common mistakes</h5><ul><li>Treating 0.5 as the correct threshold for every application.</li><li>Interpreting a positive coefficient as a guaranteed causal effect.</li></ul><p><strong>Sources:</strong> lectures/lecture_05_classification_part_1/lecture_notes.md; lectures/lecture_05_classification_part_1/lecture_examples/README.md; lectures/lecture_05_classification_part_1/practical_session/README.md</p></article><article><h4>Name each kind of classification outcome</h4><p>For a binary classifier, the confusion matrix counts true positives, false positives, true negatives, and false negatives. These four counts distinguish correct decisions from the two error types.</p><p><strong>How to interpret it:</strong> Define the positive class first, then ask which error matters in the application. False-positive rate divides false positives by all actual negatives, while false-negative rate divides false negatives by all actual positives.</p><h5>Common mistakes</h5><ul><li>Swapping false positives and false negatives by forgetting what the actual class was.</li><li>Comparing error counts without considering the number of actual positives or negatives.</li></ul><p><strong>Sources:</strong> lectures/lecture_05_classification_part_1/lecture_notes.md; lectures/lecture_05_classification_part_1/practical_session/README.md</p></article><article><h4>Choose metrics around the error cost</h4><p>Precision is TP divided by TP plus FP and asks how often positive predictions are correct. Recall is TP divided by TP plus FN and asks how many actual positives were found. F-beta combines precision and recall, with beta above one emphasizing recall and beta below one emphasizing precision.</p><p><strong>How to interpret it:</strong> Accuracy can hide failure on a rare class. Prefer precision when false positives are especially costly, recall when missing positives is especially costly, and an F-score when a stated balance between them is useful.</p><h5>Common mistakes</h5><ul><li>Reporting only accuracy for a strongly imbalanced target.</li><li>Assuming F1 reveals whether precision or recall is the weaker component.</li></ul><p><strong>Sources:</strong> lectures/lecture_05_classification_part_1/lecture_notes.md; lectures/lecture_05_classification_part_1/practical_session/README.md</p></article><article><h4>Evaluate rankings and probabilities, not only hard labels</h4><p>The ROC curve plots true-positive rate against false-positive rate across thresholds, while ROC-AUC summarizes ranking quality. Log loss evaluates predicted probabilities directly and heavily penalizes confident wrong predictions.</p><p><strong>How to interpret it:</strong> Use ROC-AUC to examine threshold-spanning ranking behavior and log loss when probability quality matters. A score-distribution view can reveal class overlap that makes threshold selection difficult, even when one hard-label metric looks acceptable.</p><h5>Common mistakes</h5><ul><li>Reading AUC as accuracy at the default threshold.</li><li>Ignoring overconfident probability errors because the final class label happened to be the main reported output.</li></ul><p><strong>Sources:</strong> lectures/lecture_05_classification_part_1/lecture_notes.md; lectures/lecture_05_classification_part_1/practical_session/README.md</p></article></section><section><h3>Visualization reference</h3><article><h4>Illustrative predicted-score distribution</h4><p>These fixed illustrative probability-like scores show how bin choice changes the visible shape of a score distribution. This control changes histogram resolution; it is not a decision-threshold control and does not report classifier performance by itself.</p><p class="graph-fallback"><strong>Graph fallback:</strong> Illustrative probability-like scores, sorted: 0.04, 0.07, 0.09, 0.12, 0.16, 0.19, 0.23, 0.27, 0.31, 0.36, 0.42, 0.48, 0.54, 0.59, 0.64, 0.69, 0.73, 0.77, 0.81, 0.85, 0.89, 0.92, 0.95, 0.97. Different bin counts change the visible grouping, not the scores or a classification threshold.</p></article><article><h4>Illustrative feature geometry and local separation</h4><p>These fixed illustrative feature coordinates form two broadly separated regions with some overlap. The optional trend line summarizes association between the two coordinates; it is not a class boundary. KNN neighborhoods and a linear classifier can respond differently to this geometry.</p><p class="graph-fallback"><strong>Graph fallback:</strong> Illustrative class A points: (1.0, 1.2), (1.3, 1.0), (1.6, 1.7), (1.9, 1.5), (2.2, 2.4), (2.5, 2.0). Illustrative class B points: (2.7, 3.0), (3.0, 2.6), (3.3, 3.5), (3.7, 3.2), (4.0, 4.1), (4.4, 3.9). The coordinates generally rise together and the class regions nearly meet around the middle.</p></article><article><h4>Illustrative classification margins need context</h4><p>These fixed illustrative absolute margin-like values represent distances from a decision boundary. Wider fence settings change which large margins are flagged. A flagged value is unusual in this teaching sample, not evidence of a data error or a wrong prediction.</p><p class="graph-fallback"><strong>Graph fallback:</strong> Illustrative absolute margin-like values, sorted: 0.05, 0.08, 0.10, 0.11, 0.12, 0.14, 0.15, 0.16, 0.18, 0.20, 0.22, 0.25, 0.28, 0.45, 0.75. A 1 or 1.5 times IQR fence flags 0.45 and 0.75, while a 2 times IQR fence flags only 0.75. These are unusual margins, not automatically errors.</p></article></section><section><h3>Quiz banks and answer review</h3><section><h4>Foundations</h4><ol><li><p><strong>Which task allows several labels to be assigned to one observation?</strong></p><ul><li>Multilabel classification</li><li>Binary classification</li><li>Ordinary regression</li></ul><p><strong>Answer:</strong> Multilabel classification</p><p><strong>Explanation:</strong> In multilabel classification, several labels can apply simultaneously to the same observation.</p></li><li><p><strong>Why is feature scaling important for KNN?</strong></p><ul><li>Large-unit features can dominate distance</li><li>It makes every class balanced</li><li>It removes the need to select k</li></ul><p><strong>Answer:</strong> Large-unit features can dominate distance</p><p><strong>Explanation:</strong> KNN relies directly on distances, so a feature with a large numerical scale can overwhelm other features even when that dominance is not meaningful.</p></li><li><p><strong>What usually happens as k becomes very large in KNN?</strong></p><ul><li>The decision regions become smoother</li><li>The model uses only one neighbor</li><li>Distance stops mattering</li></ul><p><strong>Answer:</strong> The decision regions become smoother</p><p><strong>Explanation:</strong> Larger neighborhoods average over more observations, increasing smoothing and potentially blurring local class boundaries.</p></li><li><p><strong>What does low impurity mean in a decision-tree node?</strong></p><ul><li>One class dominates the node</li><li>All features have equal importance</li><li>The tree cannot overfit</li></ul><p><strong>Answer:</strong> One class dominates the node</p><p><strong>Explanation:</strong> Gini impurity and entropy are low when the class labels in the node are relatively homogeneous.</p></li><li><p><strong>Which control directly limits how many levels a decision tree can grow?</strong></p><ul><li>Maximum depth</li><li>Probability threshold</li><li>Number of KNN neighbors</li></ul><p><strong>Answer:</strong> Maximum depth</p><p><strong>Explanation:</strong> Maximum depth restricts tree complexity and can reduce the tendency to memorize small training patterns.</p></li><li><p><strong>What does the sigmoid function do in binary logistic regression?</strong></p><ul><li>Maps a linear score into a value from 0 to 1</li><li>Chooses the nearest neighbors</li><li>Builds axis-aligned splits</li></ul><p><strong>Answer:</strong> Maps a linear score into a value from 0 to 1</p><p><strong>Explanation:</strong> The sigmoid transforms the linear score into an estimated positive-class probability.</p></li><li><p><strong>What normally happens when the positive-class decision threshold is lowered?</strong></p><ul><li>More observations are predicted positive</li><li>No predictions change</li><li>Only true negatives increase</li></ul><p><strong>Answer:</strong> More observations are predicted positive</p><p><strong>Explanation:</strong> A lower threshold makes it easier for an estimated probability to qualify as positive, which can increase both true and false positives.</p></li><li><p><strong>Which confusion-matrix outcome is an actual positive predicted as negative?</strong></p><ul><li>False negative</li><li>False positive</li><li>True negative</li></ul><p><strong>Answer:</strong> False negative</p><p><strong>Explanation:</strong> The prediction missed an actual positive, so the outcome is a false negative.</p></li><li><p><strong>Which metric asks how often positive predictions are correct?</strong></p><ul><li>Precision</li><li>Recall</li><li>False-negative rate</li></ul><p><strong>Answer:</strong> Precision</p><p><strong>Explanation:</strong> Precision is TP divided by TP plus FP, so its denominator is all predicted positives.</p></li><li><p><strong>Which metric directly penalizes confident wrong probability predictions?</strong></p><ul><li>Log loss</li><li>Accuracy only</li><li>Tree depth</li></ul><p><strong>Answer:</strong> Log loss</p><p><strong>Explanation:</strong> Log loss evaluates probabilities and imposes a large penalty when a wrong prediction is made with high confidence.</p></li></ol></section><section><h4>Applied</h4><ol><li><p><strong>A photo can be tagged both indoor and nature. Which target structure fits?</strong></p><ul><li>Multilabel</li><li>Multiclass with exactly one class</li><li>Continuous regression</li></ul><p><strong>Answer:</strong> Multilabel</p><p><strong>Explanation:</strong> The labels are not mutually exclusive, so more than one can be correct for the same photo.</p></li><li><p><strong>A target has levels low, medium, and high. What must the analysis preserve?</strong></p><ul><li>Their natural order</li><li>Equal numeric gaps between levels</li><li>No relationship among levels</li></ul><p><strong>Answer:</strong> Their natural order</p><p><strong>Explanation:</strong> Ordinal classes have meaningful order, but the spacing between adjacent levels is not automatically equal.</p></li><li><p><strong>A KNN model uses age in years and income in euros without scaling. What is the main risk?</strong></p><ul><li>Income may dominate the distance calculation</li><li>The tree becomes too deep</li><li>The sigmoid stops returning probabilities</li></ul><p><strong>Answer:</strong> Income may dominate the distance calculation</p><p><strong>Explanation:</strong> The larger numerical scale can drive nearest-neighbor distances even if that influence is not substantively justified.</p></li><li><p><strong>How should k usually be selected for KNN?</strong></p><ul><li>With validation or cross-validation</li><li>From training accuracy alone</li><li>Always set to 1</li></ul><p><strong>Answer:</strong> With validation or cross-validation</p><p><strong>Explanation:</strong> Validation checks the bias-variance tradeoff on held-out data rather than rewarding a neighborhood that merely fits training noise.</p></li><li><p><strong>A tree has tiny leaves that memorize rare training combinations. Which change directly addresses this?</strong></p><ul><li>Increase minimum samples per leaf</li><li>Lower the logistic threshold</li><li>Use more histogram bins</li></ul><p><strong>Answer:</strong> Increase minimum samples per leaf</p><p><strong>Explanation:</strong> Requiring more observations in each leaf prevents the tree from creating rules for extremely small training groups.</p></li><li><p><strong>Missing a disease case is especially costly. Which threshold change commonly supports higher recall?</strong></p><ul><li>Lower the positive threshold</li><li>Raise the positive threshold</li><li>Remove probability estimates</li></ul><p><strong>Answer:</strong> Lower the positive threshold</p><p><strong>Explanation:</strong> Lowering the threshold usually predicts more observations as positive and can catch more actual positives, though false positives may also rise.</p></li><li><p><strong>A classifier has 30 true positives and 10 false positives. What is its precision?</strong></p><ul><li>0.75</li><li>0.60</li><li>0.30</li></ul><p><strong>Answer:</strong> 0.75</p><p><strong>Explanation:</strong> Precision is 30 divided by 30 plus 10, which equals 0.75.</p></li><li><p><strong>A classifier has 30 true positives and 20 false negatives. What is its recall?</strong></p><ul><li>0.60</li><li>0.75</li><li>0.40</li></ul><p><strong>Answer:</strong> 0.60</p><p><strong>Explanation:</strong> Recall is 30 divided by 30 plus 20, which equals 0.60.</p></li><li><p><strong>Only 1 percent of cases are positive, and a model always predicts negative. Why is accuracy misleading?</strong></p><ul><li>It hides complete failure on the positive class</li><li>It directly measures probability calibration</li><li>It gives equal detail about both error types</li></ul><p><strong>Answer:</strong> It hides complete failure on the positive class</p><p><strong>Explanation:</strong> The model can be 99 percent accurate while its recall for the rare positive class is zero.</p></li><li><p><strong>Which evaluation is most directly concerned with the quality of estimated probabilities?</strong></p><ul><li>Log loss</li><li>Maximum tree depth</li><li>KNN fit time</li></ul><p><strong>Answer:</strong> Log loss</p><p><strong>Explanation:</strong> Log loss uses the predicted probabilities themselves rather than only the final hard labels.</p></li></ol></section><section><h4>Challenge</h4><ol><li><p><strong>Why can KNN degrade in a very high-dimensional feature space?</strong></p><ul><li>Near and far distances can become less distinguishable</li><li>Trees become probabilistic</li><li>All classes become ordinal</li></ul><p><strong>Answer:</strong> Near and far distances can become less distinguishable</p><p><strong>Explanation:</strong> Distance concentration makes local neighborhoods less informative as dimensionality grows, especially with irrelevant features.</p></li><li><p><strong>What distinguishes weighted KNN from ordinary majority voting?</strong></p><ul><li>Closer neighbors receive more influence</li><li>Every feature receives the same scale</li><li>The model grows a deeper tree</li></ul><p><strong>Answer:</strong> Closer neighbors receive more influence</p><p><strong>Explanation:</strong> Weighted KNN gives nearby observations larger votes because they may be more informative than distant neighbors.</p></li><li><p><strong>Why might a shallow decision tree struggle with a diagonal class boundary?</strong></p><ul><li>Its individual splits are axis-aligned</li><li>It cannot use numerical features</li><li>Gini impurity requires probabilities from logistic regression</li></ul><p><strong>Answer:</strong> Its individual splits are axis-aligned</p><p><strong>Explanation:</strong> A tree partitions one feature at a time, so representing a diagonal boundary may require several rectangular regions.</p></li><li><p><strong>Which node has the lower Gini impurity?</strong></p><ul><li>A node containing only one class</li><li>A node split evenly between two classes</li><li>They always have equal impurity</li></ul><p><strong>Answer:</strong> A node containing only one class</p><p><strong>Explanation:</strong> A pure node has Gini impurity zero, while an evenly mixed binary node has higher impurity.</p></li><li><p><strong>A deep tree has perfect training accuracy but much worse validation accuracy. What is the strongest diagnosis?</strong></p><ul><li>The tree is overfitting</li><li>The validation data proves the tree is pure</li><li>The model needs a lower logistic threshold</li></ul><p><strong>Answer:</strong> The tree is overfitting</p><p><strong>Explanation:</strong> A large training-validation gap is consistent with memorizing training-specific patterns that do not generalize.</p></li><li><p><strong>What does choosing beta greater than 1 do in an F-beta score?</strong></p><ul><li>Gives recall more weight</li><li>Gives precision more weight</li><li>Turns the score into accuracy</li></ul><p><strong>Answer:</strong> Gives recall more weight</p><p><strong>Explanation:</strong> The lecture defines beta above one as emphasizing recall and beta below one as emphasizing precision.</p></li><li><p><strong>What does ROC-AUC summarize?</strong></p><ul><li>Ranking behavior across thresholds</li><li>Accuracy at exactly 0.5</li><li>Only the false-negative count</li></ul><p><strong>Answer:</strong> Ranking behavior across thresholds</p><p><strong>Explanation:</strong> The ROC curve varies the threshold, and its area summarizes how well scores rank positives relative to negatives.</p></li><li><p><strong>Two models make the same number of wrong labels, but one is extremely confident when wrong. Which metric exposes that difference?</strong></p><ul><li>Log loss</li><li>Hard-label accuracy alone</li><li>Maximum depth</li></ul><p><strong>Answer:</strong> Log loss</p><p><strong>Explanation:</strong> Log loss penalizes a confident wrong probability more heavily, while hard-label accuracy records only that both predictions were wrong.</p></li><li><p><strong>False positives are very expensive. Which threshold change commonly reduces positive predictions?</strong></p><ul><li>Raise the positive threshold</li><li>Lower the positive threshold</li><li>Set every score to 0.5</li></ul><p><strong>Answer:</strong> Raise the positive threshold</p><p><strong>Explanation:</strong> A higher threshold demands stronger estimated evidence before predicting positive, often reducing both true and false positive predictions.</p></li><li><p><strong>A regulated decision needs a compact, readable model and usable probabilities. Which lecture model is a strong baseline to assess?</strong></p><ul><li>Logistic regression</li><li>Unconstrained deep decision tree</li><li>KNN with unscaled features</li></ul><p><strong>Answer:</strong> Logistic regression</p><p><strong>Explanation:</strong> Logistic regression offers smooth probability estimates and interpretable signed coefficients when a linear boundary is suitable, though validation and application-specific checks remain necessary.</p></li></ol></section></section><section><h3>Sources</h3><ul><li>lectures/lecture_05_classification_part_1/README.md</li><li>lectures/lecture_05_classification_part_1/lecture_notes.md</li><li>lectures/lecture_05_classification_part_1/links.yaml</li><li>lectures/lecture_05_classification_part_1/lecture_examples/README.md</li><li>lectures/lecture_05_classification_part_1/practical_session/README.md</li></ul></section></div>
+        <div class="static-reference-body"><h2>Complete static learning reference</h2><p>This reference remains available when scripts or browser storage are unavailable.</p><section><h3>Concepts</h3><article><h4>Match the classifier to the target structure</h4><p>Classification predicts categorical targets or probabilities over categories. Binary tasks have two outcomes, multiclass tasks choose among more than two classes, multilabel tasks can assign several labels to one observation, and ordinal tasks use ordered classes whose gaps are not necessarily equal.</p><p><strong>How to interpret it:</strong> Identify whether one or several labels can apply and whether label order matters before choosing modeling and evaluation methods. An ordinal target preserves order without turning the levels into an ordinary continuous measurement.</p><h5>Common mistakes</h5><ul><li>Treating a multilabel task as multiclass even though several labels can be correct at once.</li><li>Treating ordered labels as equally spaced numerical values without justification.</li></ul><p><strong>Sources:</strong> lectures/lecture_05_classification_part_1/lecture_notes.md; lectures/lecture_05_classification_part_1/README.md</p></article><article><h4>KNN depends on meaningful distances</h4><p>K-Nearest Neighbors stores the training data and predicts from the majority class among the k nearest observations. The distance metric, feature scaling, dimensionality, and choice of k all change which observations count as neighbors.</p><p><strong>How to interpret it:</strong> Scale numerical features before distance-based comparison when their units differ, and select k with validation. Small k can follow local noise, while large k creates smoother neighborhoods that may blur a real boundary.</p><h5>Common mistakes</h5><ul><li>Letting a large-unit feature dominate distance solely because of its measurement scale.</li><li>Choosing k from training performance alone.</li></ul><p><strong>Sources:</strong> lectures/lecture_05_classification_part_1/lecture_notes.md; lectures/lecture_05_classification_part_1/lecture_examples/README.md; lectures/lecture_05_classification_part_1/practical_session/README.md</p></article><article><h4>Tree splits seek purer child nodes</h4><p>A decision tree recursively applies feature-threshold rules. Gini impurity and entropy measure how mixed the classes are in a node, and a useful split reduces impurity or uncertainty in its children.</p><p><strong>How to interpret it:</strong> Read a split as a local rule that partitions the current observations. Low impurity means one class dominates the node; it does not by itself prove that the rule will generalize to new data.</p><h5>Common mistakes</h5><ul><li>Assuming every impurity-reducing training split improves validation performance.</li><li>Reading Gini impurity as a feature importance score.</li></ul><p><strong>Sources:</strong> lectures/lecture_05_classification_part_1/lecture_notes.md; lectures/lecture_05_classification_part_1/lecture_examples/README.md</p></article><article><h4>Control tree complexity before it memorizes noise</h4><p>Deep trees can keep making greedy splits until small training patterns are memorized. Maximum depth, minimum samples per split or leaf, pruning, and cost-complexity control reduce effective tree complexity.</p><p><strong>How to interpret it:</strong> Compare training and validation behavior while changing a complexity control. A shallow tree may underfit, while an unconstrained tree can be accurate on training data yet fragile on unseen observations.</p><h5>Common mistakes</h5><ul><li>Choosing the deepest tree because it has the highest training accuracy.</li><li>Calling a very deep tree easy to interpret merely because every rule is technically visible.</li></ul><p><strong>Sources:</strong> lectures/lecture_05_classification_part_1/lecture_notes.md; lectures/lecture_05_classification_part_1/practical_session/README.md</p></article><article><h4>Separate probability estimation from the decision threshold</h4><p>Logistic regression applies the sigmoid function to a linear score, producing an estimated positive-class probability between zero and one. A threshold, often 0.5 by default, then converts that probability into a class decision.</p><p><strong>How to interpret it:</strong> Choose the threshold according to the cost of false positives and false negatives. Raising it usually produces fewer positive predictions; lowering it usually catches more positives but can also create more false alarms.</p><h5>Common mistakes</h5><ul><li>Treating 0.5 as the correct threshold for every application.</li><li>Interpreting a positive coefficient as a guaranteed causal effect.</li></ul><p><strong>Sources:</strong> lectures/lecture_05_classification_part_1/lecture_notes.md; lectures/lecture_05_classification_part_1/lecture_examples/README.md; lectures/lecture_05_classification_part_1/practical_session/README.md</p></article><article><h4>Name each kind of classification outcome</h4><p>For a binary classifier, the confusion matrix counts true positives, false positives, true negatives, and false negatives. These four counts distinguish correct decisions from the two error types.</p><p><strong>How to interpret it:</strong> Define the positive class first, then ask which error matters in the application. False-positive rate divides false positives by all actual negatives, while false-negative rate divides false negatives by all actual positives.</p><h5>Common mistakes</h5><ul><li>Swapping false positives and false negatives by forgetting what the actual class was.</li><li>Comparing error counts without considering the number of actual positives or negatives.</li></ul><p><strong>Sources:</strong> lectures/lecture_05_classification_part_1/lecture_notes.md; lectures/lecture_05_classification_part_1/practical_session/README.md</p></article><article><h4>Choose metrics around the error cost</h4><p>Precision is TP divided by TP plus FP and asks how often positive predictions are correct. Recall is TP divided by TP plus FN and asks how many actual positives were found. F-beta combines precision and recall, with beta above one emphasizing recall and beta below one emphasizing precision.</p><p><strong>How to interpret it:</strong> Accuracy can hide failure on a rare class. Prefer precision when false positives are especially costly, recall when missing positives is especially costly, and an F-score when a stated balance between them is useful.</p><h5>Common mistakes</h5><ul><li>Reporting only accuracy for a strongly imbalanced target.</li><li>Assuming F1 reveals whether precision or recall is the weaker component.</li></ul><p><strong>Sources:</strong> lectures/lecture_05_classification_part_1/lecture_notes.md; lectures/lecture_05_classification_part_1/practical_session/README.md</p></article><article><h4>Evaluate rankings and probabilities, not only hard labels</h4><p>The ROC curve plots true-positive rate against false-positive rate across thresholds, while ROC-AUC summarizes ranking quality. Log loss evaluates predicted probabilities directly and heavily penalizes confident wrong predictions.</p><p><strong>How to interpret it:</strong> Use ROC-AUC to examine threshold-spanning ranking behavior and log loss when probability quality matters. A score-distribution view can reveal class overlap that makes threshold selection difficult, even when one hard-label metric looks acceptable.</p><h5>Common mistakes</h5><ul><li>Reading AUC as accuracy at the default threshold.</li><li>Ignoring overconfident probability errors because the final class label happened to be the main reported output.</li></ul><p><strong>Sources:</strong> lectures/lecture_05_classification_part_1/lecture_notes.md; lectures/lecture_05_classification_part_1/practical_session/README.md</p></article></section><section><h3>Visualization reference</h3><article><h4>Decision threshold and confusion matrix</h4><p>These fixed illustrative scores separate probability estimation from the threshold used to make a positive or negative decision. Move the threshold to see how true positives, false positives, true negatives, false negatives, precision, and recall change together.</p><p class="graph-fallback"><strong>Graph fallback:</strong> At the 0.50 decision threshold, the fixed illustrative cases give TP 4, FP 2, TN 4, and FN 2. Precision and recall are both about 0.67. Raising the threshold predicts fewer positives; lowering it predicts more positives.</p></article><article><h4>Class-aware decision boundary explorer</h4><p>The same illustrative Class A and Class B points stay visibly tied to their class labels while you compare candidate linear boundaries. A boundary changes the predicted side of a point; it does not change its true class.</p><p class="graph-fallback"><strong>Graph fallback:</strong> Class A occupies the lower-left portion of the illustrative feature space and Class B the upper-right. Compare the balanced, conservative-positive, and permissive-positive boundaries while keeping the true A/B class labels fixed.</p></article></section><section><h3>Quiz banks and answer review</h3><section><h4>Foundations</h4><ol><li><p><strong>Which task allows several labels to be assigned to one observation?</strong></p><ul><li>Multilabel classification</li><li>Binary classification</li><li>Ordinary regression</li></ul><p><strong>Answer:</strong> Multilabel classification</p><p><strong>Explanation:</strong> In multilabel classification, several labels can apply simultaneously to the same observation.</p></li><li><p><strong>Why is feature scaling important for KNN?</strong></p><ul><li>Large-unit features can dominate distance</li><li>It makes every class balanced</li><li>It removes the need to select k</li></ul><p><strong>Answer:</strong> Large-unit features can dominate distance</p><p><strong>Explanation:</strong> KNN relies directly on distances, so a feature with a large numerical scale can overwhelm other features even when that dominance is not meaningful.</p></li><li><p><strong>What usually happens as k becomes very large in KNN?</strong></p><ul><li>The decision regions become smoother</li><li>The model uses only one neighbor</li><li>Distance stops mattering</li></ul><p><strong>Answer:</strong> The decision regions become smoother</p><p><strong>Explanation:</strong> Larger neighborhoods average over more observations, increasing smoothing and potentially blurring local class boundaries.</p></li><li><p><strong>What does low impurity mean in a decision-tree node?</strong></p><ul><li>One class dominates the node</li><li>All features have equal importance</li><li>The tree cannot overfit</li></ul><p><strong>Answer:</strong> One class dominates the node</p><p><strong>Explanation:</strong> Gini impurity and entropy are low when the class labels in the node are relatively homogeneous.</p></li><li><p><strong>Which control directly limits how many levels a decision tree can grow?</strong></p><ul><li>Maximum depth</li><li>Probability threshold</li><li>Number of KNN neighbors</li></ul><p><strong>Answer:</strong> Maximum depth</p><p><strong>Explanation:</strong> Maximum depth restricts tree complexity and can reduce the tendency to memorize small training patterns.</p></li><li><p><strong>What does the sigmoid function do in binary logistic regression?</strong></p><ul><li>Maps a linear score into a value from 0 to 1</li><li>Chooses the nearest neighbors</li><li>Builds axis-aligned splits</li></ul><p><strong>Answer:</strong> Maps a linear score into a value from 0 to 1</p><p><strong>Explanation:</strong> The sigmoid transforms the linear score into an estimated positive-class probability.</p></li><li><p><strong>What normally happens when the positive-class decision threshold is lowered?</strong></p><ul><li>More observations are predicted positive</li><li>No predictions change</li><li>Only true negatives increase</li></ul><p><strong>Answer:</strong> More observations are predicted positive</p><p><strong>Explanation:</strong> A lower threshold makes it easier for an estimated probability to qualify as positive, which can increase both true and false positives.</p></li><li><p><strong>Which confusion-matrix outcome is an actual positive predicted as negative?</strong></p><ul><li>False negative</li><li>False positive</li><li>True negative</li></ul><p><strong>Answer:</strong> False negative</p><p><strong>Explanation:</strong> The prediction missed an actual positive, so the outcome is a false negative.</p></li><li><p><strong>Which metric asks how often positive predictions are correct?</strong></p><ul><li>Precision</li><li>Recall</li><li>False-negative rate</li></ul><p><strong>Answer:</strong> Precision</p><p><strong>Explanation:</strong> Precision is TP divided by TP plus FP, so its denominator is all predicted positives.</p></li><li><p><strong>Which metric directly penalizes confident wrong probability predictions?</strong></p><ul><li>Log loss</li><li>Accuracy only</li><li>Tree depth</li></ul><p><strong>Answer:</strong> Log loss</p><p><strong>Explanation:</strong> Log loss evaluates probabilities and imposes a large penalty when a wrong prediction is made with high confidence.</p></li></ol></section><section><h4>Applied</h4><ol><li><p><strong>A photo can be tagged both indoor and nature. Which target structure fits?</strong></p><ul><li>Multilabel</li><li>Multiclass with exactly one class</li><li>Continuous regression</li></ul><p><strong>Answer:</strong> Multilabel</p><p><strong>Explanation:</strong> The labels are not mutually exclusive, so more than one can be correct for the same photo.</p></li><li><p><strong>A target has levels low, medium, and high. What must the analysis preserve?</strong></p><ul><li>Their natural order</li><li>Equal numeric gaps between levels</li><li>No relationship among levels</li></ul><p><strong>Answer:</strong> Their natural order</p><p><strong>Explanation:</strong> Ordinal classes have meaningful order, but the spacing between adjacent levels is not automatically equal.</p></li><li><p><strong>A KNN model uses age in years and income in euros without scaling. What is the main risk?</strong></p><ul><li>Income may dominate the distance calculation</li><li>The tree becomes too deep</li><li>The sigmoid stops returning probabilities</li></ul><p><strong>Answer:</strong> Income may dominate the distance calculation</p><p><strong>Explanation:</strong> The larger numerical scale can drive nearest-neighbor distances even if that influence is not substantively justified.</p></li><li><p><strong>How should k usually be selected for KNN?</strong></p><ul><li>With validation or cross-validation</li><li>From training accuracy alone</li><li>Always set to 1</li></ul><p><strong>Answer:</strong> With validation or cross-validation</p><p><strong>Explanation:</strong> Validation checks the bias-variance tradeoff on held-out data rather than rewarding a neighborhood that merely fits training noise.</p></li><li><p><strong>A tree has tiny leaves that memorize rare training combinations. Which change directly addresses this?</strong></p><ul><li>Increase minimum samples per leaf</li><li>Lower the logistic threshold</li><li>Use more histogram bins</li></ul><p><strong>Answer:</strong> Increase minimum samples per leaf</p><p><strong>Explanation:</strong> Requiring more observations in each leaf prevents the tree from creating rules for extremely small training groups.</p></li><li><p><strong>Missing a disease case is especially costly. Which threshold change commonly supports higher recall?</strong></p><ul><li>Lower the positive threshold</li><li>Raise the positive threshold</li><li>Remove probability estimates</li></ul><p><strong>Answer:</strong> Lower the positive threshold</p><p><strong>Explanation:</strong> Lowering the threshold usually predicts more observations as positive and can catch more actual positives, though false positives may also rise.</p></li><li><p><strong>A classifier has 30 true positives and 10 false positives. What is its precision?</strong></p><ul><li>0.75</li><li>0.60</li><li>0.30</li></ul><p><strong>Answer:</strong> 0.75</p><p><strong>Explanation:</strong> Precision is 30 divided by 30 plus 10, which equals 0.75.</p></li><li><p><strong>A classifier has 30 true positives and 20 false negatives. What is its recall?</strong></p><ul><li>0.60</li><li>0.75</li><li>0.40</li></ul><p><strong>Answer:</strong> 0.60</p><p><strong>Explanation:</strong> Recall is 30 divided by 30 plus 20, which equals 0.60.</p></li><li><p><strong>Only 1 percent of cases are positive, and a model always predicts negative. Why is accuracy misleading?</strong></p><ul><li>It hides complete failure on the positive class</li><li>It directly measures probability calibration</li><li>It gives equal detail about both error types</li></ul><p><strong>Answer:</strong> It hides complete failure on the positive class</p><p><strong>Explanation:</strong> The model can be 99 percent accurate while its recall for the rare positive class is zero.</p></li><li><p><strong>Which evaluation is most directly concerned with the quality of estimated probabilities?</strong></p><ul><li>Log loss</li><li>Maximum tree depth</li><li>KNN fit time</li></ul><p><strong>Answer:</strong> Log loss</p><p><strong>Explanation:</strong> Log loss uses the predicted probabilities themselves rather than only the final hard labels.</p></li></ol></section><section><h4>Challenge</h4><ol><li><p><strong>Why can KNN degrade in a very high-dimensional feature space?</strong></p><ul><li>Near and far distances can become less distinguishable</li><li>Trees become probabilistic</li><li>All classes become ordinal</li></ul><p><strong>Answer:</strong> Near and far distances can become less distinguishable</p><p><strong>Explanation:</strong> Distance concentration makes local neighborhoods less informative as dimensionality grows, especially with irrelevant features.</p></li><li><p><strong>What distinguishes weighted KNN from ordinary majority voting?</strong></p><ul><li>Closer neighbors receive more influence</li><li>Every feature receives the same scale</li><li>The model grows a deeper tree</li></ul><p><strong>Answer:</strong> Closer neighbors receive more influence</p><p><strong>Explanation:</strong> Weighted KNN gives nearby observations larger votes because they may be more informative than distant neighbors.</p></li><li><p><strong>Why might a shallow decision tree struggle with a diagonal class boundary?</strong></p><ul><li>Its individual splits are axis-aligned</li><li>It cannot use numerical features</li><li>Gini impurity requires probabilities from logistic regression</li></ul><p><strong>Answer:</strong> Its individual splits are axis-aligned</p><p><strong>Explanation:</strong> A tree partitions one feature at a time, so representing a diagonal boundary may require several rectangular regions.</p></li><li><p><strong>Which node has the lower Gini impurity?</strong></p><ul><li>A node containing only one class</li><li>A node split evenly between two classes</li><li>They always have equal impurity</li></ul><p><strong>Answer:</strong> A node containing only one class</p><p><strong>Explanation:</strong> A pure node has Gini impurity zero, while an evenly mixed binary node has higher impurity.</p></li><li><p><strong>A deep tree has perfect training accuracy but much worse validation accuracy. What is the strongest diagnosis?</strong></p><ul><li>The tree is overfitting</li><li>The validation data proves the tree is pure</li><li>The model needs a lower logistic threshold</li></ul><p><strong>Answer:</strong> The tree is overfitting</p><p><strong>Explanation:</strong> A large training-validation gap is consistent with memorizing training-specific patterns that do not generalize.</p></li><li><p><strong>What does choosing beta greater than 1 do in an F-beta score?</strong></p><ul><li>Gives recall more weight</li><li>Gives precision more weight</li><li>Turns the score into accuracy</li></ul><p><strong>Answer:</strong> Gives recall more weight</p><p><strong>Explanation:</strong> The lecture defines beta above one as emphasizing recall and beta below one as emphasizing precision.</p></li><li><p><strong>What does ROC-AUC summarize?</strong></p><ul><li>Ranking behavior across thresholds</li><li>Accuracy at exactly 0.5</li><li>Only the false-negative count</li></ul><p><strong>Answer:</strong> Ranking behavior across thresholds</p><p><strong>Explanation:</strong> The ROC curve varies the threshold, and its area summarizes how well scores rank positives relative to negatives.</p></li><li><p><strong>Two models make the same number of wrong labels, but one is extremely confident when wrong. Which metric exposes that difference?</strong></p><ul><li>Log loss</li><li>Hard-label accuracy alone</li><li>Maximum depth</li></ul><p><strong>Answer:</strong> Log loss</p><p><strong>Explanation:</strong> Log loss penalizes a confident wrong probability more heavily, while hard-label accuracy records only that both predictions were wrong.</p></li><li><p><strong>False positives are very expensive. Which threshold change commonly reduces positive predictions?</strong></p><ul><li>Raise the positive threshold</li><li>Lower the positive threshold</li><li>Set every score to 0.5</li></ul><p><strong>Answer:</strong> Raise the positive threshold</p><p><strong>Explanation:</strong> A higher threshold demands stronger estimated evidence before predicting positive, often reducing both true and false positive predictions.</p></li><li><p><strong>A regulated decision needs a compact, readable model and usable probabilities. Which lecture model is a strong baseline to assess?</strong></p><ul><li>Logistic regression</li><li>Unconstrained deep decision tree</li><li>KNN with unscaled features</li></ul><p><strong>Answer:</strong> Logistic regression</p><p><strong>Explanation:</strong> Logistic regression offers smooth probability estimates and interpretable signed coefficients when a linear boundary is suitable, though validation and application-specific checks remain necessary.</p></li></ol></section></section><section><h3>Sources</h3><ul><li>lectures/lecture_05_classification_part_1/README.md</li><li>lectures/lecture_05_classification_part_1/lecture_notes.md</li></ul></section></div>
       </details>
     </section>
 
@@ -674,7 +798,99 @@
 });
 
   </script>
-  <script>const CONTENT = {"meta":{"experience_id":"lecture-05-classification-part-1","title":"Classification Part 1: Interactive Review","sources":["lectures/lecture_05_classification_part_1/README.md","lectures/lecture_05_classification_part_1/lecture_notes.md","lectures/lecture_05_classification_part_1/links.yaml","lectures/lecture_05_classification_part_1/lecture_examples/README.md","lectures/lecture_05_classification_part_1/practical_session/README.md"]},"defaults":{"difficulty":"foundations","focus_mode":true,"color_blind":true,"break_prompts":true},"concepts":[{"id":"classification-problem-types","title":"Match the classifier to the target structure","explanation":"Classification predicts categorical targets or probabilities over categories. Binary tasks have two outcomes, multiclass tasks choose among more than two classes, multilabel tasks can assign several labels to one observation, and ordinal tasks use ordered classes whose gaps are not necessarily equal.","interpretation":"Identify whether one or several labels can apply and whether label order matters before choosing modeling and evaluation methods. An ordinal target preserves order without turning the levels into an ordinary continuous measurement.","common_mistakes":["Treating a multilabel task as multiclass even though several labels can be correct at once.","Treating ordered labels as equally spaced numerical values without justification."],"sources":["lectures/lecture_05_classification_part_1/lecture_notes.md","lectures/lecture_05_classification_part_1/README.md"]},{"id":"knn-distance-scaling","title":"KNN depends on meaningful distances","explanation":"K-Nearest Neighbors stores the training data and predicts from the majority class among the k nearest observations. The distance metric, feature scaling, dimensionality, and choice of k all change which observations count as neighbors.","interpretation":"Scale numerical features before distance-based comparison when their units differ, and select k with validation. Small k can follow local noise, while large k creates smoother neighborhoods that may blur a real boundary.","common_mistakes":["Letting a large-unit feature dominate distance solely because of its measurement scale.","Choosing k from training performance alone."],"sources":["lectures/lecture_05_classification_part_1/lecture_notes.md","lectures/lecture_05_classification_part_1/lecture_examples/README.md","lectures/lecture_05_classification_part_1/practical_session/README.md"]},{"id":"decision-tree-impurity","title":"Tree splits seek purer child nodes","explanation":"A decision tree recursively applies feature-threshold rules. Gini impurity and entropy measure how mixed the classes are in a node, and a useful split reduces impurity or uncertainty in its children.","interpretation":"Read a split as a local rule that partitions the current observations. Low impurity means one class dominates the node; it does not by itself prove that the rule will generalize to new data.","common_mistakes":["Assuming every impurity-reducing training split improves validation performance.","Reading Gini impurity as a feature importance score."],"sources":["lectures/lecture_05_classification_part_1/lecture_notes.md","lectures/lecture_05_classification_part_1/lecture_examples/README.md"]},{"id":"tree-overfitting-control","title":"Control tree complexity before it memorizes noise","explanation":"Deep trees can keep making greedy splits until small training patterns are memorized. Maximum depth, minimum samples per split or leaf, pruning, and cost-complexity control reduce effective tree complexity.","interpretation":"Compare training and validation behavior while changing a complexity control. A shallow tree may underfit, while an unconstrained tree can be accurate on training data yet fragile on unseen observations.","common_mistakes":["Choosing the deepest tree because it has the highest training accuracy.","Calling a very deep tree easy to interpret merely because every rule is technically visible."],"sources":["lectures/lecture_05_classification_part_1/lecture_notes.md","lectures/lecture_05_classification_part_1/practical_session/README.md"]},{"id":"logistic-probabilities-thresholds","title":"Separate probability estimation from the decision threshold","explanation":"Logistic regression applies the sigmoid function to a linear score, producing an estimated positive-class probability between zero and one. A threshold, often 0.5 by default, then converts that probability into a class decision.","interpretation":"Choose the threshold according to the cost of false positives and false negatives. Raising it usually produces fewer positive predictions; lowering it usually catches more positives but can also create more false alarms.","common_mistakes":["Treating 0.5 as the correct threshold for every application.","Interpreting a positive coefficient as a guaranteed causal effect."],"sources":["lectures/lecture_05_classification_part_1/lecture_notes.md","lectures/lecture_05_classification_part_1/lecture_examples/README.md","lectures/lecture_05_classification_part_1/practical_session/README.md"]},{"id":"confusion-matrix-outcomes","title":"Name each kind of classification outcome","explanation":"For a binary classifier, the confusion matrix counts true positives, false positives, true negatives, and false negatives. These four counts distinguish correct decisions from the two error types.","interpretation":"Define the positive class first, then ask which error matters in the application. False-positive rate divides false positives by all actual negatives, while false-negative rate divides false negatives by all actual positives.","common_mistakes":["Swapping false positives and false negatives by forgetting what the actual class was.","Comparing error counts without considering the number of actual positives or negatives."],"sources":["lectures/lecture_05_classification_part_1/lecture_notes.md","lectures/lecture_05_classification_part_1/practical_session/README.md"]},{"id":"precision-recall-fscore","title":"Choose metrics around the error cost","explanation":"Precision is TP divided by TP plus FP and asks how often positive predictions are correct. Recall is TP divided by TP plus FN and asks how many actual positives were found. F-beta combines precision and recall, with beta above one emphasizing recall and beta below one emphasizing precision.","interpretation":"Accuracy can hide failure on a rare class. Prefer precision when false positives are especially costly, recall when missing positives is especially costly, and an F-score when a stated balance between them is useful.","common_mistakes":["Reporting only accuracy for a strongly imbalanced target.","Assuming F1 reveals whether precision or recall is the weaker component."],"sources":["lectures/lecture_05_classification_part_1/lecture_notes.md","lectures/lecture_05_classification_part_1/practical_session/README.md"]},{"id":"roc-auc-log-loss","title":"Evaluate rankings and probabilities, not only hard labels","explanation":"The ROC curve plots true-positive rate against false-positive rate across thresholds, while ROC-AUC summarizes ranking quality. Log loss evaluates predicted probabilities directly and heavily penalizes confident wrong predictions.","interpretation":"Use ROC-AUC to examine threshold-spanning ranking behavior and log loss when probability quality matters. A score-distribution view can reveal class overlap that makes threshold selection difficult, even when one hard-label metric looks acceptable.","common_mistakes":["Reading AUC as accuracy at the default threshold.","Ignoring overconfident probability errors because the final class label happened to be the main reported output."],"sources":["lectures/lecture_05_classification_part_1/lecture_notes.md","lectures/lecture_05_classification_part_1/practical_session/README.md"]}],"visualizations":[{"id":"cls-score-distribution","type":"histogram","title":"Illustrative predicted-score distribution","explanation":"These fixed illustrative probability-like scores show how bin choice changes the visible shape of a score distribution. This control changes histogram resolution; it is not a decision-threshold control and does not report classifier performance by itself.","data":[0.04,0.07,0.09,0.12,0.16,0.19,0.23,0.27,0.31,0.36,0.42,0.48,0.54,0.59,0.64,0.69,0.73,0.77,0.81,0.85,0.89,0.92,0.95,0.97],"controls":{"bins":[4,6,8,12]},"fallback":"Illustrative probability-like scores, sorted: 0.04, 0.07, 0.09, 0.12, 0.16, 0.19, 0.23, 0.27, 0.31, 0.36, 0.42, 0.48, 0.54, 0.59, 0.64, 0.69, 0.73, 0.77, 0.81, 0.85, 0.89, 0.92, 0.95, 0.97. Different bin counts change the visible grouping, not the scores or a classification threshold."},{"id":"cls-feature-separation","type":"scatter","title":"Illustrative feature geometry and local separation","explanation":"These fixed illustrative feature coordinates form two broadly separated regions with some overlap. The optional trend line summarizes association between the two coordinates; it is not a class boundary. KNN neighborhoods and a linear classifier can respond differently to this geometry.","data":[{"x":1.0,"y":1.2,"class":"A"},{"x":1.3,"y":1.0,"class":"A"},{"x":1.6,"y":1.7,"class":"A"},{"x":1.9,"y":1.5,"class":"A"},{"x":2.2,"y":2.4,"class":"A"},{"x":2.5,"y":2.0,"class":"A"},{"x":2.7,"y":3.0,"class":"B"},{"x":3.0,"y":2.6,"class":"B"},{"x":3.3,"y":3.5,"class":"B"},{"x":3.7,"y":3.2,"class":"B"},{"x":4.0,"y":4.1,"class":"B"},{"x":4.4,"y":3.9,"class":"B"}],"controls":{"trend_line":true},"fallback":"Illustrative class A points: (1.0, 1.2), (1.3, 1.0), (1.6, 1.7), (1.9, 1.5), (2.2, 2.4), (2.5, 2.0). Illustrative class B points: (2.7, 3.0), (3.0, 2.6), (3.3, 3.5), (3.7, 3.2), (4.0, 4.1), (4.4, 3.9). The coordinates generally rise together and the class regions nearly meet around the middle."},{"id":"cls-margin-outliers","type":"boxplot","title":"Illustrative classification margins need context","explanation":"These fixed illustrative absolute margin-like values represent distances from a decision boundary. Wider fence settings change which large margins are flagged. A flagged value is unusual in this teaching sample, not evidence of a data error or a wrong prediction.","data":[0.05,0.08,0.1,0.11,0.12,0.14,0.15,0.16,0.18,0.2,0.22,0.25,0.28,0.45,0.75],"controls":{"fence_multipliers":[1,1.5,2]},"fallback":"Illustrative absolute margin-like values, sorted: 0.05, 0.08, 0.10, 0.11, 0.12, 0.14, 0.15, 0.16, 0.18, 0.20, 0.22, 0.25, 0.28, 0.45, 0.75. A 1 or 1.5 times IQR fence flags 0.45 and 0.75, while a 2 times IQR fence flags only 0.75. These are unusual margins, not automatically errors."}],"quizzes":{"foundations":[{"id":"cls-f-01","type":"single-choice","prompt":"Which task allows several labels to be assigned to one observation?","options":["Multilabel classification","Binary classification","Ordinary regression"],"answer":"Multilabel classification","explanation":"In multilabel classification, several labels can apply simultaneously to the same observation.","concept":"classification-problem-types"},{"id":"cls-f-02","type":"single-choice","prompt":"Why is feature scaling important for KNN?","options":["Large-unit features can dominate distance","It makes every class balanced","It removes the need to select k"],"answer":"Large-unit features can dominate distance","explanation":"KNN relies directly on distances, so a feature with a large numerical scale can overwhelm other features even when that dominance is not meaningful.","concept":"knn-distance-scaling"},{"id":"cls-f-03","type":"single-choice","prompt":"What usually happens as k becomes very large in KNN?","options":["The decision regions become smoother","The model uses only one neighbor","Distance stops mattering"],"answer":"The decision regions become smoother","explanation":"Larger neighborhoods average over more observations, increasing smoothing and potentially blurring local class boundaries.","concept":"knn-distance-scaling"},{"id":"cls-f-04","type":"single-choice","prompt":"What does low impurity mean in a decision-tree node?","options":["One class dominates the node","All features have equal importance","The tree cannot overfit"],"answer":"One class dominates the node","explanation":"Gini impurity and entropy are low when the class labels in the node are relatively homogeneous.","concept":"decision-tree-impurity"},{"id":"cls-f-05","type":"single-choice","prompt":"Which control directly limits how many levels a decision tree can grow?","options":["Maximum depth","Probability threshold","Number of KNN neighbors"],"answer":"Maximum depth","explanation":"Maximum depth restricts tree complexity and can reduce the tendency to memorize small training patterns.","concept":"tree-overfitting-control"},{"id":"cls-f-06","type":"single-choice","prompt":"What does the sigmoid function do in binary logistic regression?","options":["Maps a linear score into a value from 0 to 1","Chooses the nearest neighbors","Builds axis-aligned splits"],"answer":"Maps a linear score into a value from 0 to 1","explanation":"The sigmoid transforms the linear score into an estimated positive-class probability.","concept":"logistic-probabilities-thresholds"},{"id":"cls-f-07","type":"single-choice","prompt":"What normally happens when the positive-class decision threshold is lowered?","options":["More observations are predicted positive","No predictions change","Only true negatives increase"],"answer":"More observations are predicted positive","explanation":"A lower threshold makes it easier for an estimated probability to qualify as positive, which can increase both true and false positives.","concept":"logistic-probabilities-thresholds"},{"id":"cls-f-08","type":"single-choice","prompt":"Which confusion-matrix outcome is an actual positive predicted as negative?","options":["False negative","False positive","True negative"],"answer":"False negative","explanation":"The prediction missed an actual positive, so the outcome is a false negative.","concept":"confusion-matrix-outcomes"},{"id":"cls-f-09","type":"single-choice","prompt":"Which metric asks how often positive predictions are correct?","options":["Precision","Recall","False-negative rate"],"answer":"Precision","explanation":"Precision is TP divided by TP plus FP, so its denominator is all predicted positives.","concept":"precision-recall-fscore"},{"id":"cls-f-10","type":"single-choice","prompt":"Which metric directly penalizes confident wrong probability predictions?","options":["Log loss","Accuracy only","Tree depth"],"answer":"Log loss","explanation":"Log loss evaluates probabilities and imposes a large penalty when a wrong prediction is made with high confidence.","concept":"roc-auc-log-loss"}],"applied":[{"id":"cls-a-01","type":"single-choice","prompt":"A photo can be tagged both indoor and nature. Which target structure fits?","options":["Multilabel","Multiclass with exactly one class","Continuous regression"],"answer":"Multilabel","explanation":"The labels are not mutually exclusive, so more than one can be correct for the same photo.","concept":"classification-problem-types"},{"id":"cls-a-02","type":"single-choice","prompt":"A target has levels low, medium, and high. What must the analysis preserve?","options":["Their natural order","Equal numeric gaps between levels","No relationship among levels"],"answer":"Their natural order","explanation":"Ordinal classes have meaningful order, but the spacing between adjacent levels is not automatically equal.","concept":"classification-problem-types"},{"id":"cls-a-03","type":"single-choice","prompt":"A KNN model uses age in years and income in euros without scaling. What is the main risk?","options":["Income may dominate the distance calculation","The tree becomes too deep","The sigmoid stops returning probabilities"],"answer":"Income may dominate the distance calculation","explanation":"The larger numerical scale can drive nearest-neighbor distances even if that influence is not substantively justified.","concept":"knn-distance-scaling"},{"id":"cls-a-04","type":"single-choice","prompt":"How should k usually be selected for KNN?","options":["With validation or cross-validation","From training accuracy alone","Always set to 1"],"answer":"With validation or cross-validation","explanation":"Validation checks the bias-variance tradeoff on held-out data rather than rewarding a neighborhood that merely fits training noise.","concept":"knn-distance-scaling"},{"id":"cls-a-05","type":"single-choice","prompt":"A tree has tiny leaves that memorize rare training combinations. Which change directly addresses this?","options":["Increase minimum samples per leaf","Lower the logistic threshold","Use more histogram bins"],"answer":"Increase minimum samples per leaf","explanation":"Requiring more observations in each leaf prevents the tree from creating rules for extremely small training groups.","concept":"tree-overfitting-control"},{"id":"cls-a-06","type":"single-choice","prompt":"Missing a disease case is especially costly. Which threshold change commonly supports higher recall?","options":["Lower the positive threshold","Raise the positive threshold","Remove probability estimates"],"answer":"Lower the positive threshold","explanation":"Lowering the threshold usually predicts more observations as positive and can catch more actual positives, though false positives may also rise.","concept":"logistic-probabilities-thresholds"},{"id":"cls-a-07","type":"single-choice","prompt":"A classifier has 30 true positives and 10 false positives. What is its precision?","options":["0.75","0.60","0.30"],"answer":"0.75","explanation":"Precision is 30 divided by 30 plus 10, which equals 0.75.","concept":"precision-recall-fscore"},{"id":"cls-a-08","type":"single-choice","prompt":"A classifier has 30 true positives and 20 false negatives. What is its recall?","options":["0.60","0.75","0.40"],"answer":"0.60","explanation":"Recall is 30 divided by 30 plus 20, which equals 0.60.","concept":"precision-recall-fscore"},{"id":"cls-a-09","type":"single-choice","prompt":"Only 1 percent of cases are positive, and a model always predicts negative. Why is accuracy misleading?","options":["It hides complete failure on the positive class","It directly measures probability calibration","It gives equal detail about both error types"],"answer":"It hides complete failure on the positive class","explanation":"The model can be 99 percent accurate while its recall for the rare positive class is zero.","concept":"precision-recall-fscore"},{"id":"cls-a-10","type":"single-choice","prompt":"Which evaluation is most directly concerned with the quality of estimated probabilities?","options":["Log loss","Maximum tree depth","KNN fit time"],"answer":"Log loss","explanation":"Log loss uses the predicted probabilities themselves rather than only the final hard labels.","concept":"roc-auc-log-loss"}],"challenge":[{"id":"cls-c-01","type":"single-choice","prompt":"Why can KNN degrade in a very high-dimensional feature space?","options":["Near and far distances can become less distinguishable","Trees become probabilistic","All classes become ordinal"],"answer":"Near and far distances can become less distinguishable","explanation":"Distance concentration makes local neighborhoods less informative as dimensionality grows, especially with irrelevant features.","concept":"knn-distance-scaling"},{"id":"cls-c-02","type":"single-choice","prompt":"What distinguishes weighted KNN from ordinary majority voting?","options":["Closer neighbors receive more influence","Every feature receives the same scale","The model grows a deeper tree"],"answer":"Closer neighbors receive more influence","explanation":"Weighted KNN gives nearby observations larger votes because they may be more informative than distant neighbors.","concept":"knn-distance-scaling"},{"id":"cls-c-03","type":"single-choice","prompt":"Why might a shallow decision tree struggle with a diagonal class boundary?","options":["Its individual splits are axis-aligned","It cannot use numerical features","Gini impurity requires probabilities from logistic regression"],"answer":"Its individual splits are axis-aligned","explanation":"A tree partitions one feature at a time, so representing a diagonal boundary may require several rectangular regions.","concept":"decision-tree-impurity"},{"id":"cls-c-04","type":"single-choice","prompt":"Which node has the lower Gini impurity?","options":["A node containing only one class","A node split evenly between two classes","They always have equal impurity"],"answer":"A node containing only one class","explanation":"A pure node has Gini impurity zero, while an evenly mixed binary node has higher impurity.","concept":"decision-tree-impurity"},{"id":"cls-c-05","type":"single-choice","prompt":"A deep tree has perfect training accuracy but much worse validation accuracy. What is the strongest diagnosis?","options":["The tree is overfitting","The validation data proves the tree is pure","The model needs a lower logistic threshold"],"answer":"The tree is overfitting","explanation":"A large training-validation gap is consistent with memorizing training-specific patterns that do not generalize.","concept":"tree-overfitting-control"},{"id":"cls-c-06","type":"single-choice","prompt":"What does choosing beta greater than 1 do in an F-beta score?","options":["Gives recall more weight","Gives precision more weight","Turns the score into accuracy"],"answer":"Gives recall more weight","explanation":"The lecture defines beta above one as emphasizing recall and beta below one as emphasizing precision.","concept":"precision-recall-fscore"},{"id":"cls-c-07","type":"single-choice","prompt":"What does ROC-AUC summarize?","options":["Ranking behavior across thresholds","Accuracy at exactly 0.5","Only the false-negative count"],"answer":"Ranking behavior across thresholds","explanation":"The ROC curve varies the threshold, and its area summarizes how well scores rank positives relative to negatives.","concept":"roc-auc-log-loss"},{"id":"cls-c-08","type":"single-choice","prompt":"Two models make the same number of wrong labels, but one is extremely confident when wrong. Which metric exposes that difference?","options":["Log loss","Hard-label accuracy alone","Maximum depth"],"answer":"Log loss","explanation":"Log loss penalizes a confident wrong probability more heavily, while hard-label accuracy records only that both predictions were wrong.","concept":"roc-auc-log-loss"},{"id":"cls-c-09","type":"single-choice","prompt":"False positives are very expensive. Which threshold change commonly reduces positive predictions?","options":["Raise the positive threshold","Lower the positive threshold","Set every score to 0.5"],"answer":"Raise the positive threshold","explanation":"A higher threshold demands stronger estimated evidence before predicting positive, often reducing both true and false positive predictions.","concept":"logistic-probabilities-thresholds"},{"id":"cls-c-10","type":"single-choice","prompt":"A regulated decision needs a compact, readable model and usable probabilities. Which lecture model is a strong baseline to assess?","options":["Logistic regression","Unconstrained deep decision tree","KNN with unscaled features"],"answer":"Logistic regression","explanation":"Logistic regression offers smooth probability estimates and interpretable signed coefficients when a linear boundary is suitable, though validation and application-specific checks remain necessary.","concept":"logistic-probabilities-thresholds"}]},"break_prompts":["Take a nearest-neighbor break: your water bottle is probably close.","Prune one minute of screen time and stretch your decision branches.","No threshold tuning required: stand up when your comfort score exceeds 0.5.","Reset the confusion matrix by looking somewhere far away for twenty seconds."]};</script>
+  <script>const CONTENT = {"meta":{"experience_id":"lecture-05-classification-part-1","title":"Classification Part 1: Interactive Review","sources":["lectures/lecture_05_classification_part_1/README.md","lectures/lecture_05_classification_part_1/lecture_notes.md"]},"defaults":{"difficulty":"foundations","focus_mode":true,"color_blind":true,"break_prompts":true},"concepts":[{"id":"classification-problem-types","title":"Match the classifier to the target structure","explanation":"Classification predicts categorical targets or probabilities over categories. Binary tasks have two outcomes, multiclass tasks choose among more than two classes, multilabel tasks can assign several labels to one observation, and ordinal tasks use ordered classes whose gaps are not necessarily equal.","interpretation":"Identify whether one or several labels can apply and whether label order matters before choosing modeling and evaluation methods. An ordinal target preserves order without turning the levels into an ordinary continuous measurement.","common_mistakes":["Treating a multilabel task as multiclass even though several labels can be correct at once.","Treating ordered labels as equally spaced numerical values without justification."],"sources":["lectures/lecture_05_classification_part_1/lecture_notes.md","lectures/lecture_05_classification_part_1/README.md"]},{"id":"knn-distance-scaling","title":"KNN depends on meaningful distances","explanation":"K-Nearest Neighbors stores the training data and predicts from the majority class among the k nearest observations. The distance metric, feature scaling, dimensionality, and choice of k all change which observations count as neighbors.","interpretation":"Scale numerical features before distance-based comparison when their units differ, and select k with validation. Small k can follow local noise, while large k creates smoother neighborhoods that may blur a real boundary.","common_mistakes":["Letting a large-unit feature dominate distance solely because of its measurement scale.","Choosing k from training performance alone."],"sources":["lectures/lecture_05_classification_part_1/lecture_notes.md","lectures/lecture_05_classification_part_1/lecture_examples/README.md","lectures/lecture_05_classification_part_1/practical_session/README.md"]},{"id":"decision-tree-impurity","title":"Tree splits seek purer child nodes","explanation":"A decision tree recursively applies feature-threshold rules. Gini impurity and entropy measure how mixed the classes are in a node, and a useful split reduces impurity or uncertainty in its children.","interpretation":"Read a split as a local rule that partitions the current observations. Low impurity means one class dominates the node; it does not by itself prove that the rule will generalize to new data.","common_mistakes":["Assuming every impurity-reducing training split improves validation performance.","Reading Gini impurity as a feature importance score."],"sources":["lectures/lecture_05_classification_part_1/lecture_notes.md","lectures/lecture_05_classification_part_1/lecture_examples/README.md"]},{"id":"tree-overfitting-control","title":"Control tree complexity before it memorizes noise","explanation":"Deep trees can keep making greedy splits until small training patterns are memorized. Maximum depth, minimum samples per split or leaf, pruning, and cost-complexity control reduce effective tree complexity.","interpretation":"Compare training and validation behavior while changing a complexity control. A shallow tree may underfit, while an unconstrained tree can be accurate on training data yet fragile on unseen observations.","common_mistakes":["Choosing the deepest tree because it has the highest training accuracy.","Calling a very deep tree easy to interpret merely because every rule is technically visible."],"sources":["lectures/lecture_05_classification_part_1/lecture_notes.md","lectures/lecture_05_classification_part_1/practical_session/README.md"]},{"id":"logistic-probabilities-thresholds","title":"Separate probability estimation from the decision threshold","explanation":"Logistic regression applies the sigmoid function to a linear score, producing an estimated positive-class probability between zero and one. A threshold, often 0.5 by default, then converts that probability into a class decision.","interpretation":"Choose the threshold according to the cost of false positives and false negatives. Raising it usually produces fewer positive predictions; lowering it usually catches more positives but can also create more false alarms.","common_mistakes":["Treating 0.5 as the correct threshold for every application.","Interpreting a positive coefficient as a guaranteed causal effect."],"sources":["lectures/lecture_05_classification_part_1/lecture_notes.md","lectures/lecture_05_classification_part_1/lecture_examples/README.md","lectures/lecture_05_classification_part_1/practical_session/README.md"]},{"id":"confusion-matrix-outcomes","title":"Name each kind of classification outcome","explanation":"For a binary classifier, the confusion matrix counts true positives, false positives, true negatives, and false negatives. These four counts distinguish correct decisions from the two error types.","interpretation":"Define the positive class first, then ask which error matters in the application. False-positive rate divides false positives by all actual negatives, while false-negative rate divides false negatives by all actual positives.","common_mistakes":["Swapping false positives and false negatives by forgetting what the actual class was.","Comparing error counts without considering the number of actual positives or negatives."],"sources":["lectures/lecture_05_classification_part_1/lecture_notes.md","lectures/lecture_05_classification_part_1/practical_session/README.md"]},{"id":"precision-recall-fscore","title":"Choose metrics around the error cost","explanation":"Precision is TP divided by TP plus FP and asks how often positive predictions are correct. Recall is TP divided by TP plus FN and asks how many actual positives were found. F-beta combines precision and recall, with beta above one emphasizing recall and beta below one emphasizing precision.","interpretation":"Accuracy can hide failure on a rare class. Prefer precision when false positives are especially costly, recall when missing positives is especially costly, and an F-score when a stated balance between them is useful.","common_mistakes":["Reporting only accuracy for a strongly imbalanced target.","Assuming F1 reveals whether precision or recall is the weaker component."],"sources":["lectures/lecture_05_classification_part_1/lecture_notes.md","lectures/lecture_05_classification_part_1/practical_session/README.md"]},{"id":"roc-auc-log-loss","title":"Evaluate rankings and probabilities, not only hard labels","explanation":"The ROC curve plots true-positive rate against false-positive rate across thresholds, while ROC-AUC summarizes ranking quality. Log loss evaluates predicted probabilities directly and heavily penalizes confident wrong predictions.","interpretation":"Use ROC-AUC to examine threshold-spanning ranking behavior and log loss when probability quality matters. A score-distribution view can reveal class overlap that makes threshold selection difficult, even when one hard-label metric looks acceptable.","common_mistakes":["Reading AUC as accuracy at the default threshold.","Ignoring overconfident probability errors because the final class label happened to be the main reported output."],"sources":["lectures/lecture_05_classification_part_1/lecture_notes.md","lectures/lecture_05_classification_part_1/practical_session/README.md"]}],"visualizations":[{"id":"cls-threshold-confusion","type":"binary-threshold","title":"Decision threshold and confusion matrix","explanation":"These fixed illustrative scores separate probability estimation from the threshold used to make a positive or negative decision. Move the threshold to see how true positives, false positives, true negatives, false negatives, precision, and recall change together.","data":[{"id":"c01","score":0.92,"actual":1},{"id":"c02","score":0.85,"actual":1},{"id":"c03","score":0.78,"actual":0},{"id":"c04","score":0.72,"actual":1},{"id":"c05","score":0.66,"actual":1},{"id":"c06","score":0.58,"actual":0},{"id":"c07","score":0.49,"actual":1},{"id":"c08","score":0.43,"actual":0},{"id":"c09","score":0.35,"actual":1},{"id":"c10","score":0.28,"actual":0},{"id":"c11","score":0.18,"actual":0},{"id":"c12","score":0.08,"actual":0}],"controls":{"minimum":0.1,"maximum":0.9,"step":0.05,"initial":0.5},"labels":{"positive":"Positive","negative":"Negative"},"fallback":"At the 0.50 decision threshold, the fixed illustrative cases give TP 4, FP 2, TN 4, and FN 2. Precision and recall are both about 0.67. Raising the threshold predicts fewer positives; lowering it predicts more positives."},{"id":"cls-decision-boundary","type":"labeled-scatter","title":"Class-aware decision boundary explorer","explanation":"The same illustrative Class A and Class B points stay visibly tied to their class labels while you compare candidate linear boundaries. A boundary changes the predicted side of a point; it does not change its true class.","data":[{"id":"a01","x":1.0,"y":1.2,"series":"A"},{"id":"a02","x":1.3,"y":1.0,"series":"A"},{"id":"a03","x":1.6,"y":1.7,"series":"A"},{"id":"a04","x":1.9,"y":1.5,"series":"A"},{"id":"a05","x":2.2,"y":2.4,"series":"A"},{"id":"a06","x":2.5,"y":2.0,"series":"A"},{"id":"b01","x":2.7,"y":3.0,"series":"B"},{"id":"b02","x":3.0,"y":2.6,"series":"B"},{"id":"b03","x":3.3,"y":3.5,"series":"B"},{"id":"b04","x":3.7,"y":3.2,"series":"B"},{"id":"b05","x":4.0,"y":4.1,"series":"B"},{"id":"b06","x":4.4,"y":3.9,"series":"B"}],"controls":{"boundaries":[{"id":"balanced","label":"Balanced boundary","slope":-1.0,"intercept":5.3},{"id":"conservative","label":"Conservative positive boundary","slope":-1.0,"intercept":6.0},{"id":"permissive","label":"Permissive positive boundary","slope":-1.0,"intercept":4.6}],"initial":"balanced"},"labels":{"x_axis":"Feature 1","y_axis":"Feature 2","series":{"A":"Class A","B":"Class B"},"positive_series":"B"},"fallback":"Class A occupies the lower-left portion of the illustrative feature space and Class B the upper-right. Compare the balanced, conservative-positive, and permissive-positive boundaries while keeping the true A/B class labels fixed."}],"quizzes":{"foundations":[{"id":"cls-f-01","type":"single-choice","prompt":"Which task allows several labels to be assigned to one observation?","options":["Multilabel classification","Binary classification","Ordinary regression"],"answer":"Multilabel classification","explanation":"In multilabel classification, several labels can apply simultaneously to the same observation.","concept":"classification-problem-types"},{"id":"cls-f-02","type":"single-choice","prompt":"Why is feature scaling important for KNN?","options":["Large-unit features can dominate distance","It makes every class balanced","It removes the need to select k"],"answer":"Large-unit features can dominate distance","explanation":"KNN relies directly on distances, so a feature with a large numerical scale can overwhelm other features even when that dominance is not meaningful.","concept":"knn-distance-scaling"},{"id":"cls-f-03","type":"single-choice","prompt":"What usually happens as k becomes very large in KNN?","options":["The decision regions become smoother","The model uses only one neighbor","Distance stops mattering"],"answer":"The decision regions become smoother","explanation":"Larger neighborhoods average over more observations, increasing smoothing and potentially blurring local class boundaries.","concept":"knn-distance-scaling"},{"id":"cls-f-04","type":"single-choice","prompt":"What does low impurity mean in a decision-tree node?","options":["One class dominates the node","All features have equal importance","The tree cannot overfit"],"answer":"One class dominates the node","explanation":"Gini impurity and entropy are low when the class labels in the node are relatively homogeneous.","concept":"decision-tree-impurity"},{"id":"cls-f-05","type":"single-choice","prompt":"Which control directly limits how many levels a decision tree can grow?","options":["Maximum depth","Probability threshold","Number of KNN neighbors"],"answer":"Maximum depth","explanation":"Maximum depth restricts tree complexity and can reduce the tendency to memorize small training patterns.","concept":"tree-overfitting-control"},{"id":"cls-f-06","type":"single-choice","prompt":"What does the sigmoid function do in binary logistic regression?","options":["Maps a linear score into a value from 0 to 1","Chooses the nearest neighbors","Builds axis-aligned splits"],"answer":"Maps a linear score into a value from 0 to 1","explanation":"The sigmoid transforms the linear score into an estimated positive-class probability.","concept":"logistic-probabilities-thresholds"},{"id":"cls-f-07","type":"single-choice","prompt":"What normally happens when the positive-class decision threshold is lowered?","options":["More observations are predicted positive","No predictions change","Only true negatives increase"],"answer":"More observations are predicted positive","explanation":"A lower threshold makes it easier for an estimated probability to qualify as positive, which can increase both true and false positives.","concept":"logistic-probabilities-thresholds"},{"id":"cls-f-08","type":"single-choice","prompt":"Which confusion-matrix outcome is an actual positive predicted as negative?","options":["False negative","False positive","True negative"],"answer":"False negative","explanation":"The prediction missed an actual positive, so the outcome is a false negative.","concept":"confusion-matrix-outcomes"},{"id":"cls-f-09","type":"single-choice","prompt":"Which metric asks how often positive predictions are correct?","options":["Precision","Recall","False-negative rate"],"answer":"Precision","explanation":"Precision is TP divided by TP plus FP, so its denominator is all predicted positives.","concept":"precision-recall-fscore"},{"id":"cls-f-10","type":"single-choice","prompt":"Which metric directly penalizes confident wrong probability predictions?","options":["Log loss","Accuracy only","Tree depth"],"answer":"Log loss","explanation":"Log loss evaluates probabilities and imposes a large penalty when a wrong prediction is made with high confidence.","concept":"roc-auc-log-loss"}],"applied":[{"id":"cls-a-01","type":"single-choice","prompt":"A photo can be tagged both indoor and nature. Which target structure fits?","options":["Multilabel","Multiclass with exactly one class","Continuous regression"],"answer":"Multilabel","explanation":"The labels are not mutually exclusive, so more than one can be correct for the same photo.","concept":"classification-problem-types"},{"id":"cls-a-02","type":"single-choice","prompt":"A target has levels low, medium, and high. What must the analysis preserve?","options":["Their natural order","Equal numeric gaps between levels","No relationship among levels"],"answer":"Their natural order","explanation":"Ordinal classes have meaningful order, but the spacing between adjacent levels is not automatically equal.","concept":"classification-problem-types"},{"id":"cls-a-03","type":"single-choice","prompt":"A KNN model uses age in years and income in euros without scaling. What is the main risk?","options":["Income may dominate the distance calculation","The tree becomes too deep","The sigmoid stops returning probabilities"],"answer":"Income may dominate the distance calculation","explanation":"The larger numerical scale can drive nearest-neighbor distances even if that influence is not substantively justified.","concept":"knn-distance-scaling"},{"id":"cls-a-04","type":"single-choice","prompt":"How should k usually be selected for KNN?","options":["With validation or cross-validation","From training accuracy alone","Always set to 1"],"answer":"With validation or cross-validation","explanation":"Validation checks the bias-variance tradeoff on held-out data rather than rewarding a neighborhood that merely fits training noise.","concept":"knn-distance-scaling"},{"id":"cls-a-05","type":"single-choice","prompt":"A tree has tiny leaves that memorize rare training combinations. Which change directly addresses this?","options":["Increase minimum samples per leaf","Lower the logistic threshold","Use more histogram bins"],"answer":"Increase minimum samples per leaf","explanation":"Requiring more observations in each leaf prevents the tree from creating rules for extremely small training groups.","concept":"tree-overfitting-control"},{"id":"cls-a-06","type":"single-choice","prompt":"Missing a disease case is especially costly. Which threshold change commonly supports higher recall?","options":["Lower the positive threshold","Raise the positive threshold","Remove probability estimates"],"answer":"Lower the positive threshold","explanation":"Lowering the threshold usually predicts more observations as positive and can catch more actual positives, though false positives may also rise.","concept":"logistic-probabilities-thresholds"},{"id":"cls-a-07","type":"single-choice","prompt":"A classifier has 30 true positives and 10 false positives. What is its precision?","options":["0.75","0.60","0.30"],"answer":"0.75","explanation":"Precision is 30 divided by 30 plus 10, which equals 0.75.","concept":"precision-recall-fscore"},{"id":"cls-a-08","type":"single-choice","prompt":"A classifier has 30 true positives and 20 false negatives. What is its recall?","options":["0.60","0.75","0.40"],"answer":"0.60","explanation":"Recall is 30 divided by 30 plus 20, which equals 0.60.","concept":"precision-recall-fscore"},{"id":"cls-a-09","type":"single-choice","prompt":"Only 1 percent of cases are positive, and a model always predicts negative. Why is accuracy misleading?","options":["It hides complete failure on the positive class","It directly measures probability calibration","It gives equal detail about both error types"],"answer":"It hides complete failure on the positive class","explanation":"The model can be 99 percent accurate while its recall for the rare positive class is zero.","concept":"precision-recall-fscore"},{"id":"cls-a-10","type":"single-choice","prompt":"Which evaluation is most directly concerned with the quality of estimated probabilities?","options":["Log loss","Maximum tree depth","KNN fit time"],"answer":"Log loss","explanation":"Log loss uses the predicted probabilities themselves rather than only the final hard labels.","concept":"roc-auc-log-loss"}],"challenge":[{"id":"cls-c-01","type":"single-choice","prompt":"Why can KNN degrade in a very high-dimensional feature space?","options":["Near and far distances can become less distinguishable","Trees become probabilistic","All classes become ordinal"],"answer":"Near and far distances can become less distinguishable","explanation":"Distance concentration makes local neighborhoods less informative as dimensionality grows, especially with irrelevant features.","concept":"knn-distance-scaling"},{"id":"cls-c-02","type":"single-choice","prompt":"What distinguishes weighted KNN from ordinary majority voting?","options":["Closer neighbors receive more influence","Every feature receives the same scale","The model grows a deeper tree"],"answer":"Closer neighbors receive more influence","explanation":"Weighted KNN gives nearby observations larger votes because they may be more informative than distant neighbors.","concept":"knn-distance-scaling"},{"id":"cls-c-03","type":"single-choice","prompt":"Why might a shallow decision tree struggle with a diagonal class boundary?","options":["Its individual splits are axis-aligned","It cannot use numerical features","Gini impurity requires probabilities from logistic regression"],"answer":"Its individual splits are axis-aligned","explanation":"A tree partitions one feature at a time, so representing a diagonal boundary may require several rectangular regions.","concept":"decision-tree-impurity"},{"id":"cls-c-04","type":"single-choice","prompt":"Which node has the lower Gini impurity?","options":["A node containing only one class","A node split evenly between two classes","They always have equal impurity"],"answer":"A node containing only one class","explanation":"A pure node has Gini impurity zero, while an evenly mixed binary node has higher impurity.","concept":"decision-tree-impurity"},{"id":"cls-c-05","type":"single-choice","prompt":"A deep tree has perfect training accuracy but much worse validation accuracy. What is the strongest diagnosis?","options":["The tree is overfitting","The validation data proves the tree is pure","The model needs a lower logistic threshold"],"answer":"The tree is overfitting","explanation":"A large training-validation gap is consistent with memorizing training-specific patterns that do not generalize.","concept":"tree-overfitting-control"},{"id":"cls-c-06","type":"single-choice","prompt":"What does choosing beta greater than 1 do in an F-beta score?","options":["Gives recall more weight","Gives precision more weight","Turns the score into accuracy"],"answer":"Gives recall more weight","explanation":"The lecture defines beta above one as emphasizing recall and beta below one as emphasizing precision.","concept":"precision-recall-fscore"},{"id":"cls-c-07","type":"single-choice","prompt":"What does ROC-AUC summarize?","options":["Ranking behavior across thresholds","Accuracy at exactly 0.5","Only the false-negative count"],"answer":"Ranking behavior across thresholds","explanation":"The ROC curve varies the threshold, and its area summarizes how well scores rank positives relative to negatives.","concept":"roc-auc-log-loss"},{"id":"cls-c-08","type":"single-choice","prompt":"Two models make the same number of wrong labels, but one is extremely confident when wrong. Which metric exposes that difference?","options":["Log loss","Hard-label accuracy alone","Maximum depth"],"answer":"Log loss","explanation":"Log loss penalizes a confident wrong probability more heavily, while hard-label accuracy records only that both predictions were wrong.","concept":"roc-auc-log-loss"},{"id":"cls-c-09","type":"single-choice","prompt":"False positives are very expensive. Which threshold change commonly reduces positive predictions?","options":["Raise the positive threshold","Lower the positive threshold","Set every score to 0.5"],"answer":"Raise the positive threshold","explanation":"A higher threshold demands stronger estimated evidence before predicting positive, often reducing both true and false positive predictions.","concept":"logistic-probabilities-thresholds"},{"id":"cls-c-10","type":"single-choice","prompt":"A regulated decision needs a compact, readable model and usable probabilities. Which lecture model is a strong baseline to assess?","options":["Logistic regression","Unconstrained deep decision tree","KNN with unscaled features"],"answer":"Logistic regression","explanation":"Logistic regression offers smooth probability estimates and interpretable signed coefficients when a linear boundary is suitable, though validation and application-specific checks remain necessary.","concept":"logistic-probabilities-thresholds"}]},"break_prompts":["Take a nearest-neighbor break: your water bottle is probably close.","Prune one minute of screen time and stretch your decision branches.","No threshold tuning required: stand up when your comfort score exceeds 0.5.","Reset the confusion matrix by looking somewhere far away for twenty seconds."]};</script>
+  <script>(function visualizationModelsFactory(root, factory) {
+  const api = factory();
+  if (typeof module === "object" && module.exports) module.exports = api;
+  root.LearningVisualizationModels = api;
+})(typeof globalThis === "object" ? globalThis : this, function buildModels() {
+  "use strict";
+
+  function safeRatio(numerator, denominator) {
+    return denominator === 0 ? null : numerator / denominator;
+  }
+
+  function thresholdSummary(records, threshold) {
+    const counts = { tp: 0, fp: 0, tn: 0, fn: 0 };
+    records.forEach((record) => {
+      const predicted = Number(record.score) >= threshold ? 1 : 0;
+      const actual = Number(record.actual);
+      if (predicted === 1 && actual === 1) counts.tp += 1;
+      else if (predicted === 1 && actual === 0) counts.fp += 1;
+      else if (predicted === 0 && actual === 0) counts.tn += 1;
+      else counts.fn += 1;
+    });
+    return {
+      threshold,
+      ...counts,
+      precision: safeRatio(counts.tp, counts.tp + counts.fp),
+      recall: safeRatio(counts.tp, counts.tp + counts.fn),
+    };
+  }
+
+  function seriesStyles(seriesNames) {
+    const names = [...new Set(seriesNames.map(String))].sort();
+    const styles = [
+      { colorRole: "primary", shape: "circle", pattern: "solid" },
+      { colorRole: "secondary", shape: "square", pattern: "hatched" },
+    ];
+    return Object.fromEntries(names.map((name, index) => [name, styles[index]]));
+  }
+
+  function boundarySummary(points, boundary, positiveSeries) {
+    const allSeries = [...new Set(points.map((point) => String(point.series)))].sort();
+    const negativeSeries = allSeries.find((series) => series !== positiveSeries);
+    const mapped = points.map((point) => {
+      const boundaryY = Number(boundary.slope) * Number(point.x) + Number(boundary.intercept);
+      const predictedSeries = Number(point.y) >= boundaryY ? positiveSeries : negativeSeries;
+      return {
+        ...point,
+        boundaryY,
+        predictedSeries,
+        correct: predictedSeries === String(point.series),
+      };
+    });
+    const correct = mapped.filter((point) => point.correct).length;
+    return { points: mapped, correct, incorrect: mapped.length - correct };
+  }
+
+  function residualPoints(scenario) {
+    return scenario.points.map((point) => ({
+      ...point,
+      fitted: Number(point.predicted),
+      residual: Number(point.observed) - Number(point.predicted),
+    }));
+  }
+
+  function coefficientSnapshot(data, index) {
+    return {
+      penalty: Number(data.penalties[index]),
+      rows: data.series.map((series) => ({
+        feature: String(series.feature),
+        ridge: Number(series.ridge[index]),
+        lasso: Number(series.lasso[index]),
+        lassoIsZero: Number(series.lasso[index]) === 0,
+      })),
+    };
+  }
+
+  function errorMetricSummary(baseErrors, adjustableError) {
+    const errors = [...baseErrors.map(Number), Number(adjustableError)];
+    const mae = errors.reduce((sum, value) => sum + Math.abs(value), 0) / errors.length;
+    const mse = errors.reduce((sum, value) => sum + value ** 2, 0) / errors.length;
+    return { errors, mae, mse, rmse: Math.sqrt(mse) };
+  }
+
+  return {
+    boundarySummary,
+    coefficientSnapshot,
+    errorMetricSummary,
+    residualPoints,
+    seriesStyles,
+    thresholdSummary,
+  };
+});
+</script>
   <script>
     "use strict";
 
@@ -783,6 +999,9 @@
       document.querySelector('[data-setting="focus"]').checked = state.focus;
       document.querySelector('[data-setting="color-blind"]').checked = state.colorBlind;
       document.querySelector('[data-setting="break-prompts"]').checked = state.breakPrompts;
+      byId("palette-status").textContent = state.colorBlind
+        ? "Palette: color-blind-safe"
+        : "Palette: standard";
       if (!state.breakPrompts) byId("break-prompt").hidden = true;
       saveSettings();
       renderConcepts();
@@ -961,7 +1180,374 @@
       ).join("; ");
     }
 
+    function renderBinaryThreshold(visualization, target, summary, threshold) {
+      const result = LearningVisualizationModels.thresholdSummary(
+        visualization.data,
+        threshold,
+      );
+      const formatMetric = (value) => value === null ? "not defined" : value.toFixed(2);
+      const positive = escapeHtml(String(visualization.labels.positive));
+      const negative = escapeHtml(String(visualization.labels.negative));
+      target.innerHTML = `<div class="threshold-layout">
+        <svg viewBox="0 0 520 250" role="img"
+          aria-label="${escapeHtml(visualization.title)} confusion matrix">
+          <text class="chart-label" x="240" y="24">Predicted ${negative}</text>
+          <text class="chart-label" x="385" y="24">Predicted ${positive}</text>
+          <text class="chart-label" x="12" y="95">Actual ${negative}</text>
+          <text class="chart-label" x="12" y="190">Actual ${positive}</text>
+          <g class="confusion-cell outcome-tn">
+            <rect x="190" y="45" width="135" height="80"></rect>
+            <text x="245" y="88">TN ${result.tn}</text>
+          </g>
+          <g class="confusion-cell outcome-fp">
+            <rect x="335" y="45" width="135" height="80"></rect>
+            <text x="390" y="88">FP ${result.fp}</text>
+          </g>
+          <g class="confusion-cell outcome-fn">
+            <rect x="190" y="140" width="135" height="80"></rect>
+            <text x="245" y="183">FN ${result.fn}</text>
+          </g>
+          <g class="confusion-cell outcome-tp">
+            <rect x="335" y="140" width="135" height="80"></rect>
+            <text x="390" y="183">TP ${result.tp}</text>
+          </g>
+        </svg>
+      </div>`;
+      summary.textContent =
+        `Threshold ${threshold.toFixed(2)}. TP ${result.tp}, FP ${result.fp}, ` +
+        `TN ${result.tn}, FN ${result.fn}. Precision ${formatMetric(result.precision)}; ` +
+        `recall ${formatMetric(result.recall)}.`;
+    }
+
+    function renderLabeledScatter(visualization, target, summary, boundaryId) {
+      const points = visualization.data;
+      const boundaries = visualization.controls.boundaries;
+      const boundary = boundaries.find((candidate) => candidate.id === boundaryId)
+        || boundaries.find((candidate) => candidate.id === visualization.controls.initial)
+        || boundaries[0];
+      const positiveSeries = String(visualization.labels.positive_series);
+      const result = LearningVisualizationModels.boundarySummary(
+        points,
+        boundary,
+        positiveSeries,
+      );
+      const styles = LearningVisualizationModels.seriesStyles(
+        points.map((point) => point.series),
+      );
+      const xs = points.map((point) => Number(point.x));
+      const ys = points.map((point) => Number(point.y));
+      const minX = Math.min(...xs);
+      const maxX = Math.max(...xs);
+      const boundaryYs = [
+        Number(boundary.slope) * minX + Number(boundary.intercept),
+        Number(boundary.slope) * maxX + Number(boundary.intercept),
+      ];
+      const minY = Math.min(...ys, ...boundaryYs);
+      const maxY = Math.max(...ys, ...boundaryYs);
+      const xScale = (value) => 65 + ((value - minX) / Math.max(1, maxX - minX)) * 410;
+      const yScale = (value) => 220 - ((value - minY) / Math.max(1, maxY - minY)) * 175;
+      const pointMark = (point) => {
+        const series = String(point.series);
+        const style = styles[series];
+        const seriesLabel = visualization.labels.series[series];
+        const predictedLabel = visualization.labels.series[point.predictedSeries];
+        const title = `True series ${seriesLabel}: ${visualization.labels.x_axis} ${point.x}, ` +
+          `${visualization.labels.y_axis} ${point.y}; predicted as ${predictedLabel}`;
+        if (style.shape === "square") {
+          return `<rect class="mark-series-${style.colorRole}" data-shape="${style.shape}"
+            x="${xScale(Number(point.x)) - 7}" y="${yScale(Number(point.y)) - 7}"
+            width="14" height="14"><title>${escapeHtml(title)}</title></rect>`;
+        }
+        return `<circle class="mark-series-${style.colorRole}" data-shape="${style.shape}"
+          cx="${xScale(Number(point.x))}" cy="${yScale(Number(point.y))}" r="7">
+          <title>${escapeHtml(title)}</title></circle>`;
+      };
+      target.innerHTML = `<svg viewBox="0 0 520 270" role="img"
+        aria-label="${escapeHtml(visualization.title)} labeled scatter plot">
+        <line x1="65" y1="220" x2="475" y2="220" stroke="currentColor"></line>
+        <line x1="65" y1="45" x2="65" y2="220" stroke="currentColor"></line>
+        <line class="boundary-line" x1="${xScale(minX)}" y1="${yScale(boundaryYs[0])}"
+          x2="${xScale(maxX)}" y2="${yScale(boundaryYs[1])}">
+          <title>${escapeHtml(boundary.label)}</title>
+        </line>
+        ${result.points.map(pointMark).join("")}
+        <text class="chart-label" x="210" y="255">
+          ${escapeHtml(visualization.labels.x_axis)}
+        </text>
+        <text class="chart-label" x="8" y="28">
+          ${escapeHtml(visualization.labels.y_axis)}
+        </text>
+      </svg>`;
+      summary.textContent =
+        `${boundary.label}. ${result.correct} of ${result.points.length} illustrative ` +
+        `points are on the expected side; ${result.incorrect} are not.`;
+    }
+
+    function renderResidualDiagnostics(visualization, target, summary, scenarioId) {
+      const scenarios = visualization.data.scenarios;
+      const scenario = scenarios.find((candidate) => candidate.id === scenarioId)
+        || scenarios.find((candidate) => candidate.id === visualization.controls.initial)
+        || scenarios[0];
+      const points = LearningVisualizationModels.residualPoints(scenario);
+      const xs = points.map((point) => Number(point.x));
+      const targets = points.flatMap((point) => [
+        Number(point.observed),
+        Number(point.predicted),
+      ]);
+      const residuals = points.map((point) => point.residual);
+      const minX = Math.min(...xs);
+      const maxX = Math.max(...xs);
+      const minTarget = Math.min(...targets);
+      const maxTarget = Math.max(...targets);
+      const maxAbsResidual = Math.max(1, ...residuals.map(Math.abs));
+      const xScale = (value) => 65 + ((value - minX) / Math.max(1, maxX - minX)) * 410;
+      const targetScale = (value) =>
+        185 - ((value - minTarget) / Math.max(1, maxTarget - minTarget)) * 140;
+      const fittedMin = Math.min(...points.map((point) => point.fitted));
+      const fittedMax = Math.max(...points.map((point) => point.fitted));
+      const fittedScale = (value) =>
+        65 + ((value - fittedMin) / Math.max(1, fittedMax - fittedMin)) * 410;
+      const residualScale = (value) => 115 - (value / maxAbsResidual) * 70;
+      target.innerHTML = `<svg viewBox="0 0 520 220" role="img"
+          aria-label="${escapeHtml(visualization.title)} observed and predicted panel">
+          ${points.map((point) => `<g>
+            <line class="residual-line" x1="${xScale(Number(point.x))}"
+              y1="${targetScale(Number(point.observed))}"
+              x2="${xScale(Number(point.x))}" y2="${targetScale(point.fitted)}"></line>
+            <circle class="mark-series-primary" data-shape="circle"
+              cx="${xScale(Number(point.x))}" cy="${targetScale(Number(point.observed))}" r="6">
+              <title>Observed ${escapeHtml(point.observed)} at
+                ${escapeHtml(visualization.labels.x_axis)} ${escapeHtml(point.x)}</title>
+            </circle>
+            <rect class="mark-series-secondary" data-shape="square"
+              x="${xScale(Number(point.x)) - 5}" y="${targetScale(point.fitted) - 5}"
+              width="10" height="10">
+              <title>Predicted ${escapeHtml(point.predicted)} at
+                ${escapeHtml(visualization.labels.x_axis)} ${escapeHtml(point.x)}</title>
+            </rect>
+          </g>`).join("")}
+          <text class="chart-label" x="205" y="212">
+            ${escapeHtml(visualization.labels.x_axis)}
+          </text>
+          <text class="chart-label" x="8" y="26">
+            ${escapeHtml(visualization.labels.target_axis)}
+          </text>
+        </svg>
+        <svg viewBox="0 0 520 220" role="img"
+          aria-label="${escapeHtml(visualization.title)} residual against fitted panel">
+          <line class="zero-line" x1="65" y1="${residualScale(0)}"
+            x2="475" y2="${residualScale(0)}"></line>
+          <text class="chart-label" x="70" y="${residualScale(0) - 8}">Positive residual</text>
+          <text class="chart-label" x="70" y="${residualScale(0) + 18}">Negative residual</text>
+          <text class="chart-label" x="425" y="${residualScale(0) - 8}">Zero residual</text>
+          ${points.map((point) => `<circle class="mark-series-primary" data-shape="circle"
+            cx="${fittedScale(point.fitted)}" cy="${residualScale(point.residual)}" r="6">
+            <title>Fitted ${point.fitted.toFixed(2)}, residual
+              ${point.residual.toFixed(2)}</title>
+          </circle>`).join("")}
+          <text class="chart-label" x="220" y="212">Fitted value</text>
+          <text class="chart-label" x="8" y="26">
+            ${escapeHtml(visualization.labels.residual_axis)}
+          </text>
+        </svg>`;
+      summary.textContent =
+        `${scenario.label}. Illustrative residuals range from ` +
+        `${Math.min(...residuals).toFixed(2)} to ${Math.max(...residuals).toFixed(2)}.`;
+    }
+
+    function coefficientFeatureStyle(featureIndex) {
+      const styles = [
+        { dashArray: "", marker: "●" },
+        { dashArray: "10 4", marker: "■" },
+        { dashArray: "2 4", marker: "▲" },
+        { dashArray: "14 3 2 3", marker: "◆" },
+      ];
+      return styles[featureIndex % styles.length];
+    }
+
+    function renderCoefficientPath(visualization, target, summary, selectedIndex) {
+      const data = visualization.data;
+      const index = Math.max(
+        0,
+        Math.min(data.penalties.length - 1, Number(selectedIndex)),
+      );
+      const snapshot = LearningVisualizationModels.coefficientSnapshot(data, index);
+      const allValues = data.series.flatMap((series) => [...series.ridge, ...series.lasso])
+        .map(Number);
+      const maxAbs = Math.max(1, ...allValues.map(Math.abs));
+      const xScale = (step) =>
+        65 + (step / Math.max(1, data.penalties.length - 1)) * 410;
+      const yScale = (value) => 120 - (Number(value) / maxAbs) * 85;
+      const paths = data.series.flatMap((series, featureIndex) =>
+        ["ridge", "lasso"].map((model) => {
+          const values = series[model];
+          const featureStyle = coefficientFeatureStyle(featureIndex);
+          const points = values.map(
+            (value, step) => `${xScale(step)},${yScale(value)}`,
+          ).join(" ");
+          const label = model === "ridge"
+            ? `<text class="feature-label" x="${xScale(data.penalties.length - 1) - 4}"
+                y="${yScale(values[values.length - 1]) - 7}" text-anchor="end">
+                ${featureStyle.marker} ${escapeHtml(series.feature)}</text>`
+            : "";
+          return `<polyline class="coefficient-line model-${model}" data-feature-pattern="${featureIndex}"
+            stroke-dasharray="${featureStyle.dashArray}" points="${points}">
+            <title>${escapeHtml(series.feature)} ${model} coefficient path; feature cue ${featureStyle.marker}</title>
+            </polyline>${label}`;
+        }),
+      ).join("");
+      const markers = snapshot.rows.map((row) => {
+        const x = xScale(index);
+        const ridgeY = yScale(row.ridge);
+        const lassoY = yScale(row.lasso);
+        const zeroMark = row.lassoIsZero
+          ? `<g class="coefficient-zero" data-shape="zero">
+              <circle cx="${x}" cy="${lassoY}" r="9"></circle>
+              <path d="M${x - 5},${lassoY - 5} L${x + 5},${lassoY + 5}
+                M${x + 5},${lassoY - 5} L${x - 5},${lassoY + 5}"></path>
+              <title>${escapeHtml(row.feature)} Lasso is exactly zero</title>
+            </g>`
+          : `<rect class="mark-series-secondary" data-shape="square"
+              x="${x - 6}" y="${lassoY - 6}" width="12" height="12">
+              <title>${escapeHtml(row.feature)} Lasso ${row.lasso}</title>
+            </rect>`;
+        return `<circle class="mark-series-primary" data-shape="circle"
+            cx="${x}" cy="${ridgeY}" r="6">
+            <title>${escapeHtml(row.feature)} Ridge ${row.ridge}</title>
+          </circle>${zeroMark}`;
+      }).join("");
+      target.innerHTML = `<svg viewBox="0 0 520 240" role="img"
+          aria-label="${escapeHtml(visualization.title)} coefficient path chart">
+          <line class="zero-line" x1="65" y1="${yScale(0)}"
+            x2="475" y2="${yScale(0)}"></line>
+          ${paths}
+          ${markers}
+          <text class="chart-label" x="195" y="228">Penalty strength</text>
+          <text class="chart-label" x="8" y="24">Coefficient</text>
+        </svg>
+        <p class="coefficient-legend">Feature cues: ${data.series.map((series, featureIndex) =>
+          `${coefficientFeatureStyle(featureIndex).marker} ${escapeHtml(series.feature)}`
+        ).join("; ")}. Ridge uses circles; Lasso uses squares or an exact-zero cross.</p>
+        <table class="visualization-table">
+          <caption>Coefficients at penalty ${snapshot.penalty}</caption>
+          <thead><tr><th>Feature</th><th>Ridge</th><th>Lasso</th></tr></thead>
+          <tbody>${snapshot.rows.map((row) => `<tr>
+            <th scope="row">${escapeHtml(row.feature)}</th>
+            <td>${row.ridge}</td>
+            <td>${row.lasso}${row.lassoIsZero ? " (exact zero)" : ""}</td>
+          </tr>`).join("")}</tbody>
+        </table>`;
+      summary.textContent =
+        `Penalty ${snapshot.penalty}. ` +
+        snapshot.rows.map((row) =>
+          `${row.feature}: Ridge ${row.ridge}, Lasso ${row.lasso}`
+        ).join("; ") + ".";
+    }
+
+    function renderErrorMetrics(visualization, target, summary, selectedIndex) {
+      const adjustableErrors = visualization.data.adjustable_error;
+      const index = Math.max(
+        0,
+        Math.min(adjustableErrors.length - 1, Number(selectedIndex)),
+      );
+      const adjustableError = Number(adjustableErrors[index]);
+      const result = LearningVisualizationModels.errorMetricSummary(
+        visualization.data.base_errors,
+        adjustableError,
+      );
+      const maxAbsError = Math.max(1, ...result.errors.map((value) => Math.abs(value)));
+      const errorScale = (value) => 260 + (Number(value) / maxAbsError) * 190;
+      const metrics = [
+        ["MAE", result.mae],
+        ["MSE", result.mse],
+        ["RMSE", result.rmse],
+      ];
+      const maxMetric = Math.max(1, ...metrics.map((metric) => metric[1]));
+      target.innerHTML = `<svg viewBox="0 0 520 320" role="img"
+        aria-label="${escapeHtml(visualization.title)} error and metric chart">
+        <line class="zero-line" x1="${errorScale(0)}" y1="35"
+          x2="${errorScale(0)}" y2="105"></line>
+        ${visualization.data.base_errors.map((error, markIndex) =>
+          `<circle class="mark-series-primary" data-shape="circle"
+            cx="${errorScale(error)}" cy="${58 + (markIndex % 2) * 24}" r="6">
+            <title>Base error ${escapeHtml(error)}</title>
+          </circle>`
+        ).join("")}
+        <rect class="mark-series-secondary" data-shape="square"
+          x="${errorScale(adjustableError) - 8}" y="62" width="16" height="16">
+          <title>Adjustable error ${adjustableError}</title>
+        </rect>
+        <text class="chart-label" x="210" y="122">Prediction error</text>
+        ${metrics.map(([label, value], metricIndex) => {
+          const width = (value / maxMetric) * 330;
+          const y = 160 + metricIndex * 48;
+          return `<g><text class="chart-label" x="25" y="${y + 20}">${label}</text>
+            <rect class="metric-bar" data-shape="bar" x="95" y="${y}"
+              width="${width}" height="26">
+              <title>${label} ${value.toFixed(2)}</title>
+            </rect>
+            <text class="chart-label" x="${105 + width}" y="${y + 20}">
+              ${value.toFixed(2)}
+            </text></g>`;
+        }).join("")}
+      </svg>`;
+      const units = visualization.labels.units;
+      summary.textContent =
+        `Adjustable error ${adjustableError.toFixed(2)} ${units}. ` +
+        `MAE ${result.mae.toFixed(2)} ${units}; MSE ${result.mse.toFixed(2)} ` +
+        `${units} squared; RMSE ${result.rmse.toFixed(2)} ${units}.`;
+    }
+
     function visualizationControl(visualization) {
+      if (visualization.type === "binary-threshold") {
+        const controls = visualization.controls;
+        return `<label>Decision threshold
+          <input type="range" min="${controls.minimum}" max="${controls.maximum}"
+            step="${controls.step}" value="${controls.initial}"
+            data-viz-control="${escapeHtml(visualization.id)}">
+        </label>`;
+      }
+      if (visualization.type === "labeled-scatter") {
+        const controls = visualization.controls;
+        return `<label>Decision boundary
+          <select data-viz-control="${escapeHtml(visualization.id)}">
+            ${controls.boundaries.map((boundary) =>
+              `<option value="${escapeHtml(boundary.id)}"
+                ${boundary.id === controls.initial ? "selected" : ""}>
+                ${escapeHtml(boundary.label)}
+              </option>`
+            ).join("")}
+          </select>
+        </label>`;
+      }
+      if (visualization.type === "residual-diagnostics") {
+        return `<label>Residual scenario
+          <select data-viz-control="${escapeHtml(visualization.id)}">
+            ${visualization.data.scenarios.map((scenario) =>
+              `<option value="${escapeHtml(scenario.id)}"
+                ${scenario.id === visualization.controls.initial ? "selected" : ""}>
+                ${escapeHtml(scenario.label)}
+              </option>`
+            ).join("")}
+          </select>
+        </label>`;
+      }
+      if (visualization.type === "coefficient-path") {
+        const lastIndex = visualization.data.penalties.length - 1;
+        return `<label>Penalty step
+          <input type="range" min="0" max="${lastIndex}" step="1"
+            value="${visualization.controls.initial_index}"
+            data-viz-control="${escapeHtml(visualization.id)}">
+        </label>`;
+      }
+      if (visualization.type === "error-metrics") {
+        const lastIndex = visualization.data.adjustable_error.length - 1;
+        return `<label>Adjustable error
+          <input type="range" min="0" max="${lastIndex}" step="1"
+            value="${visualization.controls.initial_index}"
+            data-viz-control="${escapeHtml(visualization.id)}">
+        </label>`;
+      }
       if (visualization.type === "histogram") {
         const choices = visualization.controls?.bins || [4, 6, 8];
         return `<label>Number of bins
@@ -996,7 +1582,17 @@
       const control = document.querySelector(
         `[data-viz-control="${CSS.escape(visualization.id)}"]`,
       );
-      if (visualization.type === "histogram") {
+      if (visualization.type === "binary-threshold") {
+        renderBinaryThreshold(visualization, target, summary, Number(control.value));
+      } else if (visualization.type === "labeled-scatter") {
+        renderLabeledScatter(visualization, target, summary, control.value);
+      } else if (visualization.type === "residual-diagnostics") {
+        renderResidualDiagnostics(visualization, target, summary, control.value);
+      } else if (visualization.type === "coefficient-path") {
+        renderCoefficientPath(visualization, target, summary, Number(control.value));
+      } else if (visualization.type === "error-metrics") {
+        renderErrorMetrics(visualization, target, summary, Number(control.value));
+      } else if (visualization.type === "histogram") {
         renderHistogram(visualization, target, summary, Math.max(1, Number(control.value)));
       } else if (visualization.type === "boxplot") {
         renderBoxplot(visualization, target, summary, Number(control.value));
@@ -1027,7 +1623,8 @@
         const control = document.querySelector(
           `[data-viz-control="${CSS.escape(visualization.id)}"]`,
         );
-        control.addEventListener("change", () => renderOneVisualization(visualization));
+        const eventType = control.matches('input[type="range"]') ? "input" : "change";
+        control.addEventListener(eventType, () => renderOneVisualization(visualization));
         renderOneVisualization(visualization);
       });
       byId("previous-visualization").disabled = state.visualizationIndex === 0;

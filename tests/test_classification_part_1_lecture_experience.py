@@ -46,11 +46,10 @@ EXPECTED_CONCEPTS = {
     "precision-recall-fscore",
     "roc-auc-log-loss",
 }
-EXPECTED_VISUALIZATION_TYPES = {"histogram", "scatter", "boxplot"}
+EXPECTED_VISUALIZATION_TYPES = {"binary-threshold", "labeled-scatter"}
 EXPECTED_VISUALIZATIONS = {
-    "cls-score-distribution": "histogram",
-    "cls-feature-separation": "scatter",
-    "cls-margin-outliers": "boxplot",
+    "cls-threshold-confusion": "binary-threshold",
+    "cls-decision-boundary": "labeled-scatter",
 }
 EXPECTED_DEFAULTS = {
     "difficulty": "foundations",
@@ -88,25 +87,6 @@ def _okf_hashes() -> dict[Path, str]:
 def _source_is_allowed(source: str) -> bool:
     return source.startswith(f"lectures/{LECTURE_SLUG}/") or source.startswith(
         "okf/"
-    )
-
-
-def _outlier_count(values: list[float], multiplier: float) -> int:
-    ordered = sorted(values)
-
-    def quantile(fraction: float) -> float:
-        position = (len(ordered) - 1) * fraction
-        lower = int(position)
-        upper = min(lower + 1, len(ordered) - 1)
-        weight = position - lower
-        return ordered[lower] * (1 - weight) + ordered[upper] * weight
-
-    q1 = quantile(0.25)
-    q3 = quantile(0.75)
-    iqr = q3 - q1
-    return sum(
-        value < q1 - multiplier * iqr or value > q3 + multiplier * iqr
-        for value in ordered
     )
 
 
@@ -163,18 +143,23 @@ def test_classification_payload_and_generated_site_meet_learning_contract(
         for source in concept["sources"]
     )
 
-    visualizations = {item["id"]: item for item in payload["visualizations"]}
-    histogram = visualizations["cls-score-distribution"]
-    assert len(histogram["controls"]["bins"]) >= 4
-    scatter = visualizations["cls-feature-separation"]
-    assert scatter["controls"]["trend_line"] is True
-    boxplot = visualizations["cls-margin-outliers"]
-    assert boxplot["controls"]["fence_multipliers"] == [1, 1.5, 2]
-    outlier_counts = {
-        _outlier_count(boxplot["data"], multiplier)
-        for multiplier in boxplot["controls"]["fence_multipliers"]
-    }
-    assert len(outlier_counts) > 1
+    visualizations = payload["visualizations"]
+    assert [visualization["type"] for visualization in visualizations] == [
+        "binary-threshold",
+        "labeled-scatter",
+    ]
+    assert {
+        item["id"]: item["type"] for item in visualizations
+    } == EXPECTED_VISUALIZATIONS
+
+    threshold = visualizations[0]
+    assert threshold["controls"]["initial"] == 0.5
+    assert {record["actual"] for record in threshold["data"]} == {0, 1}
+
+    boundary = visualizations[1]
+    assert {point["series"] for point in boundary["data"]} == {"A", "B"}
+    assert boundary["labels"]["positive_series"] == "B"
+    assert len(boundary["controls"]["boundaries"]) == 3
 
     html = SITE_PATH.read_text(encoding="utf-8")
     assert "__CONTENT_JSON__" not in html
@@ -182,6 +167,16 @@ def test_classification_payload_and_generated_site_meet_learning_contract(
     assert "__QUIZ_STATE_MACHINE__" not in html
     assert "LearningExperienceQuiz" in html
     assert payload["meta"]["title"] in html
+    for hook in (
+        "Decision threshold",
+        "confusion matrix",
+        "Precision",
+        "recall",
+        "Balanced boundary",
+        "Conservative positive boundary",
+        "Permissive positive boundary",
+    ):
+        assert hook in html
     assert _load_script("validate_learning_experience").validate_html(SITE_PATH) == []
 
     okf_before = _okf_hashes()
