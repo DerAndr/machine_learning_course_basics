@@ -226,6 +226,14 @@ def test_build_week_submission_preparation_is_actionable() -> None:
     assert "own voice" in text.lower()
 
 
+def test_build_week_submission_setup_matches_supported_python_runtime() -> None:
+    text = Path(SUBMISSION_PREPARATION_PATH).read_text(encoding="utf-8")
+
+    assert "Python 3.12" in text
+    assert "Python 3.11+" not in text
+    assert "`uv` can provision" in text
+
+
 def test_learning_companions_architecture_contract() -> None:
     path = Path(ARCHITECTURE_PATH)
     assert path.is_file()

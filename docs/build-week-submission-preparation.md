@@ -111,8 +111,9 @@ developer-facing workflow. A concise judge instruction can say:
 > `.agents/skills/` workflows are discoverable. Use the general-purpose prompt
 > from `docs/interactive-lecture-learning-assistant.md`, or use the ML-course
 > prompt for a lecture-scoped review. Generated HTML works in a modern browser
-> without a server. Python 3.11+ and `uv` are needed only for regeneration and
-> automated validation.
+> without a server. Python 3.12 and `uv` are needed only for regeneration and
+> automated validation; `uv` can provision and use the required Python 3.12
+> runtime when it is not already installed.
 
 Confirm the exact Codex surfaces and operating systems you personally tested
 before placing that statement in the final form.
