@@ -1,3 +1,4 @@
+import copy
 import importlib.util
 import json
 from pathlib import Path
@@ -35,6 +36,110 @@ validate_html = validator.validate_html
 
 
 LEVELS = ("foundations", "applied", "challenge")
+
+
+SEMANTIC_VISUALIZATIONS = {
+    "binary-threshold": {
+        "id": "threshold",
+        "type": "binary-threshold",
+        "title": "Threshold",
+        "explanation": "Thresholds convert scores to decisions.",
+        "data": [
+            {"id": "p1", "score": 0.9, "actual": 1},
+            {"id": "p2", "score": 0.6, "actual": 0},
+            {"id": "p3", "score": 0.4, "actual": 1},
+            {"id": "p4", "score": 0.1, "actual": 0},
+        ],
+        "controls": {"minimum": 0.1, "maximum": 0.9, "step": 0.1, "initial": 0.5},
+        "labels": {"positive": "Positive", "negative": "Negative"},
+        "fallback": "At 0.5 there is one TP, one FP, one TN, and one FN.",
+    },
+    "labeled-scatter": {
+        "id": "boundary",
+        "type": "labeled-scatter",
+        "title": "Boundary",
+        "explanation": "A line divides two illustrative classes.",
+        "data": [
+            {"id": "a1", "x": 1, "y": 1, "series": "A"},
+            {"id": "a2", "x": 2, "y": 1.5, "series": "A"},
+            {"id": "b1", "x": 3, "y": 3, "series": "B"},
+            {"id": "b2", "x": 4, "y": 4, "series": "B"},
+        ],
+        "controls": {
+            "boundaries": [
+                {
+                    "id": "balanced",
+                    "label": "Balanced boundary",
+                    "slope": -1,
+                    "intercept": 5,
+                }
+            ],
+            "initial": "balanced",
+        },
+        "labels": {
+            "x_axis": "Feature 1",
+            "y_axis": "Feature 2",
+            "series": {"A": "Class A", "B": "Class B"},
+            "positive_series": "B",
+        },
+        "fallback": "Class A occupies the lower-left and Class B the upper-right.",
+    },
+    "residual-diagnostics": {
+        "id": "residuals",
+        "type": "residual-diagnostics",
+        "title": "Residuals",
+        "explanation": "Residual patterns reveal missed structure.",
+        "data": {
+            "scenarios": [
+                {
+                    "id": "appropriate",
+                    "label": "Appropriate fit",
+                    "points": [
+                        {
+                            "id": f"r{index}",
+                            "x": index,
+                            "observed": 2 * index + 1,
+                            "predicted": 2 * index + 0.9,
+                        }
+                        for index in range(1, 6)
+                    ],
+                }
+            ]
+        },
+        "controls": {"initial": "appropriate"},
+        "labels": {
+            "x_axis": "Predictor",
+            "target_axis": "Observed target",
+            "residual_axis": "Residual",
+        },
+        "fallback": "Residuals stay close to zero without a systematic pattern.",
+    },
+    "coefficient-path": {
+        "id": "coefficients",
+        "type": "coefficient-path",
+        "title": "Coefficient paths",
+        "explanation": "Ridge shrinks while Lasso can reach zero.",
+        "data": {
+            "penalties": [0, 0.5, 1],
+            "series": [
+                {"feature": "Area", "ridge": [3, 2, 1], "lasso": [3, 1.5, 0]},
+                {"feature": "Age", "ridge": [-1, -0.7, -0.4], "lasso": [-1, -0.4, 0]},
+            ],
+        },
+        "controls": {"initial_index": 0},
+        "fallback": "Ridge values shrink; both Lasso values reach zero at penalty 1.",
+    },
+    "error-metrics": {
+        "id": "metrics",
+        "type": "error-metrics",
+        "title": "Metric sensitivity",
+        "explanation": "RMSE reacts more strongly to a large error.",
+        "data": {"base_errors": [-2, -1, 0, 1, 2], "adjustable_error": [0, 5, 10]},
+        "controls": {"initial_index": 1},
+        "labels": {"units": "target units"},
+        "fallback": "Increasing one error from 0 to 10 raises RMSE faster than MAE.",
+    },
+}
 
 
 def _question(level: str, number: int) -> dict[str, object]:
@@ -154,6 +259,37 @@ def test_render_site_requires_exactly_one_static_content_marker(
         render_site(template, payload)
 
 
+def test_render_site_embeds_visualization_models_and_requires_the_source(
+    payload: dict[str, object],
+) -> None:
+    template = (
+        "<main>__STATIC_CONTENT__</main>"
+        "<script>const CONTENT = __CONTENT_JSON__;</script>"
+        "<script>__VISUALIZATION_MODELS__</script>"
+    )
+
+    with pytest.raises(ValueError, match="visualization models"):
+        render_site(template, payload)
+
+    rendered = render_site(template, payload, visualization_models="const models = {};")
+
+    assert rendered.count("const models = {};") == 1
+    assert "__VISUALIZATION_MODELS__" not in rendered
+
+
+def test_render_site_rejects_multiple_visualization_model_markers(
+    payload: dict[str, object],
+) -> None:
+    template = (
+        "<main>__STATIC_CONTENT__</main>"
+        "<script>const CONTENT = __CONTENT_JSON__;</script>"
+        "<script>__VISUALIZATION_MODELS____VISUALIZATION_MODELS__</script>"
+    )
+
+    with pytest.raises(ValueError, match="no more than one"):
+        render_site(template, payload, visualization_models="const models = {};")
+
+
 def test_render_site_embeds_escaped_complete_static_reference(
     payload: dict[str, object],
 ) -> None:
@@ -269,6 +405,42 @@ def test_validate_payload_rejects_invalid_visualization_data(
     errors = validate_payload(payload)
 
     assert any("data" in error for error in errors)
+
+
+@pytest.mark.parametrize("visualization", SEMANTIC_VISUALIZATIONS.values())
+def test_validate_payload_accepts_semantic_visualization(
+    payload: dict[str, object], visualization: dict[str, object]
+) -> None:
+    payload["visualizations"] = [visualization]
+
+    assert validate_payload(payload) == []
+
+
+@pytest.mark.parametrize(
+    ("visualization_type", "field_path"),
+    [
+        ("binary-threshold", ("data", 0, "actual")),
+        ("labeled-scatter", ("data", 0, "series")),
+        ("residual-diagnostics", ("data", "scenarios", 0, "points")),
+        ("coefficient-path", ("data", "series", 0, "lasso")),
+        ("error-metrics", ("data", "adjustable_error")),
+    ],
+)
+def test_validate_payload_rejects_broken_semantic_schema(
+    payload: dict[str, object],
+    visualization_type: str,
+    field_path: tuple[object, ...],
+) -> None:
+    visualization = copy.deepcopy(SEMANTIC_VISUALIZATIONS[visualization_type])
+    target: object = visualization
+    for key in field_path[:-1]:
+        target = target[key]  # type: ignore[index]
+    del target[field_path[-1]]  # type: ignore[index]
+    payload["visualizations"] = [visualization]
+
+    errors = validate_payload(payload)
+
+    assert any(visualization_type in error for error in errors)
 
 
 def test_validate_payload_rejects_choice_question_without_options(

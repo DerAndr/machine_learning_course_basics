@@ -9,6 +9,7 @@ from typing import Any
 CONTENT_MARKER = "__CONTENT_JSON__"
 STATIC_CONTENT_MARKER = "__STATIC_CONTENT__"
 QUIZ_STATE_MACHINE_MARKER = "__QUIZ_STATE_MACHINE__"
+VISUALIZATION_MODELS_MARKER = "__VISUALIZATION_MODELS__"
 REQUIRED_TOP_LEVEL = {
     "meta",
     "defaults",
@@ -28,7 +29,17 @@ QUESTION_FIELDS = {
     "concept",
 }
 QUESTION_TYPES = {"single-choice", "multiple-choice", "interpretation"}
-VISUALIZATION_TYPES = {"histogram", "boxplot", "scatter", "missingness"}
+VISUALIZATION_TYPES = {
+    "histogram",
+    "boxplot",
+    "scatter",
+    "missingness",
+    "binary-threshold",
+    "labeled-scatter",
+    "residual-diagnostics",
+    "coefficient-path",
+    "error-metrics",
+}
 SOURCE_IDENTIFIER = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:[^/].+")
 
 
@@ -83,6 +94,359 @@ def _has_valid_histogram_bins(controls: object) -> bool:
             for value in bins
         )
     )
+
+
+def _validate_binary_threshold(visualization: dict[str, object], location: str) -> list[str]:
+    """Validate the probability-threshold teaching visualization."""
+    errors: list[str] = []
+    data = visualization.get("data")
+    records_are_valid = isinstance(data, list) and len(data) >= 4
+    if records_are_valid:
+        ids: list[str] = []
+        for record in data:
+            if not isinstance(record, dict):
+                records_are_valid = False
+                break
+            identifier = record.get("id")
+            if not _is_non_empty_string(identifier):
+                records_are_valid = False
+                break
+            ids.append(identifier)
+            if (
+                not _is_finite_number(record.get("score"))
+                or not 0 <= record["score"] <= 1
+                or isinstance(record.get("actual"), bool)
+                or record.get("actual") not in {0, 1}
+            ):
+                records_are_valid = False
+                break
+        records_are_valid = records_are_valid and len(ids) == len(set(ids))
+    if not records_are_valid:
+        errors.append(
+            f"{location}.data does not match the binary-threshold schema: "
+            "records need unique IDs, scores from 0 through 1, and actual values 0 or 1"
+        )
+
+    controls = visualization.get("controls")
+    controls_are_valid = isinstance(controls, dict) and all(
+        _is_finite_number(controls.get(field))
+        for field in ("minimum", "maximum", "step", "initial")
+    )
+    if controls_are_valid:
+        minimum = controls["minimum"]
+        maximum = controls["maximum"]
+        step = controls["step"]
+        initial = controls["initial"]
+        controls_are_valid = (
+            0 <= minimum <= initial <= maximum <= 1
+            and minimum < maximum
+            and 0 < step <= maximum - minimum
+        )
+    if not controls_are_valid:
+        errors.append(
+            f"{location}.controls does not match the binary-threshold schema: "
+            "minimum, maximum, step, and initial must define a finite threshold range"
+        )
+
+    labels = visualization.get("labels")
+    if not (
+        isinstance(labels, dict)
+        and _is_non_empty_string(labels.get("positive"))
+        and _is_non_empty_string(labels.get("negative"))
+    ):
+        errors.append(
+            f"{location}.labels does not match the binary-threshold schema: "
+            "positive and negative labels must be non-empty"
+        )
+    return errors
+
+
+def _validate_labeled_scatter(visualization: dict[str, object], location: str) -> list[str]:
+    """Validate semantic groups and candidate boundaries."""
+    errors: list[str] = []
+    data = visualization.get("data")
+    data_are_valid = isinstance(data, list) and len(data) >= 4
+    point_ids: list[str] = []
+    point_series: set[str] = set()
+    if data_are_valid:
+        for point in data:
+            if not isinstance(point, dict):
+                data_are_valid = False
+                break
+            identifier = point.get("id")
+            series = point.get("series")
+            if (
+                not _is_non_empty_string(identifier)
+                or not _is_non_empty_string(series)
+                or not _is_finite_number(point.get("x"))
+                or not _is_finite_number(point.get("y"))
+            ):
+                data_are_valid = False
+                break
+            point_ids.append(identifier)
+            point_series.add(series)
+        data_are_valid = data_are_valid and len(point_ids) == len(set(point_ids))
+
+    labels = visualization.get("labels")
+    labels_are_valid = (
+        isinstance(labels, dict)
+        and _is_non_empty_string(labels.get("x_axis"))
+        and _is_non_empty_string(labels.get("y_axis"))
+        and isinstance(labels.get("series"), dict)
+        and len(labels["series"]) == 2
+        and all(
+            _is_non_empty_string(key) and _is_non_empty_string(value)
+            for key, value in labels["series"].items()
+        )
+    )
+    supported_series: set[str] = set()
+    if labels_are_valid:
+        supported_series = set(labels["series"])
+        labels_are_valid = (
+            len(point_series) == 2
+            and point_series == supported_series
+            and labels.get("positive_series") in supported_series
+        )
+    if not data_are_valid or not labels_are_valid:
+        errors.append(
+            f"{location}.data does not match the labeled-scatter schema: "
+            "points need unique IDs, finite coordinates, and exactly two labeled series"
+        )
+    if not labels_are_valid:
+        errors.append(
+            f"{location}.labels does not match the labeled-scatter schema: "
+            "axis, series, and positive-series labels must be non-empty and cross-reference points"
+        )
+
+    controls = visualization.get("controls")
+    controls_are_valid = isinstance(controls, dict) and isinstance(controls.get("boundaries"), list)
+    boundary_ids: list[str] = []
+    if controls_are_valid:
+        boundaries = controls["boundaries"]
+        controls_are_valid = bool(boundaries)
+        for boundary in boundaries:
+            if not isinstance(boundary, dict):
+                controls_are_valid = False
+                break
+            identifier = boundary.get("id")
+            if (
+                not _is_non_empty_string(identifier)
+                or not _is_non_empty_string(boundary.get("label"))
+                or not _is_finite_number(boundary.get("slope"))
+                or not _is_finite_number(boundary.get("intercept"))
+            ):
+                controls_are_valid = False
+                break
+            boundary_ids.append(identifier)
+        controls_are_valid = (
+            controls_are_valid
+            and len(boundary_ids) == len(set(boundary_ids))
+            and controls.get("initial") in set(boundary_ids)
+        )
+    if not controls_are_valid:
+        errors.append(
+            f"{location}.controls does not match the labeled-scatter schema: "
+            "boundaries need unique IDs, labels, finite lines, and a valid initial boundary"
+        )
+    return errors
+
+
+def _validate_residual_diagnostics(visualization: dict[str, object], location: str) -> list[str]:
+    """Validate precomputed fitted-value scenarios."""
+    errors: list[str] = []
+    data = visualization.get("data")
+    scenarios_are_valid = isinstance(data, dict) and isinstance(data.get("scenarios"), list)
+    scenario_ids: list[str] = []
+    point_ids: list[str] = []
+    if scenarios_are_valid:
+        scenarios = data["scenarios"]
+        scenarios_are_valid = bool(scenarios)
+        for scenario in scenarios:
+            if not isinstance(scenario, dict):
+                scenarios_are_valid = False
+                break
+            identifier = scenario.get("id")
+            points = scenario.get("points")
+            if (
+                not _is_non_empty_string(identifier)
+                or not _is_non_empty_string(scenario.get("label"))
+                or not isinstance(points, list)
+                or len(points) < 5
+            ):
+                scenarios_are_valid = False
+                break
+            scenario_ids.append(identifier)
+            for point in points:
+                if (
+                    not isinstance(point, dict)
+                    or not _is_non_empty_string(point.get("id"))
+                    or not all(
+                        _is_finite_number(point.get(field))
+                        for field in ("x", "observed", "predicted")
+                    )
+                ):
+                    scenarios_are_valid = False
+                    break
+                point_ids.append(point["id"])
+            if not scenarios_are_valid:
+                break
+        scenarios_are_valid = (
+            scenarios_are_valid
+            and len(scenario_ids) == len(set(scenario_ids))
+            and len(point_ids) == len(set(point_ids))
+        )
+    if not scenarios_are_valid:
+        errors.append(
+            f"{location}.data does not match the residual-diagnostics schema: "
+            "scenarios need unique IDs and at least five finite, uniquely identified points"
+        )
+
+    controls = visualization.get("controls")
+    if not (isinstance(controls, dict) and controls.get("initial") in set(scenario_ids)):
+        errors.append(
+            f"{location}.controls does not match the residual-diagnostics schema: "
+            "initial must identify a scenario"
+        )
+    labels = visualization.get("labels")
+    if not (
+        isinstance(labels, dict)
+        and all(
+            _is_non_empty_string(labels.get(field))
+            for field in ("x_axis", "target_axis", "residual_axis")
+        )
+    ):
+        errors.append(
+            f"{location}.labels does not match the residual-diagnostics schema: "
+            "axis labels must be non-empty"
+        )
+    return errors
+
+
+def _validate_coefficient_path(visualization: dict[str, object], location: str) -> list[str]:
+    """Validate aligned Ridge and Lasso coefficient paths."""
+    errors: list[str] = []
+    data = visualization.get("data")
+    data_are_valid = isinstance(data, dict)
+    penalties: list[object] = []
+    if data_are_valid:
+        raw_penalties = data.get("penalties")
+        raw_series = data.get("series")
+        data_are_valid = (
+            isinstance(raw_penalties, list)
+            and len(raw_penalties) >= 3
+            and isinstance(raw_series, list)
+            and len(raw_series) >= 2
+        )
+        if data_are_valid:
+            penalties = raw_penalties
+            data_are_valid = all(
+                _is_finite_number(value) and value >= 0 for value in penalties
+            ) and all(left < right for left, right in zip(penalties, penalties[1:], strict=False))
+            features: list[str] = []
+            for series in raw_series:
+                if not isinstance(series, dict) or not _is_non_empty_string(series.get("feature")):
+                    data_are_valid = False
+                    break
+                features.append(series["feature"])
+                for path in (series.get("ridge"), series.get("lasso")):
+                    if (
+                        not isinstance(path, list)
+                        or len(path) != len(penalties)
+                        or not all(_is_finite_number(value) for value in path)
+                    ):
+                        data_are_valid = False
+                        break
+                if not data_are_valid:
+                    break
+            data_are_valid = data_are_valid and len(features) == len(set(features))
+    if not data_are_valid:
+        errors.append(
+            f"{location}.data does not match the coefficient-path schema: "
+            "penalties and unique Ridge/Lasso feature paths must be finite and aligned"
+        )
+
+    controls = visualization.get("controls")
+    if not (
+        isinstance(controls, dict)
+        and isinstance(controls.get("initial_index"), int)
+        and not isinstance(controls.get("initial_index"), bool)
+        and 0 <= controls["initial_index"] < len(penalties)
+    ):
+        errors.append(
+            f"{location}.controls does not match the coefficient-path schema: "
+            "initial_index must select one penalty"
+        )
+    return errors
+
+
+def _validate_error_metrics(visualization: dict[str, object], location: str) -> list[str]:
+    """Validate the fixed and adjustable errors used for metric comparison."""
+    errors: list[str] = []
+    data = visualization.get("data")
+    data_are_valid = isinstance(data, dict)
+    adjustable_errors: list[object] = []
+    if data_are_valid:
+        base_errors = data.get("base_errors")
+        raw_adjustable_errors = data.get("adjustable_error")
+        data_are_valid = (
+            isinstance(base_errors, list)
+            and len(base_errors) >= 3
+            and all(_is_finite_number(error) for error in base_errors)
+            and isinstance(raw_adjustable_errors, list)
+            and len(raw_adjustable_errors) >= 3
+            and all(_is_finite_number(error) and error >= 0 for error in raw_adjustable_errors)
+        )
+        if data_are_valid:
+            adjustable_errors = raw_adjustable_errors
+            data_are_valid = all(
+                left < right
+                for left, right in zip(adjustable_errors, adjustable_errors[1:], strict=False)
+            )
+    if not data_are_valid:
+        errors.append(
+            f"{location}.data does not match the error-metrics schema: "
+            "base errors and increasing non-negative adjustable errors must be finite"
+        )
+
+    controls = visualization.get("controls")
+    if not (
+        isinstance(controls, dict)
+        and isinstance(controls.get("initial_index"), int)
+        and not isinstance(controls.get("initial_index"), bool)
+        and 0 <= controls["initial_index"] < len(adjustable_errors)
+    ):
+        errors.append(
+            f"{location}.controls does not match the error-metrics schema: "
+            "initial_index must select one adjustable error"
+        )
+    labels = visualization.get("labels")
+    if not (isinstance(labels, dict) and _is_non_empty_string(labels.get("units"))):
+        errors.append(
+            f"{location}.labels does not match the error-metrics schema: units must be non-empty"
+        )
+    return errors
+
+
+def validate_visualization(visualization: dict[str, object], location: str) -> list[str]:
+    """Return schema violations for a supported visualization."""
+    visualization_type = visualization.get("type")
+    validators = {
+        "binary-threshold": _validate_binary_threshold,
+        "labeled-scatter": _validate_labeled_scatter,
+        "residual-diagnostics": _validate_residual_diagnostics,
+        "coefficient-path": _validate_coefficient_path,
+        "error-metrics": _validate_error_metrics,
+    }
+    if visualization_type in validators:
+        return validators[visualization_type](visualization, location)
+    errors: list[str] = []
+    if not _has_valid_visualization_data(visualization_type, visualization.get("data")):
+        errors.append(f"{location}.data does not match the {visualization_type} schema")
+    if visualization_type == "histogram" and not _has_valid_histogram_bins(
+        visualization.get("controls")
+    ):
+        errors.append(f"{location}.controls.bins must contain positive integers up to 50")
+    return errors
 
 
 def _is_repository_relative_path(value: object) -> bool:
@@ -214,15 +578,7 @@ def validate_payload(payload: dict[str, object], repository_root: Path | None = 
             for field in ("id", "title", "explanation"):
                 if not _is_non_empty_string(visualization.get(field)):
                     errors.append(f"{location}.{field} must be a non-empty string")
-            if not _has_valid_visualization_data(
-                visualization_type,
-                visualization.get("data"),
-            ):
-                errors.append(f"{location}.data does not match the {visualization_type} schema")
-            if visualization_type == "histogram" and not _has_valid_histogram_bins(
-                visualization.get("controls")
-            ):
-                errors.append(f"{location}.controls.bins must contain positive integers up to 50")
+            errors.extend(validate_visualization(visualization, location))
             if not _is_non_empty_string(visualization.get("fallback")):
                 errors.append(f"{location}.fallback must be readable without a graph")
 
@@ -412,6 +768,7 @@ def render_site(
     template: str,
     payload: dict[str, object],
     quiz_state_machine: str | None = None,
+    visualization_models: str | None = None,
 ) -> str:
     """Embed deterministic JSON and a complete escaped static reference."""
     marker_count = template.count(CONTENT_MARKER)
@@ -433,6 +790,14 @@ def render_site(
         )
     if quiz_marker_count == 1 and quiz_state_machine is None:
         raise ValueError("template requires the embedded quiz state machine")
+    model_marker_count = template.count(VISUALIZATION_MODELS_MARKER)
+    if model_marker_count > 1:
+        raise ValueError(
+            "template must contain no more than one "
+            f"{VISUALIZATION_MODELS_MARKER} marker; found {model_marker_count}"
+        )
+    if model_marker_count == 1 and visualization_models is None:
+        raise ValueError("template requires the embedded visualization models")
     encoded = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
     encoded = (
         encoded.replace("&", "\\u0026")
@@ -448,6 +813,9 @@ def render_site(
     if quiz_marker_count == 1:
         assert quiz_state_machine is not None
         rendered = rendered.replace(QUIZ_STATE_MACHINE_MARKER, quiz_state_machine)
+    if model_marker_count == 1:
+        assert visualization_models is not None
+        rendered = rendered.replace(VISUALIZATION_MODELS_MARKER, visualization_models)
     return rendered
 
 
@@ -455,12 +823,13 @@ def generate_site(
     payload: dict[str, object],
     template: str,
     quiz_state_machine: str | None = None,
+    visualization_models: str | None = None,
 ) -> str:
     """Validate payload content and return one portable HTML document."""
     errors = validate_payload(payload)
     if errors:
         raise ValueError("\n".join(errors))
-    return render_site(template, payload, quiz_state_machine)
+    return render_site(template, payload, quiz_state_machine, visualization_models)
 
 
 def write_site(
@@ -484,7 +853,12 @@ def write_site(
         quiz_state_machine = template_path.with_name("quiz-state-machine.js").read_text(
             encoding="utf-8"
         )
-    html = generate_site(payload, template, quiz_state_machine)
+    visualization_models = None
+    if VISUALIZATION_MODELS_MARKER in template:
+        visualization_models = template_path.with_name("visualization-models.js").read_text(
+            encoding="utf-8"
+        )
+    html = generate_site(payload, template, quiz_state_machine, visualization_models)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(html, encoding="utf-8", newline="\n")
     return output_path
