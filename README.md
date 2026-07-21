@@ -6,6 +6,20 @@
 An introductory machine learning course with connected textbook pages, focused
 interactive reviews, lecture notes and slides, and hands-on notebooks.
 
+## Build Week project: Learning Companions
+
+Learning Companions is a reusable Codex skill that turns repositories and
+knowledge bases into short interactive lessons. The ML course is its first
+repository-specific implementation.
+
+[Open the portable skill](.agents/skills/interactive-learning-experience-builder/)
+· [Try a generated lesson](https://derandr.github.io/machine_learning_course_basics/demos/lecture_05_classification_part_1/)
+· [How Codex and GPT-5.6 were used](#how-codex-and-gpt-56-were-used)
+
+The course materials existed before Build Week. During the event, I built the
+portable skill, repository adapter, generator, validator, interaction runtime,
+and generated learning companions.
+
 ## Choose how to learn
 
 | Route | Best for | Open |
