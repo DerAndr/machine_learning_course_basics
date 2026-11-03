@@ -1,6 +1,6 @@
 ---
 name: ml-course-interactive-learning-assistant
-description: Use when creating an interactive review for an ML-course lecture and its course-specific source, safety, and publishing rules are needed.
+description: Use when creating, revising, or regenerating an ML-course lecture companion under course source and publishing rules.
 ---
 
 # ML Course Interactive Learning Assistant
@@ -45,9 +45,12 @@ even though the portable core can support them in unrelated repositories.
 
 ## Recurring generation workflow
 
-1. Ask the learner for four defaults: Foundations, Applied, or Challenge quiz
-   depth; focus-friendly mode on or off; color-blind-safe palette on or off; and
-   funny topic-related break prompts on or off.
+1. Reuse defaults supplied by the learner or the existing payload when regenerating:
+   Foundations, Applied, or Challenge quiz depth; focus-friendly mode on or off;
+   color-blind-safe palette on or off; funny topic-related break prompts on or off.
+   For a new experience, ask for missing preferences together; do not repeat an
+   answered setup question. If the user delegates the choices, state the chosen
+   defaults and proceed.
 2. Create the short experience specification required by
    `interactive-learning-experience-builder`, then ground the payload using the
    course source order above.
@@ -94,5 +97,8 @@ uv run pytest tests/test_eda_lecture_experience.py tests/test_interactive_learni
 uv run python tools/build_textbook_preview.py
 ```
 
-After merging to `main`, verify GitHub Actions and the deployed Pages review in
-the public student repository.
+For an instruction-only edit, use the focused documentation/skill checks in
+`docs/agent-workflow.md`; do not regenerate reviews to check prose.
+Publish only when included in the user's task. After an authorized merge to
+`main`, verify GitHub Actions and the deployed Pages review in the public student
+repository. Report local and deployed verification separately.

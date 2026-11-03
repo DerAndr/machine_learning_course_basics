@@ -1,5 +1,9 @@
 # OKF Authoring Guide
 
+For task-specific checks and instruction-only edits, see
+[Agent Workflow](agent-workflow.md#verification). The full textbook gate applies
+when changing OKF content, rendering, or labs; a local validation is not publication.
+
 ## Purpose
 
 The `okf/` directory is a concise, independently conformant Open Knowledge Format v0.1 bundle. It complements the full course in `lectures/`; it does not replace or duplicate it. This student repository is the source of truth for public-safe OKF content.
