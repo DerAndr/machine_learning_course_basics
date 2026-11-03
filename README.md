@@ -149,6 +149,7 @@ and optional dependency groups.
 - [Learning companions architecture](docs/learning-companions-architecture.md)
 - [Deep-learning and Colab guide](docs/deep-learning-colab-guide.md)
 - [Agent repository guide](AGENTS.md)
+- [Agent verification, skill maintenance, and source review](docs/agent-workflow.md)
 
 ## Repository map
 

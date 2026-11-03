@@ -140,7 +140,9 @@ When the workflow itself changes, update the skill, this guide, `docs/okf-author
 
 ## Local checks
 
-Run before committing:
+For instruction/prose-only changes that do not alter textbook content or rendering,
+use the focused checks in [Agent Workflow](agent-workflow.md#verification).
+For textbook, OKF, renderer, or lab changes, run before committing:
 
 ```powershell
 uv run ruff format --check src/mlcourse/okf_validation.py tools/validate_okf.py tools/build_textbook_preview.py tests/test_okf_validation.py tests/test_textbook_preview.py tests/test_smoke.py
@@ -153,7 +155,8 @@ uv run python tools/build_textbook_preview.py
 
 ## Online checks
 
-After merge to `main`, check:
+Publishing follows the user's requested scope; this guide does not require a push
+for a local contribution. After an authorized merge to public `main`, check:
 
 - GitHub Actions succeeded.
 - The changed textbook page opens on GitHub Pages.
